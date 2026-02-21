@@ -5,6 +5,7 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import AuthProvider from '@/components/layout/AuthProvider'
 import AuthGuard from '@/components/layout/AuthGuard'
+import { Toaster } from '@/components/ui/sonner'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -37,6 +38,7 @@ export default function RootLayout({
             <div className="min-h-screen">{children}</div>
           </AuthGuard>
           <Footer />
+          <Toaster position="top-right" />
         </AuthProvider>
       </body>
     </html>
