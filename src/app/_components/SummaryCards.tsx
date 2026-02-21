@@ -1,27 +1,14 @@
 import { ArrowUpCircle, ArrowDownCircle, History } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-interface SummaryProps {
-  total: number
+type SummaryProps = {
   income: number
   expense: number
 }
 
-export function SummaryCards({ total, income, expense }: SummaryProps) {
+export function SummaryCards({ income, expense }: SummaryProps) {
   return (
-    <section className="grid gap-4 md:grid-cols-3">
-      <Card className="bg-card border-border shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-muted text-sm font-medium">
-            총 잔액
-          </CardTitle>
-          <History className="text-accent h-4 w-4" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">₩ {total.toLocaleString()}</div>
-        </CardContent>
-      </Card>
-
+    <section className="grid gap-4 md:grid-cols-2">
       <Card className="bg-card border-border shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-muted text-sm font-medium">
@@ -31,7 +18,7 @@ export function SummaryCards({ total, income, expense }: SummaryProps) {
         </CardHeader>
         <CardContent>
           <div className="text-income text-2xl font-bold">
-            + ₩ {income.toLocaleString()}
+            + {income.toLocaleString()} 원
           </div>
         </CardContent>
       </Card>
@@ -45,7 +32,7 @@ export function SummaryCards({ total, income, expense }: SummaryProps) {
         </CardHeader>
         <CardContent>
           <div className="text-expense text-2xl font-bold">
-            - ₩ {expense.toLocaleString()}
+            - {expense.toLocaleString()} 원
           </div>
         </CardContent>
       </Card>
