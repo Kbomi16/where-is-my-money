@@ -14,8 +14,6 @@ export default function Header() {
   const userProfile =
     GHOST_IMAGES.find((ghost) => ghost.id === user?.photoURL) || GHOST_IMAGES[0]
 
-  console.log(userProfile)
-
   if (!user) return null
 
   return (
@@ -24,7 +22,7 @@ export default function Header() {
         <Link href={'/'} className="flex items-center gap-2">
           <Wallet className="text-accent h-6 w-6" />
           <span className="text-xl font-bold tracking-tight">
-            Where did it go?
+            내 돈 다 어디갔니?
           </span>
         </Link>
         <div className="flex items-center gap-4">
