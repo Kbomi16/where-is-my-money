@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { auth } from '@/lib/firebase'
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth' // updateProfile 추가
+import { auth, db } from '@/lib/firebase'
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -25,6 +25,7 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { doc, setDoc } from 'firebase/firestore'
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('')
@@ -41,13 +42,13 @@ export default function SignUpPage() {
     setIsLoading(true)
 
     try {
-      // 1. 닉네임 검사
+      // 1. 닉네임 유효성 검사
       if (nickname.trim().length < 2) {
         toast.error('닉네임은 최소 2자 이상이어야 해요!')
         return
       }
 
-      // 2. 비밀번호 유효성 검사 추가
+      // 2. 비밀번호 유효성 검사
       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
 
       if (!passwordRegex.test(password)) {
@@ -55,35 +56,56 @@ export default function SignUpPage() {
         return
       }
 
+      // 2. Firebase Auth 계정 생성
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password,
       )
+      const user = userCredential.user
 
-      if (userCredential.user) {
-        await updateProfile(userCredential.user, {
-          displayName: nickname,
-        })
+      // 3. Auth 계정 생성이 성공했다면 후속 작업 진행
+      if (user) {
+        try {
+          // 프로필과 DB 저장을 동시에 시도
+          await Promise.all([
+            updateProfile(user, {
+              displayName: nickname,
+              photoURL: 'ghost_1',
+            }),
+            setDoc(doc(db, 'users', user.uid), {
+              uid: user.uid,
+              email: user.email,
+              nickname: nickname,
+              photoURL: 'ghost_1',
+              createdAt: new Date().toISOString(),
+              role: 'user',
+            }),
+          ])
+
+          // ✅ 모든 저장이 확실히 성공했을 때만 성공 메시지 및 이동
+          toast.success(`${nickname}님, 환영해요!`, {
+            description: '회원가입이 완료되었어요.',
+          })
+
+          router.push('/')
+        } catch (dbError) {
+          console.error('DB 저장 오류:', dbError)
+          toast.error('정보 저장 중 오류가 발생했습니다.', {
+            description:
+              '계정은 생성되었으나 프로필 설정에 실패했습니다. 마이페이지에서 수정해주세요.',
+          })
+          router.push('/')
+        }
       }
-
-      // ✅ 성공 메시지
-      toast.success(`${nickname}님, 환영해요!`, {
-        description: '회원가입이 성공적으로 완료되었어요.',
-      })
-
-      router.push('/')
     } catch (error: any) {
-      // ✅ 에러 메시지 처리
       let message = '회원가입에 실패했어요.'
       if (error.code === 'auth/email-already-in-use')
         message = '이미 사용 중인 이메일이에요.'
       if (error.code === 'auth/weak-password')
         message = '비밀번호가 너무 취약해요.'
 
-      toast.error('오류 발생', {
-        description: message,
-      })
+      toast.error('오류 발생', { description: message })
     } finally {
       setIsLoading(false)
     }
