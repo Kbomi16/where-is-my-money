@@ -5,13 +5,15 @@ import { Button } from '@/components/ui/button'
 import { auth } from '@/lib/firebase'
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import { LogIn, Wallet } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuthStore()
 
+  const router = useRouter()
+
   const handleLogin = () => {
-    const provider = new GoogleAuthProvider()
-    signInWithPopup(auth, provider)
+    router.push('/login')
   }
 
   if (loading)
@@ -21,10 +23,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
       </div>
     )
 
-  // 로그인 안 되었을 때 (로그인 유도 화면)
+  // 로그인 안 되었을 때
   if (!user) {
     return (
-      <div className="flex h-[70vh] flex-col items-center justify-center">
+      <div className="flex min-h-screen flex-col items-center justify-center">
         <Wallet className="text-accent mb-4 h-12 w-12" />
         <h1 className="mb-6 text-2xl font-bold">로그인이 필요해요</h1>
         <Button

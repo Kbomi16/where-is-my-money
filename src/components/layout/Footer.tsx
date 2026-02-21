@@ -1,4 +1,12 @@
+'use client'
+
+import { useAuthStore } from '@/app/store/useAuthStore'
+
 export default function Footer() {
+  const { user } = useAuthStore()
+
+  if (!user) return null
+
   return (
     <footer className="border-border bg-card w-full border-t py-8">
       <div className="base-layout flex flex-col items-center justify-between gap-4 md:flex-row">

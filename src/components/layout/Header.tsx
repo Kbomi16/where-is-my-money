@@ -1,9 +1,16 @@
+'use client'
+
 import { Wallet, Bell, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { Avatar } from 'radix-ui'
+import { useAuthStore } from '@/app/store/useAuthStore'
 
 export default function Header() {
+  const { user } = useAuthStore()
+
+  if (!user) return null
+
   return (
     <header className="border-border bg-background/80 sticky top-0 z-50 w-full border-b backdrop-blur-md">
       <div className="base-layout flex h-16 items-center justify-between">
