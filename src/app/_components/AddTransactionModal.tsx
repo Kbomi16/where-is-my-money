@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { format } from 'date-fns'
+import { useEffect, useState } from 'react'
+import { format, parseISO } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import {
   CalendarIcon,
@@ -16,7 +16,13 @@ import {
 } from 'lucide-react'
 
 import { auth, db } from '@/lib/firebase'
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  doc,
+  updateDoc,
+} from 'firebase/firestore'
 
 import {
   Dialog,
@@ -46,6 +52,7 @@ import {
 import { cn } from '@/lib/utils'
 import { CATEGORIES } from '../constants/categories'
 import { toast } from 'sonner'
+import { Transaction } from '../type/transaction.type'
 
 type FormData = {
   type: 'income' | 'expense' | null
@@ -57,13 +64,17 @@ type FormData = {
   memo?: string
 }
 
+type AddTransactionModalProps = {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  editingItem?: Transaction | null
+}
+
 export function AddTransactionModal({
   open,
   onOpenChange,
-}: {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}) {
+  editingItem = null,
+}: AddTransactionModalProps) {
   const [loading, setLoading] = useState(false)
 
   const [formData, setFormData] = useState<FormData>({
@@ -75,6 +86,31 @@ export function AddTransactionModal({
     method: null,
     memo: '',
   })
+
+  useEffect(() => {
+    if (editingItem) {
+      setFormData({
+        type: editingItem.type,
+        amount: editingItem.amount,
+        title: editingItem.title,
+        // string 형태의 date를 Date 객체로 변환
+        date: parseISO(editingItem.date),
+        category: editingItem.category,
+        method: editingItem.method || null,
+        memo: editingItem.memo || '',
+      })
+    } else {
+      setFormData({
+        type: 'expense',
+        amount: 0,
+        title: '',
+        date: new Date(),
+        category: '',
+        method: null,
+        memo: '',
+      })
+    }
+  }, [editingItem, open])
 
   // ! formData 업데이트 핸들러
   const handleFieldChange = (field: keyof FormData, value: any) => {
@@ -92,13 +128,13 @@ export function AddTransactionModal({
     const currentUser = auth.currentUser
 
     if (!currentUser) {
-      toast.error('로그인이 필요합니다!', {
+      toast.error('로그인이 필요헤요!', {
         description: '기록을 저장하려면 먼저 로그인해주세요.',
       })
       return
     }
 
-    // 필수값 검증 로직
+    // 2. 필수값 검증 로직
     if (!formData.amount || Number(formData.amount) === 0) {
       toast.error('금액을 입력해주세요!')
       return
@@ -118,22 +154,38 @@ export function AddTransactionModal({
 
     setLoading(true)
     try {
-      await addDoc(collection(db, 'transactions'), {
-        ...formData,
+      // 3. 공통 데이터 (Payload) 구성
+      const payload = {
+        type: formData.type,
         amount: Number(formData.amount),
+        title: formData.title,
         date: format(formData.date, 'yyyy-MM-dd'),
-        userId: currentUser.uid, // 👈 본인의 데이터임을 식별하는 필드 추가
-        createdAt: serverTimestamp(),
-      })
+        category: formData.category,
+        method: formData.type === 'expense' ? formData.method : null,
+        memo: formData.memo || '',
+        userId: currentUser.uid,
+        updatedAt: serverTimestamp(), // 수정/생성 시 모두 업데이트 시각 기록
+      }
 
-      toast.success(
-        `${formData.type === 'expense' ? '지출' : '수입'}이 추가되었어요!`,
-        {
-          description: `${formData.title} ${Number(formData.amount).toLocaleString()}원이 저장되었어요.`,
-        },
-      )
+      if (editingItem) {
+        const docRef = doc(db, 'transactions', editingItem.id)
+        await updateDoc(docRef, payload)
 
-      // 폼 초기화
+        toast.success('내역이 수정되었습니다! ✨')
+      } else {
+        await addDoc(collection(db, 'transactions'), {
+          ...payload,
+          createdAt: serverTimestamp(), // 생성 시에만 최초 생성일 기록
+        })
+
+        toast.success(
+          `${formData.type === 'expense' ? '지출' : '수입'}이 추가되었어요!`,
+          {
+            description: `${formData.title} ${Number(formData.amount).toLocaleString()}원이 저장되었어요.`,
+          },
+        )
+      }
+
       setFormData({
         type: 'expense',
         amount: 0,
@@ -145,7 +197,7 @@ export function AddTransactionModal({
       })
       onOpenChange(false)
     } catch (error) {
-      console.error('Error adding document: ', error)
+      console.error('Error saving document: ', error)
       toast.error('저장에 실패했습니다. 다시 시도해주세요.')
     } finally {
       setLoading(false)
@@ -188,7 +240,6 @@ export function AddTransactionModal({
             <div className="group relative flex w-full items-center justify-center gap-2">
               <Input
                 type="number"
-                placeholder="0"
                 min={0}
                 step={1000}
                 value={formData.amount}
