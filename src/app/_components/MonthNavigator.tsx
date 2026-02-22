@@ -128,7 +128,10 @@ export function MonthNavigator({
         </Button>
       </div>
 
-      <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)}>
+      <Tabs
+        value={viewMode}
+        onValueChange={(v) => setViewMode(v as 'list' | 'calendar')}
+      >
         <TabsList className="grid h-9 w-fit grid-cols-2 rounded-xl bg-slate-200/50 md:w-40 dark:bg-slate-800/50">
           <TabsTrigger
             value="list"

@@ -107,18 +107,14 @@ export default function Home() {
 
       <SummaryCards income={totalIncome} expense={totalExpense} />
 
-      {items.length === 0 ? (
+      {viewMode === 'calendar' ? (
+        <TransactionCalendar currentDate={currentDate} items={items} />
+      ) : items.length === 0 ? (
         <div className="py-20 text-center text-slate-400">
           이번 달에는 기록이 없어요!
         </div>
       ) : (
-        <>
-          {viewMode === 'calendar' ? (
-            <TransactionCalendar currentDate={currentDate} items={items} />
-          ) : (
-            <TransactionList items={items} />
-          )}
-        </>
+        <TransactionList items={items} />
       )}
 
       <AddTransactionBtn />
