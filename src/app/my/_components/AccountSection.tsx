@@ -49,7 +49,6 @@ export default function AccountSection({ user }: { user: User }) {
                   </p>
                 </div>
               </div>
-              <ChevronRight className="size-4 text-slate-300" />
             </div>
 
             {/* 가입일 정보 */}
