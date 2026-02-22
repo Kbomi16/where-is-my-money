@@ -326,7 +326,10 @@ export function AddTransactionModal({
                   <SelectTrigger className="h-12 w-full rounded-2xl border border-slate-100 bg-slate-50/50 px-4 font-bold dark:bg-slate-900">
                     <SelectValue placeholder="선택" />
                   </SelectTrigger>
-                  <SelectContent className="z-110 rounded-2xl border border-slate-100 bg-white shadow-2xl dark:bg-slate-800">
+                  <SelectContent
+                    position="popper"
+                    className="z-110 rounded-2xl border border-slate-100 bg-white shadow-2xl dark:bg-slate-800"
+                  >
                     {CATEGORIES[formData.type || 'expense'].map((cat) => (
                       <SelectItem key={cat} value={cat}>
                         {cat}
@@ -348,7 +351,10 @@ export function AddTransactionModal({
                     <SelectTrigger className="h-12 w-full rounded-2xl border border-slate-100 bg-slate-50/50 px-4 font-bold dark:bg-slate-900">
                       <SelectValue placeholder="선택" />
                     </SelectTrigger>
-                    <SelectContent className="z-110 rounded-2xl border border-slate-100 bg-white shadow-2xl dark:bg-slate-800">
+                    <SelectContent
+                      position="popper"
+                      className="z-110 rounded-2xl border border-slate-100 bg-white shadow-2xl dark:bg-slate-800"
+                    >
                       <SelectItem value="check">체크카드</SelectItem>
                       <SelectItem value="credit">신용카드</SelectItem>
                       <SelectItem value="cash">현금</SelectItem>
