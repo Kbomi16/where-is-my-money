@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { User } from 'firebase/auth'
 
-interface AuthState {
+type AuthState = {
   user: User | null
   loading: boolean
   setUser: (user: User | null) => void

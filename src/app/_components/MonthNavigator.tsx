@@ -128,25 +128,21 @@ export function MonthNavigator({
         </Button>
       </div>
 
-      <Tabs
-        value={viewMode}
-        onValueChange={(v) => setViewMode(v as any)}
-        className="hidden sm:block"
-      >
-        <TabsList className="grid h-9 w-40 grid-cols-2 rounded-xl bg-slate-200/50 dark:bg-slate-800/50">
+      <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)}>
+        <TabsList className="grid h-9 w-fit grid-cols-2 rounded-xl bg-slate-200/50 md:w-40 dark:bg-slate-800/50">
           <TabsTrigger
             value="list"
             className="cursor-pointer rounded-lg text-xs font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700"
           >
             <List className="mr-1.5 h-3.5 w-3.5" />
-            리스트
+            <span className="hidden md:block">리스트</span>
           </TabsTrigger>
           <TabsTrigger
             value="calendar"
             className="cursor-pointer rounded-lg text-xs font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700"
           >
             <CalendarIcon className="mr-1.5 h-3.5 w-3.5" />
-            달력
+            <span className="hidden md:block">달력</span>
           </TabsTrigger>
         </TabsList>
       </Tabs>

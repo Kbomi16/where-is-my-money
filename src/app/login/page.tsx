@@ -92,7 +92,7 @@ export default function LoginPage() {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="••••••••"
+                  placeholder="비밀번호를 입력하세요"
                   className="bg-background/50 border-border/50 focus:border-accent focus:ring-accent/20 h-12 rounded-xl pl-10 transition-all"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

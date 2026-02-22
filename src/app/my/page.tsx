@@ -19,7 +19,7 @@ export default function MyPage() {
   const handleLogout = async () => {
     try {
       await signOut(auth)
-      toast.success('로그아웃되었습니다. 다음에 또 만나요! 👻')
+      toast.success('로그아웃 되었습니다...')
       router.push('/login')
     } catch (error) {
       toast.error('로그아웃 중 오류가 발생했습니다.')

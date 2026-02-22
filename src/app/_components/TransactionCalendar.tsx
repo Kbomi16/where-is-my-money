@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import { TransactionList } from './TransactionList'
 import { DayButtonProps } from 'react-day-picker'
 
-interface TransactionCalendarProps {
+type TransactionCalendarProps = {
   currentDate: Date
   items: Transaction[]
 }
@@ -150,7 +150,7 @@ export function TransactionCalendar({
           )}
         </div>
 
-        <div className="custom-scrollbar max-h-[600px] overflow-y-auto pr-2">
+        <div className="custom-scrollbar max-h-150 overflow-y-auto pr-2">
           {selectedDayItems.length > 0 ? (
             <TransactionList items={selectedDayItems} />
           ) : (
