@@ -17,11 +17,12 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 })
 
-export const metadata: Metadata = {
-  title: '내 돈 다 어디갔니?',
-  description: '수입/지출 기록 가계부',
+export const metadata = {
+  title: '나의 가계부',
+  description: '자산 관리의 시작',
+  manifest: '/manifest.json',
   icons: {
-    icon: '/favicon.ico',
+    apple: '/imgs/logo.png',
   },
 }
 
