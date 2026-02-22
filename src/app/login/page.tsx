@@ -17,6 +17,7 @@ import {
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { Mail, Lock, Wallet, ArrowRight } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -27,11 +28,44 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+
     try {
       await signInWithEmailAndPassword(auth, email, password)
+      toast.success('로그인 성공! 기록을 시작해보세요.')
       router.push('/')
     } catch (error: any) {
-      alert('이메일이나 비밀번호가 올바르지 않습니다.')
+      let errorMessage = '로그인 중 오류가 발생했습니다.'
+
+      switch (error.code) {
+        case 'auth/user-not-found':
+          errorMessage = '등록되지 않은 이메일 주소입니다.'
+          break
+        case 'auth/wrong-password':
+          errorMessage = '비밀번호가 올바르지 않습니다.'
+          break
+        case 'auth/invalid-email':
+          errorMessage = '유효하지 않은 이메일 형식입니다.'
+          break
+        case 'auth/invalid-credential':
+          // 최근 파이어베이스 버전에서는 보안상
+          // 이메일 유무/비번 불일치를 이 코드로 통합해서 보내기도 합니다.
+          errorMessage = '이메일 또는 비밀번호를 다시 확인해주세요.'
+          break
+        case 'auth/too-many-requests':
+          errorMessage =
+            '여러 번 로그인 시도 실패로 계정이 잠시 차단되었습니다. 잠시 후 다시 시도해주세요.'
+          break
+        case 'auth/network-request-failed':
+          errorMessage = '네트워크 연결 상태를 확인해주세요.'
+          break
+        case 'auth/user-disabled':
+          errorMessage = '관리자에 의해 사용이 중지된 계정입니다.'
+          break
+        default:
+          errorMessage = error.message || '로그인에 실패했습니다.'
+      }
+
+      toast.error(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -83,9 +117,9 @@ export default function LoginPage() {
                 <Label htmlFor="password" className="text-sm font-semibold">
                   비밀번호
                 </Label>
-                <Link href="#" className="text-accent text-xs hover:underline">
+                {/* <Link href="#" className="text-accent text-xs hover:underline">
                   비밀번호를 잊으셨나요?
-                </Link>
+                </Link> */}
               </div>
               <div className="group relative">
                 <Lock className="text-muted group-focus-within:text-accent absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transition-colors" />
