@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { format, addMonths, subMonths } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import {
@@ -11,13 +10,18 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useState } from 'react'
 
-export function MonthNavigator() {
-  const [currentMonth, setCurrentMonth] = useState(new Date())
+type MonthNavigatorProps = {
+  currentDate: Date
+  onChange: (date: Date) => void
+}
+
+export function MonthNavigator({ currentDate, onChange }: MonthNavigatorProps) {
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list')
 
-  const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1))
-  const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1))
+  const nextMonth = () => onChange(addMonths(currentDate, 1))
+  const prevMonth = () => onChange(subMonths(currentDate, 1))
 
   return (
     <section className="flex items-center justify-between rounded-2xl border border-white/20 bg-white/40 p-2 shadow-sm backdrop-blur-md dark:bg-slate-900/40">
@@ -31,7 +35,7 @@ export function MonthNavigator() {
           <ChevronLeft className="h-5 w-5" />
         </Button>
         <h2 className="text-md min-w-25 text-center font-bold text-slate-700 dark:text-slate-200">
-          {format(currentMonth, 'yyyy년 M월', { locale: ko })}
+          {format(currentDate, 'yyyy년 M월', { locale: ko })}
         </h2>
         <Button
           variant="ghost"

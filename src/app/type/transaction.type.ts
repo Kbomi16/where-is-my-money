@@ -1,5 +1,5 @@
 export type Transaction = {
-  id: number
+  id: string // Firestore 문서 ID
   title: string // 거래명
   date: string // 'YYYY-MM-DD' 형식
   category: string // '식비', '교통', '생활' 등
