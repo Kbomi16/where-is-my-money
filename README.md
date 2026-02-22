@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💰 내 돈 어디갔지?
 
-## Getting Started
+복잡한 기능은 빼고, 직관적인 기록과 시각화에 집중한 개인용 가계부 웹앱입니다.
 
-First, run the development server:
+원래 제가 직접 사용하려고 만들었으나, 필요하신 분들이 있다면 자유롭게 사용하실 수 있도록 공개합니다. 깔끔한 금융 UI와 편리한 달력 뷰를 통해 지출과 수입을 한눈에 관리해 보세요.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 주요 기능
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- 대시보드: 이번 달 총 수입과 지출을 한눈에 파악
+- 달력 뷰 (Calendar): 날짜별 상세 내역 및 일간 합계 확인
+- 리스트 뷰: 전체 내역을 리스트 형태로 빠르게 확인
+- 드롭다운 네비게이터: 2000년부터 현재까지 원하는 연월로 자유로운 이동
+- PWA 지원: 모바일 홈 화면에 추가하여 실제 앱처럼 사용 가능
+- 다크 모드: 눈이 편안한 다크/라이트 모드 테마 지원
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🌐 바로 가기
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+🌐 [배포 주소](https://where-is-my-money-track-expenses.vercel.app/)
 
-## Learn More
+💬 [문의 및 피드백: 개발자 1:1 오픈채팅 (문의하기)](https://open.kakao.com/o/slgNaJhi)
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠 사용 기술 (Tech Stack)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Framework: Next.js (App Router)
+- Styling: Tailwind CSS, Shadcn UI
+- Database & Auth: Firebase (Firestore, Authentication)
+- Deployment: Vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📢 문의 및 피드백
 
-## Deploy on Vercel
+사용하시면서 **오류(Bug)** 를 발견하시거나, 추가되었으면 하는 기능이 있다면 아래 오픈채팅으로 편하게 말씀해 주세요!
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- [오픈채팅 주소](https://open.kakao.com/o/slgNaJhi)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 제보 양식
+  1. 발생한 문제나 제안 내용
+  2. (오류 시) 사용 중인 기기 환경 (PC/모바일 등) 및 스크린샷
+
+## 📱 설치 방법 (PWA)
+
+이 앱은 PWA를 지원하므로 스마트폰에서 앱처럼 설치할 수 있습니다.
+
+- iPhone (Safari): 하단 공유 버튼 클릭 → 홈 화면에 추가
+- Android (Chrome): 우측 상단 메뉴(점 3개) 클릭 → 앱 설치 또는 홈 화면에 추가
