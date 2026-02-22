@@ -77,18 +77,19 @@ export function TransactionList({ items }: { items: Transaction[] }) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2 md:space-y-3">
       {items.length > 0 ? (
         items.map((item) => (
           <div
             key={item.id}
-            className="group relative flex flex-col overflow-hidden rounded-3xl border border-slate-50 bg-white shadow-sm transition-all hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
+            className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white transition-all dark:border-slate-800 dark:bg-slate-900"
           >
-            <div className="flex items-center justify-between p-4">
-              <div className="flex items-center gap-4">
+            <div className="flex items-center justify-between p-3 md:p-4">
+              <div className="flex items-center gap-3 md:gap-4">
+                {/* 카테고리 아이콘: 모바일에서 크기 축소 */}
                 <div
                   className={cn(
-                    'flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition-colors',
+                    'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors md:h-12 md:w-12 md:rounded-2xl',
                     item.type === 'income'
                       ? 'bg-emerald-50 text-emerald-500'
                       : 'bg-slate-50 text-slate-500',
@@ -96,54 +97,52 @@ export function TransactionList({ items }: { items: Transaction[] }) {
                 >
                   {categoryIcons[item.category] ||
                     (item.type === 'income' ? (
-                      <Wallet size={20} />
+                      <Wallet size={18} />
                     ) : (
-                      <CreditCard size={20} />
+                      <CreditCard size={18} />
                     ))}
                 </div>
 
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
+                <div className="min-w-0 space-y-0.5">
+                  <div className="flex items-center gap-1.5">
                     {item.memo && (
                       <button
                         onClick={() =>
                           setOpenMemoId(openMemoId === item.id ? null : item.id)
                         }
                         className={cn(
-                          'flex h-6 w-6 cursor-pointer items-center justify-center rounded-full transition-all',
+                          'flex h-5 w-5 cursor-pointer items-center justify-center rounded-full transition-all',
                           openMemoId === item.id
-                            ? 'bg-blue-500 text-white shadow-sm'
+                            ? 'bg-blue-500 text-white'
                             : 'bg-slate-100 text-slate-400',
                         )}
                       >
                         <MessageSquare
-                          size={12}
+                          size={10}
                           fill={
                             openMemoId === item.id ? 'currentColor' : 'none'
                           }
                         />
                       </button>
                     )}
-                    <p className="line-clamp-1 text-sm font-bold text-slate-800 dark:text-slate-100">
+                    <p className="truncate text-[13px] font-bold text-slate-800 md:text-sm dark:text-slate-100">
                       {item.title}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-black text-slate-500">
+                    <span className="rounded-full bg-slate-50 px-1.5 py-0.5 text-[9px] font-bold text-slate-400 dark:bg-slate-800">
                       {item.category}
-                    </span>
-                    <span className="text-[10px] font-medium text-slate-400">
-                      {item.date}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
+              {/* 우측 금액 및 편집 버튼 섹션 */}
+              <div className="flex items-center gap-2 md:gap-4">
                 <div className="text-right">
                   <p
                     className={cn(
-                      'text-base font-black tracking-tight',
+                      'text-sm font-black tracking-tight md:text-base',
                       item.type === 'income'
                         ? 'text-emerald-500'
                         : 'text-slate-900 dark:text-white',
@@ -151,59 +150,66 @@ export function TransactionList({ items }: { items: Transaction[] }) {
                   >
                     {item.type === 'income' ? '+' : ''}
                     {item.amount.toLocaleString()}
-                    <span className="ml-0.5 text-xs font-normal">원</span>
+                    <span className="ml-0.5 text-[10px] font-normal opacity-70">
+                      원
+                    </span>
                   </p>
                 </div>
 
-                <div className="flex flex-col items-center gap-1">
+                {/* 편집/삭제 버튼: 모바일에서는 가로로 배치하여 높이 절약 */}
+                <div className="flex items-center gap-0.5 md:flex-col md:gap-1">
                   <button
                     onClick={() => {
                       setEditingItem(item)
                       setIsOpenEditModal(true)
                     }}
-                    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-blue-50"
+                    className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-slate-300 transition-colors hover:bg-blue-50 hover:text-blue-500"
                   >
-                    <Pencil size={16} />
+                    <Pencil size={14} />
                   </button>
                   <button
                     onClick={() => setDeleteTargetId(item.id)}
-                    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-rose-50"
+                    className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-slate-300 transition-colors hover:bg-rose-50 hover:text-rose-500"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={14} />
                   </button>
                 </div>
               </div>
             </div>
 
+            {/* 메모 영역: 더 콤팩트하게 */}
             {item.memo && openMemoId === item.id && (
-              <div className="animate-in slide-in-from-top-2 fade-in border-t border-blue-100/50 bg-blue-50/50 px-4 py-3 text-xs text-blue-700">
-                <div className="flex gap-2">
-                  <div className="mt-0.5 shrink-0 font-bold">MEMO:</div>
-                  <div className="leading-relaxed">{item.memo}</div>
-                </div>
+              <div className="animate-in slide-in-from-top-1 fade-in border-t border-blue-50/50 bg-blue-50/30 px-3 py-2 text-[11px] text-blue-600/80">
+                <p className="leading-snug">
+                  <span className="mr-1.5 font-bold">●</span>
+                  {item.memo}
+                </p>
               </div>
             )}
           </div>
         ))
       ) : (
-        <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-          <p className="text-sm font-medium">아직 기록된 내역이 없어요 👻</p>
+        <div className="flex flex-col items-center justify-center py-10 text-slate-400">
+          <p className="text-xs font-medium">기록된 내역이 없어요 👻</p>
         </div>
       )}
 
+      {/* AlertDialog 및 Modal 코드는 기존과 동일 */}
       <AlertDialog
         open={!!deleteTargetId}
         onOpenChange={(open) => !open && setDeleteTargetId(null)}
       >
-        <AlertDialogContent className="rounded-3xl border-none">
+        <AlertDialogContent className="max-w-[90vw] rounded-3xl border-none">
           <AlertDialogHeader>
-            <AlertDialogTitle>정말 삭제할까요?</AlertDialogTitle>
-            <AlertDialogDescription>
-              삭제된 거래 내역은 다시 복구할 수 없어요.
+            <AlertDialogTitle className="text-base">
+              정말 삭제할까요?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm">
+              삭제된 내역은 복구할 수 없어요.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2">
-            <AlertDialogCancel className="rounded-2xl border border-slate-200 bg-slate-100 text-slate-600 transition-colors hover:bg-slate-200">
+          <AlertDialogFooter className="mt-4 flex-row gap-2">
+            <AlertDialogCancel className="flex-1 rounded-xl border-none bg-slate-100 text-slate-600">
               취소
             </AlertDialogCancel>
             <AlertDialogAction
@@ -212,7 +218,7 @@ export function TransactionList({ items }: { items: Transaction[] }) {
                 handleDelete()
               }}
               disabled={isDeleting}
-              className="rounded-2xl bg-rose-500 text-white transition-colors hover:bg-rose-600"
+              className="flex-1 rounded-xl bg-rose-500 text-white hover:bg-rose-600"
             >
               {isDeleting ? '삭제 중...' : '삭제'}
             </AlertDialogAction>

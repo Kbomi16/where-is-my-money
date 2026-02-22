@@ -14,6 +14,19 @@ type TransactionCalendarProps = {
   items: Transaction[]
 }
 
+const formatAmount = (amount: number) => {
+  const wan = amount / 10000
+
+  if (wan >= 1) {
+    // 1만 원 이상일 때: 소수점 첫째 자리까지 표시하되, .0으로 끝나면 제거 (예: 1.5만, 2만)
+    return wan % 1 === 0 ? `${wan}만` : `${wan.toFixed(1)}만`
+  } else if (wan > 0) {
+    // 1만 원 미만일 때: 0.x만 표시 (예: 0.3만)
+    return `${wan.toFixed(1)}만`
+  }
+  return '0'
+}
+
 export function TransactionCalendar({
   currentDate,
   items,
@@ -45,7 +58,8 @@ export function TransactionCalendar({
 
   return (
     <div className="flex w-full flex-col gap-6 lg:flex-row">
-      <div className="w-full flex-1 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      {/* 달력 영역 */}
+      <div className="w-full flex-1 overflow-hidden rounded-3xl border border-slate-100 bg-white p-2 shadow-sm md:p-6 dark:border-slate-800 dark:bg-slate-900">
         <Calendar
           mode="single"
           locale={ko}
@@ -57,38 +71,42 @@ export function TransactionCalendar({
           className="w-full p-0"
           classNames={{
             root: 'w-full rounded-2xl',
-            month_grid: 'w-full border-collapse',
+            // table-fixed로 열 너비 고정, border-spacing 조절
+            month_grid: 'w-full border-collapse table-fixed rounded-2xl',
             months: 'w-full',
-            cell: 'relative p-0 text-center first:[&:has([aria-selected])]:rounded-2xl last:[&:has([aria-selected])]:rounded-2xl focus-within:relative focus-within:z-20',
-            day: 'h-full w-full p-0 font-normal min-h-20 rounded-xl',
+            cell: 'relative p-[1px] text-center focus-within:relative focus-within:z-20',
+            day: 'bg-transparent h-full w-full p-0 font-normal rounded-lg',
           }}
           components={{
             DayButton: (props: DayButtonProps) => {
               const { day, modifiers, ...buttonProps } = props
               const { date } = day
-
               const dateKey = format(date, 'yyyy-MM-dd')
               const stat = dailyStats[dateKey]
               const dayNumber = date.getDay()
               const isSelected = modifiers.selected
-              const _isToday = isToday(date) // 🔥 오늘 여부 확인
+              const _isToday = isToday(date)
 
               return (
                 <button
                   {...buttonProps}
                   className={cn(
                     buttonProps.className,
-                    'relative flex h-full min-h-24 w-full flex-col items-start justify-between px-2.5 py-3 transition-all outline-none',
-                    isSelected &&
-                      'z-10 rounded-2xl bg-white shadow-[0_0_15px_rgba(59,130,246,0.2)] ring-2 ring-blue-500 dark:bg-slate-950 dark:ring-blue-400',
-                    !isSelected && _isToday && 'bg-slate-200',
+                    // 모바일 높이 h-[62px], 데스크톱 높이 h-24로 고정
+                    'relative flex h-15.5 w-full flex-col items-center justify-start rounded-lg bg-transparent px-1 py-1.5 transition-all outline-none md:h-24 md:px-2.5 md:py-3',
+                    isSelected
+                      ? 'z-10 bg-blue-50 ring-1 ring-blue-500 dark:bg-slate-800 dark:ring-blue-400'
+                      : 'hover:bg-slate-50 dark:hover:bg-slate-800/50',
+                    !isSelected &&
+                      _isToday &&
+                      'bg-slate-50 dark:bg-slate-800/50',
                   )}
                 >
-                  {/* 날짜 영역 */}
-                  <div className="flex items-center gap-1.5">
+                  {/* 날짜 숫자 */}
+                  <div className="flex items-center justify-center gap-1">
                     <span
                       className={cn(
-                        'rounded-md text-[13px] font-bold',
+                        'text-[11px] font-bold md:text-[13px]',
                         isSelected
                           ? 'text-blue-600 dark:text-blue-400'
                           : dayNumber === 0
@@ -100,32 +118,22 @@ export function TransactionCalendar({
                     >
                       {date.getDate()}
                     </span>
-
-                    {/* 🔥 오늘 표기 배지 */}
+                    {/* 오늘 표시 점 */}
                     {_isToday && (
-                      <span
-                        className={cn(
-                          'rounded-full px-1.5 py-0.5 text-[9px] font-bold',
-                          isSelected
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-slate-400',
-                        )}
-                      >
-                        오늘
-                      </span>
+                      <span className="h-1 w-1 shrink-0 rounded-full bg-blue-500 md:h-1.5 md:w-1.5" />
                     )}
                   </div>
 
-                  {/* 수입/지출 내역 */}
-                  <div className="mt-auto flex w-full flex-col items-end gap-1">
+                  {/* 수입/지출 금액 요약 */}
+                  <div className="mt-auto flex w-full flex-col items-center gap-0 md:gap-0.5">
                     {stat?.income > 0 && (
-                      <span className="text-[10px] leading-none font-black text-emerald-500">
-                        +{stat.income.toLocaleString()}
+                      <span className="w-full truncate text-center text-[8px] leading-tight font-black text-emerald-500 md:text-[10px]">
+                        +{formatAmount(stat.income)}
                       </span>
                     )}
                     {stat?.expense > 0 && (
-                      <span className="text-[10px] leading-none font-black text-rose-500">
-                        -{stat.expense.toLocaleString()}
+                      <span className="w-full truncate text-center text-[8px] leading-tight font-black text-rose-500 md:text-[10px]">
+                        -{formatAmount(stat.expense)}
                       </span>
                     )}
                   </div>
@@ -136,6 +144,7 @@ export function TransactionCalendar({
         />
       </div>
 
+      {/* 하단 리스트 영역 */}
       <div className="flex w-full flex-col gap-4 lg:w-96">
         <div className="flex items-center justify-between px-2">
           <h3 className="text-lg font-black text-slate-800 dark:text-slate-100">
@@ -150,7 +159,7 @@ export function TransactionCalendar({
           )}
         </div>
 
-        <div className="custom-scrollbar max-h-150 overflow-y-auto pr-2">
+        <div className="custom-scrollbar max-h-125 overflow-y-auto pr-2">
           {selectedDayItems.length > 0 ? (
             <TransactionList items={selectedDayItems} />
           ) : (
