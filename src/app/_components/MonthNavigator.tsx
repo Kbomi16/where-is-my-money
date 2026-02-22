@@ -15,11 +15,16 @@ import { useState } from 'react'
 type MonthNavigatorProps = {
   currentDate: Date
   onChange: (date: Date) => void
+  viewMode: 'list' | 'calendar'
+  setViewMode: (mode: 'list' | 'calendar') => void
 }
 
-export function MonthNavigator({ currentDate, onChange }: MonthNavigatorProps) {
-  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list')
-
+export function MonthNavigator({
+  currentDate,
+  onChange,
+  viewMode,
+  setViewMode,
+}: MonthNavigatorProps) {
   const nextMonth = () => onChange(addMonths(currentDate, 1))
   const prevMonth = () => onChange(subMonths(currentDate, 1))
 

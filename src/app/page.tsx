@@ -17,11 +17,15 @@ import { TransactionList } from './_components/TransactionList'
 import { AddTransactionBtn } from './_components/AddTransactionBtn'
 import { MonthNavigator } from './_components/MonthNavigator'
 import { Transaction } from './type/transaction.type'
+import { TransactionCalendar } from './_components/TransactionCalendar'
 
 export default function Home() {
   const [items, setItems] = useState<Transaction[]>([])
+
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
+
+  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list')
 
   // 현재 선택된 월 상태
   const [currentDate, setCurrentDate] = useState(new Date())
@@ -94,7 +98,12 @@ export default function Home() {
 
   return (
     <main className="base-layout min-h-[calc(100vh-4rem)] space-y-6 py-6 pb-24">
-      <MonthNavigator currentDate={currentDate} onChange={setCurrentDate} />
+      <MonthNavigator
+        currentDate={currentDate}
+        onChange={setCurrentDate}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+      />
 
       <SummaryCards income={totalIncome} expense={totalExpense} />
 
@@ -103,7 +112,13 @@ export default function Home() {
           이번 달에는 기록이 없어요!
         </div>
       ) : (
-        <TransactionList items={items} />
+        <>
+          {viewMode === 'calendar' ? (
+            <TransactionCalendar currentDate={currentDate} items={items} />
+          ) : (
+            <TransactionList items={items} />
+          )}
+        </>
       )}
 
       <AddTransactionBtn />
