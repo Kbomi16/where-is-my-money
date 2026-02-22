@@ -1,15 +1,18 @@
 'use client'
 
-import { Wallet, Bell, User } from 'lucide-react'
+import { Wallet, Bell, User, Megaphone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { Avatar } from 'radix-ui'
 import { useAuthStore } from '@/app/store/useAuthStore'
 import Image from 'next/image'
 import { GHOST_IMAGES } from '@/app/constants/ghosts'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function Header() {
   const { user } = useAuthStore()
+  const router = useRouter()
 
   const userProfile =
     GHOST_IMAGES.find((ghost) => ghost.id === user?.photoURL) || GHOST_IMAGES[0]
@@ -26,6 +29,12 @@ export default function Header() {
           </span>
         </Link>
         <div className="flex items-center gap-4">
+          <button
+            className="hover:bg-accent/10 rounded-full p-2 transition-all duration-300"
+            onClick={() => router.push('/notice')}
+          >
+            <Megaphone className="text-accent size-5 cursor-pointer" />
+          </button>
           <Link
             href={'/my'}
             className="bg-accent/20 border-accent/30 flex h-8 w-8 items-center justify-center rounded-full border"

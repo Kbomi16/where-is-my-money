@@ -30,14 +30,16 @@ export default function MyPage() {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 base-layout min-h-[calc(100vh-64px)] py-6 duration-500 lg:py-12">
-      <div className="mb-8 flex flex-col items-center gap-2 text-center lg:items-start lg:text-left">
-        <div className="mb-1 flex items-center gap-2">
-          <User className="text-accent h-6 w-6" />
-          <h1 className="text-2xl font-bold tracking-tight lg:text-3xl">
-            마이페이지
-          </h1>
+      <div className="mx-auto pb-10">
+        <div className="flex flex-col items-start text-center">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+            <User size={28} className="text-accent" />
+          </div>
         </div>
-        <p className="text-sm text-slate-400 lg:text-base">
+        <h1 className="text-3xl font-black tracking-tight text-slate-900 md:text-4xl dark:text-slate-50">
+          마이페이지
+        </h1>
+        <p className="mt-3 text-slate-500 dark:text-slate-400">
           {user?.displayName}님의 정보를 확인하고 관리해보세요.
         </p>
       </div>
