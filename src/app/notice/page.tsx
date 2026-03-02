@@ -106,7 +106,7 @@ export default function NoticePage() {
       </div>
 
       {/* 3. 공지사항 리스트 (아코디언) */}
-      <div className="rounded-4xl border border-slate-100 bg-white p-2 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div className="rounded-4xl border border-slate-100 bg-white p-1 shadow-sm md:p-2 dark:border-slate-800 dark:bg-slate-900">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 text-slate-400">
             <Loader2 className="mb-4 h-10 w-10 animate-spin text-blue-500" />
@@ -154,8 +154,8 @@ export default function NoticePage() {
                       </span>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="px-1 pt-2 pb-6">
-                    <div className="rounded-2xl bg-slate-50 p-5 text-sm leading-relaxed text-slate-600 md:text-base dark:bg-slate-800/40 dark:text-slate-400">
+                  <AccordionContent className="px-1 pt-1 pb-6 md:pt-2">
+                    <div className="rounded-2xl bg-slate-50 p-2 text-sm leading-relaxed text-slate-600 md:p-5 md:text-base dark:bg-slate-800/40 dark:text-slate-400">
                       <div
                         className="notice-content text-sm text-slate-600 md:text-base dark:text-slate-400"
                         dangerouslySetInnerHTML={{ __html: notice.content }}
