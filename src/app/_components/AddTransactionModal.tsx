@@ -70,6 +70,14 @@ type AddTransactionModalProps = {
   editingItem?: Transaction | null
 }
 
+const methods: Record<string, string> = {
+  check: '체크카드',
+  credit: '신용카드',
+  cash: '현금',
+  bank: '계좌',
+  etc: '기타',
+}
+
 export function AddTransactionModal({
   open,
   onOpenChange,
@@ -355,9 +363,11 @@ export function AddTransactionModal({
                       position="popper"
                       className="z-110 rounded-2xl border border-slate-100 bg-white shadow-2xl dark:bg-slate-800"
                     >
-                      <SelectItem value="check">체크카드</SelectItem>
-                      <SelectItem value="credit">신용카드</SelectItem>
-                      <SelectItem value="cash">현금</SelectItem>
+                      {Object.entries(methods).map(([key, label]) => (
+                        <SelectItem key={key} value={key}>
+                          {label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

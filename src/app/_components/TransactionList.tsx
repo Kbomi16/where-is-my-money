@@ -18,6 +18,8 @@ import {
   MessageSquare,
   Pencil,
   Trash2,
+  Gamepad2,
+  Users2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Transaction } from '../type/transaction.type'
@@ -44,11 +46,24 @@ const categoryIcons: Record<string, React.ReactNode> = {
   의료: <Stethoscope size={20} />,
   쇼핑: <ShoppingBag size={20} />,
   카페: <Coffee size={20} />,
+  오락: <Gamepad2 size={20} />,
   월급: <Banknote size={20} />,
   부수입: <Coins size={20} />,
   용돈: <Gift size={20} />,
   금융수익: <TrendingUp size={20} />,
+  정산: <Users2 size={20} />,
   기타: <MoreHorizontal size={20} />,
+}
+
+const methodColors: Record<
+  string,
+  { label: string; bg: string; text: string }
+> = {
+  check: { label: '체크카드', bg: 'bg-blue-50', text: 'text-blue-500' },
+  credit: { label: '신용카드', bg: 'bg-purple-50', text: 'text-purple-500' },
+  cash: { label: '현금', bg: 'bg-green-50', text: 'text-green-500' },
+  bank: { label: '계좌', bg: 'bg-orange-50', text: 'text-orange-500' },
+  etc: { label: '기타', bg: 'bg-slate-50', text: 'text-slate-500' },
 }
 
 export function TransactionList({ items }: { items: Transaction[] }) {
@@ -86,7 +101,7 @@ export function TransactionList({ items }: { items: Transaction[] }) {
           >
             <div className="flex items-center justify-between p-3 md:p-4">
               <div className="flex items-center gap-3 md:gap-4">
-                {/* 카테고리 아이콘: 모바일에서 크기 축소 */}
+                {/* 카테고리 아이콘 */}
                 <div
                   className={cn(
                     'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors md:h-12 md:w-12 md:rounded-2xl',
@@ -133,6 +148,26 @@ export function TransactionList({ items }: { items: Transaction[] }) {
                     <span className="rounded-full bg-slate-50 px-1.5 py-0.5 text-[9px] font-bold text-slate-400 dark:bg-slate-800">
                       {item.category}
                     </span>
+                    {item.method && (
+                      <span
+                        className={cn(
+                          'rounded-full px-1.5 py-0.5 text-[9px] font-bold',
+                          (
+                            methodColors[
+                              item.method as keyof typeof methodColors
+                            ] || methodColors['기타']
+                          ).bg,
+                          (
+                            methodColors[
+                              item.method as keyof typeof methodColors
+                            ] || methodColors['기타']
+                          ).text,
+                        )}
+                      >
+                        {methodColors[item.method as keyof typeof methodColors]
+                          ?.label || item.method}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -156,7 +191,7 @@ export function TransactionList({ items }: { items: Transaction[] }) {
                   </p>
                 </div>
 
-                {/* 편집/삭제 버튼: 모바일에서는 가로로 배치하여 높이 절약 */}
+                {/* 편집/삭제 버튼 */}
                 <div className="flex items-center gap-0.5 md:flex-col md:gap-1">
                   <button
                     onClick={() => {
@@ -177,7 +212,7 @@ export function TransactionList({ items }: { items: Transaction[] }) {
               </div>
             </div>
 
-            {/* 메모 영역: 더 콤팩트하게 */}
+            {/* 메모 */}
             {item.memo && openMemoId === item.id && (
               <div className="animate-in slide-in-from-top-1 fade-in border-t border-blue-50/50 bg-blue-50/30 px-3 py-2 text-[11px] text-blue-600/80">
                 <p className="leading-snug">
@@ -194,7 +229,6 @@ export function TransactionList({ items }: { items: Transaction[] }) {
         </div>
       )}
 
-      {/* AlertDialog 및 Modal 코드는 기존과 동일 */}
       <AlertDialog
         open={!!deleteTargetId}
         onOpenChange={(open) => !open && setDeleteTargetId(null)}
