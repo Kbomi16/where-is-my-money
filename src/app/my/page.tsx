@@ -14,8 +14,6 @@ export default function MyPage() {
   const { user } = useAuthStore()
   const router = useRouter()
 
-  console.log(user)
-
   const handleLogout = async () => {
     try {
       await signOut(auth)
