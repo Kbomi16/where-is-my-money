@@ -49,7 +49,7 @@ export default function SignUpPage() {
       }
 
       // 2. 비밀번호 유효성 검사
-      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/
 
       if (!passwordRegex.test(password)) {
         toast.error('비밀번호는 영문과 숫자를 포함해 8자 이상이어야 해요!')
