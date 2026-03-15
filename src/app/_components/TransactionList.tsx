@@ -97,7 +97,7 @@ export function TransactionList({ items }: { items: Transaction[] }) {
         items.map((item) => (
           <div
             key={item.id}
-            className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white transition-all dark:border-slate-800 dark:bg-slate-900"
+            className={`{group ${item.isExclude ? 'bg-slate-100 dark:bg-slate-800' : 'bg-white'} dark:bg-slate-900} relative flex flex-col overflow-hidden rounded-2xl border border-slate-100 transition-all dark:border-slate-800`}
           >
             <div className="flex items-center justify-between p-3 md:p-4">
               <div className="flex items-center gap-3 md:gap-4">

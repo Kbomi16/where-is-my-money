@@ -80,15 +80,17 @@ export default function Home() {
   }, [user, currentDate])
 
   // 합계 계산 로직
-  const totalIncome = items
+  const displayItems = items.filter((item) => !item.isExclude)
+
+  const totalIncome = displayItems
     .filter((item) => item.type === 'income')
     .reduce((acc, cur) => acc + cur.amount, 0)
 
-  const totalExpense = items
+  const totalExpense = displayItems
     .filter((item) => item.type === 'expense')
     .reduce((acc, cur) => acc + cur.amount, 0)
 
-  if (loading && items.length === 0) {
+  if (loading && displayItems.length === 0) {
     return (
       <div className="flex h-screen items-center justify-center">
         데이터 로딩 중...

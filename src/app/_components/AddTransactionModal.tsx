@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { format, parseISO } from 'date-fns'
-import { ko } from 'date-fns/locale'
+import { is, ko } from 'date-fns/locale'
 import {
   CalendarIcon,
   Plus,
@@ -13,6 +13,7 @@ import {
   Tag,
   Utensils,
   Loader2,
+  Check,
 } from 'lucide-react'
 
 import { auth, db } from '@/lib/firebase'
@@ -53,6 +54,7 @@ import { cn } from '@/lib/utils'
 import { CATEGORIES } from '../constants/categories'
 import { toast } from 'sonner'
 import { Transaction } from '../type/transaction.type'
+import { Checkbox } from '@/components/ui/checkbox'
 
 type FormData = {
   type: 'income' | 'expense' | null
@@ -62,6 +64,8 @@ type FormData = {
   category: string
   method?: 'check' | 'credit' | 'cash' | null
   memo?: string
+
+  isExclude?: boolean
 }
 
 type AddTransactionModalProps = {
@@ -106,6 +110,7 @@ export function AddTransactionModal({
         category: editingItem.category,
         method: editingItem.method || null,
         memo: editingItem.memo || '',
+        isExclude: editingItem.isExclude || false,
       })
     } else {
       setFormData({
@@ -116,6 +121,7 @@ export function AddTransactionModal({
         category: '',
         method: null,
         memo: '',
+        isExclude: false,
       })
     }
   }, [editingItem, open])
@@ -171,6 +177,7 @@ export function AddTransactionModal({
         category: formData.category,
         method: formData.type === 'expense' ? formData.method : null,
         memo: formData.memo || '',
+        isExclude: formData.isExclude || false,
         userId: currentUser.uid,
         updatedAt: serverTimestamp(), // 수정/생성 시 모두 업데이트 시각 기록
       }
@@ -384,6 +391,63 @@ export function AddTransactionModal({
                 placeholder="예: 점심 식사, 친구와 함께"
                 className="focus-visible:ring-accent min-h-24 resize-none rounded-3xl border border-slate-100 bg-slate-50/50 p-4 font-medium focus-visible:ring-1 dark:bg-slate-900"
               />
+            </div>
+
+            <div
+              onClick={() =>
+                handleFieldChange('isExclude', !formData.isExclude)
+              }
+              className={cn(
+                'group flex cursor-pointer items-center justify-between rounded-2xl border-2 p-4 transition-all duration-200 select-none',
+                formData.isExclude
+                  ? 'border-slate-400 bg-slate-50 dark:bg-slate-800/50'
+                  : 'border-transparent bg-slate-50/50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800',
+              )}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className={cn(
+                    'flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all',
+                    formData.isExclude
+                      ? 'border-slate-600 bg-slate-600 text-white'
+                      : 'border-slate-300 bg-white dark:bg-slate-800',
+                  )}
+                >
+                  {formData.isExclude && <Check size={14} strokeWidth={4} />}
+                </div>
+                <div className="flex flex-col">
+                  <span
+                    className={cn(
+                      'text-sm font-bold transition-colors',
+                      formData.isExclude
+                        ? 'text-slate-700 dark:text-slate-200'
+                        : 'text-slate-500',
+                    )}
+                  >
+                    통계에서 제외하기
+                  </span>
+                  <span className="text-[11px] font-medium text-slate-400">
+                    이 내역은 월별 분석 결과에 포함되지 않아요.
+                  </span>
+                </div>
+              </div>
+
+              {/* 토글 스위치 느낌의 UI (선택사항) */}
+              <div
+                className={cn(
+                  'relative h-5 w-9 rounded-full transition-colors duration-200',
+                  formData.isExclude
+                    ? 'bg-slate-600'
+                    : 'bg-slate-200 dark:bg-slate-700',
+                )}
+              >
+                <div
+                  className={cn(
+                    'absolute top-1 h-3 w-3 rounded-full bg-white transition-all duration-200',
+                    formData.isExclude ? 'left-5' : 'left-1',
+                  )}
+                />
+              </div>
             </div>
 
             <Button

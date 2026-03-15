@@ -7,4 +7,5 @@ export type Transaction = {
   type: 'income' | 'expense' // 수입인지 지출인지
   method?: 'check' | 'credit' | 'cash' // 결제 수단 (지출일 때만)
   memo?: string // 메모 (선택 사항)
+  isExclude?: boolean // 통계 제외 여부 (기본값: false)
 }
