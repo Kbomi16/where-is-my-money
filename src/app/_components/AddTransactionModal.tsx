@@ -62,7 +62,16 @@ type FormData = {
   title: string
   date: Date
   category: string
-  method?: 'check' | 'credit' | 'cash' | null
+  method?:
+    | 'check'
+    | 'credit'
+    | 'cash'
+    | 'bank'
+    | 'kakaoPay'
+    | 'naverPay'
+    | 'applePay'
+    | 'etc'
+    | null
   memo?: string
 
   isExclude?: boolean
@@ -79,6 +88,9 @@ const methods: Record<string, string> = {
   credit: '신용카드',
   cash: '현금',
   bank: '계좌',
+  kakaoPay: '카카오페이',
+  naverPay: '네이버페이',
+  applePay: '애플페이',
   etc: '기타',
 }
 

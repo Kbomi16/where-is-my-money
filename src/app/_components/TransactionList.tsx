@@ -36,7 +36,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { deleteDoc, doc } from 'firebase/firestore'
 import { toast } from 'sonner'
-import { db } from '@/lib/firebase'
+import app, { db } from '@/lib/firebase'
 import { AddTransactionModal } from './AddTransactionModal'
 
 const categoryIcons: Record<string, React.ReactNode> = {
@@ -61,8 +61,15 @@ const methodColors: Record<
 > = {
   check: { label: '체크카드', bg: 'bg-blue-50', text: 'text-blue-500' },
   credit: { label: '신용카드', bg: 'bg-purple-50', text: 'text-purple-500' },
-  cash: { label: '현금', bg: 'bg-green-50', text: 'text-green-500' },
+  cash: { label: '현금', bg: 'bg-emerald-50', text: 'text-emerald-500' },
   bank: { label: '계좌', bg: 'bg-orange-50', text: 'text-orange-500' },
+  kakaoPay: {
+    label: '카카오페이',
+    bg: 'bg-yellow-50',
+    text: 'text-yellow-500',
+  },
+  naverPay: { label: '네이버페이', bg: 'bg-green-50', text: 'text-green-500' },
+  applePay: { label: '애플페이', bg: 'bg-gray-50', text: 'text-gray-500' },
   etc: { label: '기타', bg: 'bg-slate-50', text: 'text-slate-500' },
 }
 
