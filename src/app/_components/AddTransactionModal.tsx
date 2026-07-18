@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { format, parseISO } from 'date-fns'
-import { is, ko } from 'date-fns/locale'
+import { format, parseISO, addMonths } from 'date-fns'
+import { ko } from 'date-fns/locale'
 import {
   CalendarIcon,
   Plus,
@@ -23,6 +23,7 @@ import {
   serverTimestamp,
   doc,
   updateDoc,
+  writeBatch,
 } from 'firebase/firestore'
 
 import {
@@ -54,7 +55,11 @@ import { cn } from '@/lib/utils'
 import { CATEGORIES } from '../constants/categories'
 import { toast } from 'sonner'
 import { Transaction } from '../type/transaction.type'
-import { Checkbox } from '@/components/ui/checkbox'
+import {
+  getInstallmentDates,
+  INSTALLMENT_MONTH_OPTIONS,
+  splitInstallmentAmount,
+} from '../utils/installment'
 
 type FormData = {
   type: 'income' | 'expense' | null
@@ -74,7 +79,7 @@ type FormData = {
     | 'etc'
     | null
   memo?: string
-
+  installmentMonths?: number
   isExclude?: boolean
 }
 
@@ -111,6 +116,7 @@ export function AddTransactionModal({
     category: '',
     method: null,
     memo: '',
+    installmentMonths: 1,
   })
 
   useEffect(() => {
@@ -124,6 +130,7 @@ export function AddTransactionModal({
         category: editingItem.category,
         method: editingItem.method || null,
         memo: editingItem.memo || '',
+        installmentMonths: editingItem.installmentTotal || 1,
         isExclude: editingItem.isExclude || false,
       })
     } else {
@@ -135,6 +142,7 @@ export function AddTransactionModal({
         category: '',
         method: null,
         memo: '',
+        installmentMonths: 1,
         isExclude: false,
       })
     }
@@ -145,10 +153,43 @@ export function AddTransactionModal({
     setFormData((prev) => ({
       ...prev,
       [field]: value,
-      // 타입(수입/지출)이 변경되면 카테고리를 초기화
       ...(field === 'type' && { category: '' }),
+      ...(field === 'method' && value !== 'credit' && { installmentMonths: 1 }),
     }))
   }
+
+  const isCreditInstallment =
+    formData.type === 'expense' &&
+    formData.method === 'credit' &&
+    !editingItem &&
+    (formData.installmentMonths || 1) > 1
+
+  const installmentAmounts =
+    isCreditInstallment && formData.amount
+      ? splitInstallmentAmount(
+          Number(formData.amount),
+          formData.installmentMonths || 1,
+        )
+      : []
+
+  const installmentPreviewText =
+    isCreditInstallment && installmentAmounts.length > 0
+      ? (() => {
+          const months = formData.installmentMonths || 1
+          const monthlyAmount = installmentAmounts[0]
+          const lastAmount = installmentAmounts[months - 1]
+          const startMonth = format(formData.date, 'M월', { locale: ko })
+          const endMonth = format(addMonths(formData.date, months - 1), 'M월', {
+            locale: ko,
+          })
+
+          if (monthlyAmount === lastAmount) {
+            return `${startMonth}부터 ${endMonth}까지 매월 ${monthlyAmount.toLocaleString()}원씩 등록돼요.`
+          }
+
+          return `${startMonth}부터 ${endMonth}까지 ${months - 1}개월은 ${monthlyAmount.toLocaleString()}원, 마지막 달은 ${lastAmount.toLocaleString()}원이 등록돼요.`
+        })()
+      : null
 
   // ! 폼 제출
   const handleSubmit = async () => {
@@ -182,35 +223,70 @@ export function AddTransactionModal({
 
     setLoading(true)
     try {
-      // 3. 공통 데이터 (Payload) 구성
-      const payload = {
+      const totalAmount = Number(formData.amount)
+      const installmentMonths =
+        formData.type === 'expense' &&
+        formData.method === 'credit' &&
+        !editingItem
+          ? formData.installmentMonths || 1
+          : 1
+
+      const basePayload = {
         type: formData.type,
-        amount: Number(formData.amount),
         title: formData.title,
-        date: format(formData.date, 'yyyy-MM-dd'),
         category: formData.category,
         method: formData.type === 'expense' ? formData.method : null,
         memo: formData.memo || '',
         isExclude: formData.isExclude || false,
         userId: currentUser.uid,
-        updatedAt: serverTimestamp(), // 수정/생성 시 모두 업데이트 시각 기록
+        updatedAt: serverTimestamp(),
       }
 
       if (editingItem) {
         const docRef = doc(db, 'transactions', editingItem.id)
-        await updateDoc(docRef, payload)
+        await updateDoc(docRef, {
+          ...basePayload,
+          amount: totalAmount,
+          date: format(formData.date, 'yyyy-MM-dd'),
+        })
 
         toast.success('내역이 수정되었습니다! ✨')
+      } else if (installmentMonths > 1) {
+        const amounts = splitInstallmentAmount(totalAmount, installmentMonths)
+        const dates = getInstallmentDates(formData.date, installmentMonths)
+        const groupId = crypto.randomUUID()
+        const batch = writeBatch(db)
+
+        amounts.forEach((amount, index) => {
+          const docRef = doc(collection(db, 'transactions'))
+          batch.set(docRef, {
+            ...basePayload,
+            amount,
+            date: dates[index],
+            createdAt: serverTimestamp(),
+            installmentTotal: installmentMonths,
+            installmentIndex: index + 1,
+            installmentGroupId: groupId,
+          })
+        })
+
+        await batch.commit()
+
+        toast.success('할부 지출이 등록되었어요!', {
+          description: `${formData.title} ${totalAmount.toLocaleString()}원을 ${installmentMonths}개월에 나눠 저장했어요.`,
+        })
       } else {
         await addDoc(collection(db, 'transactions'), {
-          ...payload,
-          createdAt: serverTimestamp(), // 생성 시에만 최초 생성일 기록
+          ...basePayload,
+          amount: totalAmount,
+          date: format(formData.date, 'yyyy-MM-dd'),
+          createdAt: serverTimestamp(),
         })
 
         toast.success(
           `${formData.type === 'expense' ? '지출' : '수입'}이 추가되었어요!`,
           {
-            description: `${formData.title} ${Number(formData.amount).toLocaleString()}원이 저장되었어요.`,
+            description: `${formData.title} ${totalAmount.toLocaleString()}원이 저장되었어요.`,
           },
         )
       }
@@ -223,6 +299,7 @@ export function AddTransactionModal({
         category: '',
         method: null,
         memo: '',
+        installmentMonths: 1,
       })
       onOpenChange(false)
     } catch (error) {
@@ -241,10 +318,15 @@ export function AddTransactionModal({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="w-full max-w-md gap-0 overflow-y-auto rounded-4xl border border-slate-100 bg-slate-50 p-0 shadow-2xl transition-all duration-300 max-sm:h-full max-sm:max-w-none max-sm:rounded-none dark:bg-slate-900">
+      {/* 
+        모바일: max-sm:h-full로 전체 화면을 채우고, 모달 전체가 위아래로 스크롤 (overflow-y-auto)
+        PC(sm 이상): 높이를 최대 85vh로 고정하고, 내부 구조를 flex-col로 배치 (sm:max-h-[85vh] sm:overflow-hidden)
+      */}
+      <DialogContent className="w-full max-w-md gap-0 rounded-4xl border border-slate-100 bg-white p-0 shadow-2xl transition-all duration-300 max-sm:h-full max-sm:max-w-none max-sm:overflow-y-auto max-sm:rounded-none sm:flex sm:max-h-[85vh] sm:flex-col sm:overflow-hidden dark:border-slate-800 dark:bg-slate-950">
+        {/* 금액 입력 영역 (PC에서는 고정 / 모바일에서는 상단에 자연스럽게 위치) */}
         <div
           className={cn(
-            'p-8 pb-10 transition-colors duration-500',
+            'rounded-t-4xl p-8 pb-10 transition-colors duration-500 max-sm:rounded-none sm:shrink-0',
             formData.type === 'expense'
               ? 'bg-red-50 dark:bg-red-950/20'
               : 'bg-emerald-50 dark:bg-emerald-950/20',
@@ -280,8 +362,13 @@ export function AddTransactionModal({
           </div>
         </div>
 
-        <div className="relative -mt-6 rounded-t-4xl bg-white p-8 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] dark:bg-slate-950">
-          <div className="space-y-5">
+        {/* 
+          상세 입력 폼 영역 
+          모바일: 기존 느낌 그대로 마이너스 마진(-mt-6) 유지하며 자연스럽게 흐름
+          PC(sm 이상): 겹침을 해제하고 이 영역 내부에서만 독립 스크롤이 되도록 구성 (sm:flex-1 sm:overflow-y-auto sm:mt-0)
+        */}
+        <div className="relative -mt-6 rounded-t-4xl bg-white p-8 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] sm:mt-0 sm:flex-1 sm:overflow-y-auto sm:rounded-none sm:shadow-none dark:bg-slate-950">
+          <div className="space-y-5 pb-2">
             <Tabs
               value={formData.type || 'expense'}
               className="w-full"
@@ -312,7 +399,7 @@ export function AddTransactionModal({
                   value={formData.title}
                   onChange={(e) => handleFieldChange('title', e.target.value)}
                   placeholder="예: 스타벅스"
-                  className="focus-visible:ring-accent h-12 rounded-2xl border border-slate-100 bg-slate-50/50 px-4 font-bold focus-visible:ring-1 dark:bg-slate-900"
+                  className="focus-visible:ring-accent h-12 rounded-2xl border border-slate-100 bg-slate-50/50 px-4 font-bold focus-visible:ring-1 dark:border-slate-800 dark:bg-slate-900"
                 />
               </div>
               <div className="space-y-2">
@@ -323,13 +410,13 @@ export function AddTransactionModal({
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
-                      className="h-12 w-full justify-start rounded-2xl border border-slate-100 bg-slate-50/50 px-4 font-bold dark:bg-slate-900"
+                      className="h-12 w-full justify-start rounded-2xl border border-slate-100 bg-slate-50/50 px-4 font-bold dark:border-slate-800 dark:bg-slate-900"
                     >
                       {format(formData.date, 'MM/dd (eee)', { locale: ko })}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent
-                    className="z-110 w-auto rounded-3xl border border-slate-100 bg-white p-0 shadow-2xl dark:bg-slate-900"
+                    className="z-110 w-auto rounded-3xl border border-slate-100 bg-white p-0 shadow-2xl dark:border-slate-800 dark:bg-slate-900"
                     align="center"
                   >
                     <Calendar
@@ -352,12 +439,12 @@ export function AddTransactionModal({
                   value={formData.category}
                   onValueChange={(v) => handleFieldChange('category', v)}
                 >
-                  <SelectTrigger className="h-12 w-full rounded-2xl border border-slate-100 bg-slate-50/50 px-4 font-bold dark:bg-slate-900">
+                  <SelectTrigger className="h-12 w-full rounded-2xl border border-slate-100 bg-slate-50/50 px-4 font-bold dark:border-slate-800 dark:bg-slate-900">
                     <SelectValue placeholder="선택" />
                   </SelectTrigger>
                   <SelectContent
                     position="popper"
-                    className="z-110 rounded-2xl border border-slate-100 bg-white shadow-2xl dark:bg-slate-800"
+                    className="z-110 rounded-2xl border border-slate-100 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900"
                   >
                     {CATEGORIES[formData.type || 'expense'].map((cat) => (
                       <SelectItem key={cat} value={cat}>
@@ -377,12 +464,12 @@ export function AddTransactionModal({
                     value={formData.method || ''}
                     onValueChange={(v) => handleFieldChange('method', v)}
                   >
-                    <SelectTrigger className="h-12 w-full rounded-2xl border border-slate-100 bg-slate-50/50 px-4 font-bold dark:bg-slate-900">
+                    <SelectTrigger className="h-12 w-full rounded-2xl border border-slate-100 bg-slate-50/50 px-4 font-bold dark:border-slate-800 dark:bg-slate-900">
                       <SelectValue placeholder="선택" />
                     </SelectTrigger>
                     <SelectContent
                       position="popper"
-                      className="z-110 rounded-2xl border border-slate-100 bg-white shadow-2xl dark:bg-slate-800"
+                      className="z-110 rounded-2xl border border-slate-100 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900"
                     >
                       {Object.entries(methods).map(([key, label]) => (
                         <SelectItem key={key} value={key}>
@@ -395,6 +482,50 @@ export function AddTransactionModal({
               )}
             </div>
 
+            {formData.type === 'expense' &&
+              formData.method === 'credit' &&
+              !editingItem && (
+                <div className="space-y-2">
+                  <Label className="ml-1 flex items-center gap-1.5 text-xs font-black tracking-wider text-slate-400 uppercase md:text-sm">
+                    <CreditCard size={12} /> 할부 개월
+                  </Label>
+                  <Select
+                    value={String(formData.installmentMonths || 1)}
+                    onValueChange={(v) =>
+                      handleFieldChange('installmentMonths', Number(v))
+                    }
+                  >
+                    <SelectTrigger className="h-12 w-full rounded-2xl border border-slate-100 bg-slate-50/50 px-4 font-bold dark:border-slate-800 dark:bg-slate-900">
+                      <SelectValue placeholder="일시불" />
+                    </SelectTrigger>
+                    <SelectContent
+                      position="popper"
+                      className="z-110 rounded-2xl border border-slate-100 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900"
+                    >
+                      {INSTALLMENT_MONTH_OPTIONS.map((month) => (
+                        <SelectItem key={month} value={String(month)}>
+                          {month === 1 ? '일시불' : `${month}개월`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {installmentPreviewText && (
+                    <p className="px-1 text-[11px] leading-relaxed font-medium text-purple-500">
+                      {installmentPreviewText}
+                    </p>
+                  )}
+                </div>
+              )}
+
+            {editingItem?.installmentTotal &&
+              editingItem.installmentTotal > 1 && (
+                <p className="rounded-2xl bg-purple-50 px-4 py-3 text-xs font-medium text-purple-600 dark:bg-purple-950/30 dark:text-purple-300">
+                  {editingItem.installmentTotal}개월 할부{' '}
+                  {editingItem.installmentIndex}회차 내역이에요. 금액 수정 시 이
+                  회차만 변경돼요.
+                </p>
+              )}
+
             <div className="space-y-2">
               <Label className="ml-1 flex items-center gap-1.5 text-xs font-black tracking-wider text-slate-400 uppercase md:text-sm">
                 <PencilLine size={12} /> 상세 메모
@@ -403,7 +534,7 @@ export function AddTransactionModal({
                 value={formData.memo}
                 onChange={(e) => handleFieldChange('memo', e.target.value)}
                 placeholder="예: 점심 식사, 친구와 함께"
-                className="focus-visible:ring-accent min-h-24 resize-none rounded-3xl border border-slate-100 bg-slate-50/50 p-4 font-medium focus-visible:ring-1 dark:bg-slate-900"
+                className="focus-visible:ring-accent min-h-24 resize-none rounded-3xl border border-slate-100 bg-slate-50/50 p-4 font-medium focus-visible:ring-1 dark:border-slate-800 dark:bg-slate-900"
               />
             </div>
 
@@ -446,7 +577,6 @@ export function AddTransactionModal({
                 </div>
               </div>
 
-              {/* 토글 스위치 느낌의 UI (선택사항) */}
               <div
                 className={cn(
                   'relative h-5 w-9 rounded-full transition-colors duration-200',
@@ -468,7 +598,7 @@ export function AddTransactionModal({
               onClick={handleSubmit}
               disabled={loading}
               className={cn(
-                'h-16 w-full rounded-3xl text-lg font-black shadow-xl transition-all active:scale-95',
+                'mt-2 h-16 w-full rounded-3xl text-lg font-black shadow-xl transition-all active:scale-95',
                 formData.type === 'expense'
                   ? 'bg-accent hover:bg-accent/90'
                   : 'bg-emerald-500 shadow-emerald-200 hover:bg-emerald-600 dark:shadow-none',

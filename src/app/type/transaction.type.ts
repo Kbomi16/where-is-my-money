@@ -17,4 +17,7 @@ export type Transaction = {
     | 'etc' // 결제 수단 (지출일 때만)
   memo?: string // 메모 (선택 사항)
   isExclude?: boolean // 통계 제외 여부 (기본값: false)
+  installmentTotal?: number // 총 할부 개월
+  installmentIndex?: number // 현재 할부 회차 (1부터)
+  installmentGroupId?: string // 같은 할부 건을 묶는 ID
 }

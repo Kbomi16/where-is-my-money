@@ -163,17 +163,22 @@ export function TransactionList({ items }: { items: Transaction[] }) {
                           (
                             methodColors[
                               item.method as keyof typeof methodColors
-                            ] || methodColors['기타']
+                            ] || methodColors['etc']
                           ).bg,
                           (
                             methodColors[
                               item.method as keyof typeof methodColors
-                            ] || methodColors['기타']
+                            ] || methodColors['etc']
                           ).text,
                         )}
                       >
                         {methodColors[item.method as keyof typeof methodColors]
                           ?.label || item.method}
+                      </span>
+                    )}
+                    {item.installmentTotal && item.installmentTotal > 1 && (
+                      <span className="rounded-full bg-purple-50 px-1.5 py-0.5 text-[9px] font-bold text-purple-500 dark:bg-purple-950/40 dark:text-purple-300">
+                        {item.installmentIndex}/{item.installmentTotal}
                       </span>
                     )}
                   </div>
