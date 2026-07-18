@@ -6,5 +6,6 @@ export const methods = [
   '카카오페이',
   '네이버페이',
   '애플페이',
+  '토스페이',
   '기타',
 ] as const

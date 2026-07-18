@@ -5,7 +5,16 @@ export type Transaction = {
   category: string // '식비', '교통', '생활' 등
   amount: number // 금액 (양수로 통일)
   type: 'income' | 'expense' // 수입인지 지출인지
-  method?: 'check' | 'credit' | 'cash' // 결제 수단 (지출일 때만)
+  method?:
+    | 'check'
+    | 'credit'
+    | 'cash'
+    | 'bank'
+    | 'kakaoPay'
+    | 'naverPay'
+    | 'applePay'
+    | 'tossPay'
+    | 'etc' // 결제 수단 (지출일 때만)
   memo?: string // 메모 (선택 사항)
   isExclude?: boolean // 통계 제외 여부 (기본값: false)
 }

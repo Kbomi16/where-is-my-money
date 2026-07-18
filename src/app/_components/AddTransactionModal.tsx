@@ -70,6 +70,7 @@ type FormData = {
     | 'kakaoPay'
     | 'naverPay'
     | 'applePay'
+    | 'tossPay'
     | 'etc'
     | null
   memo?: string
@@ -91,6 +92,7 @@ const methods: Record<string, string> = {
   kakaoPay: '카카오페이',
   naverPay: '네이버페이',
   applePay: '애플페이',
+  tossPay: '토스페이',
   etc: '기타',
 }
 
@@ -271,7 +273,7 @@ export function AddTransactionModal({
                 step={1000}
                 value={formData.amount}
                 onChange={(e) => handleFieldChange('amount', e.target.value)}
-                className="h-12 w-full border-none bg-transparent text-center text-4xl font-black tracking-tighter text-slate-800 placeholder:text-slate-300 focus-visible:ring-0 dark:text-white"
+                className="h-12 w-full border-none bg-transparent text-center text-4xl! font-black tracking-tighter text-slate-800 placeholder:text-slate-300 focus-visible:ring-0 dark:text-white"
               />
               <span className="text-lg font-bold text-slate-400">원</span>
             </div>

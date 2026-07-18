@@ -70,6 +70,7 @@ const methodColors: Record<
   },
   naverPay: { label: '네이버페이', bg: 'bg-green-50', text: 'text-green-500' },
   applePay: { label: '애플페이', bg: 'bg-gray-50', text: 'text-gray-500' },
+  tossPay: { label: '토스페이', bg: 'bg-sky-50', text: 'text-sky-500' },
   etc: { label: '기타', bg: 'bg-slate-50', text: 'text-slate-500' },
 }
 
