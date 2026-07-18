@@ -1,14 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import {
-  Search,
-  Megaphone,
-  AlertCircle,
-  ExternalLink,
-  Loader2,
-  HeadphonesIcon,
-} from 'lucide-react'
+import { Search, Megaphone, AlertCircle, Loader2, X } from 'lucide-react'
 import {
   Accordion,
   AccordionContent,
@@ -29,13 +22,8 @@ const isWithinAWeek = (dateString: string) => {
   try {
     const noticeDate = new Date(dateString)
     const today = new Date()
-
-    // 두 날짜의 차이 (밀리초 단위)
     const diffTime = today.getTime() - noticeDate.getTime()
-    // 밀리초를 일(day) 단위로 변환
     const diffDays = diffTime / (1000 * 60 * 60 * 24)
-
-    // 0일보다 크고(미래 게시글 방지) 7일보다 작거나 같은 경우 true
     return diffDays >= 0 && diffDays <= 7
   } catch (error) {
     return false
@@ -48,9 +36,7 @@ export default function NoticePage() {
   const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
-    // notices 컬렉션을 날짜 내림차순으로 정렬하여 가져옴
     const q = query(collection(db, 'notices'), orderBy('date', 'desc'))
-
     const unsubscribe = onSnapshot(
       q,
       (querySnapshot) => {
@@ -66,11 +52,9 @@ export default function NoticePage() {
         setLoading(false)
       },
     )
-
     return () => unsubscribe()
   }, [])
 
-  // 검색 필터링
   const filteredNotices = notices.filter(
     (notice) =>
       notice.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -78,39 +62,52 @@ export default function NoticePage() {
   )
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 base-layout min-h-[calc(100vh-64px)] py-6 duration-500 lg:py-12">
-      <div className="mx-auto pb-10">
-        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
-          <Megaphone size={28} />
+    <div className="animate-in fade-in slide-in-from-bottom-4 base-layout mx-auto min-h-[calc(100vh-64px)] max-w-4xl px-4 py-8 duration-500 lg:py-16">
+      {/* 1. 헤더 섹션 */}
+      <div className="mb-10 text-center md:text-left">
+        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 shadow-sm ring-1 ring-blue-100/50 md:mx-0 dark:bg-blue-950/50 dark:text-blue-400 dark:ring-0">
+          <Megaphone
+            size={26}
+            className="animate-bounce"
+            style={{ animationDuration: '3s' }}
+          />
         </div>
         <h1 className="text-3xl font-black tracking-tight text-slate-900 md:text-4xl dark:text-slate-50">
           공지사항
         </h1>
-        <p className="mt-3 text-slate-500 dark:text-slate-400">
+        <p className="mt-2.5 text-sm text-slate-500 md:text-base dark:text-slate-400">
           서비스의 새로운 소식과 안내를 전해드립니다.
         </p>
       </div>
 
-      {/* 2. 검색창 */}
       <div className="group relative mb-8">
-        <Search
-          className="absolute top-1/2 left-4 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-blue-500"
-          size={20}
-        />
+        <Search className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-blue-500" />
         <Input
           placeholder="궁금한 소식을 검색해보세요"
-          className="h-14 rounded-2xl border-slate-200 bg-white pl-12 shadow-sm focus-visible:ring-blue-500 dark:border-slate-800 dark:bg-slate-950"
+          className="h-14 rounded-2xl border-slate-200 bg-white pr-12 pl-12 shadow-sm transition-all focus-visible:border-transparent focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-slate-800 dark:bg-slate-950"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
+        {searchQuery && (
+          <Button
+            size="icon"
+            variant="ghost"
+            className="absolute top-1/2 right-3 h-8 w-8 -translate-y-1/2 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
+            onClick={() => setSearchQuery('')}
+          >
+            <X size={16} />
+          </Button>
+        )}
       </div>
 
-      {/* 3. 공지사항 리스트 (아코디언) */}
-      <div className="rounded-4xl border border-slate-100 bg-white p-1 shadow-sm md:p-2 dark:border-slate-800 dark:bg-slate-900">
+      {/* 3. 공지사항 리스트 */}
+      <div className="rounded-3xl border border-slate-100 bg-white p-2 shadow-sm backdrop-blur-sm dark:border-slate-800/60 dark:bg-slate-900/50">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 text-slate-400">
-            <Loader2 className="mb-4 h-10 w-10 animate-spin text-blue-500" />
-            <p className="text-sm font-medium">데이터를 불러오는 중입니다...</p>
+            <Loader2 className="mb-4 h-8 w-8 animate-spin text-blue-500" />
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+              데이터를 불러오는 중입니다...
+            </p>
           </div>
         ) : filteredNotices.length > 0 ? (
           <Accordion type="single" collapsible className="w-full">
@@ -121,43 +118,42 @@ export default function NoticePage() {
                 <AccordionItem
                   key={notice.id}
                   value={notice.id}
-                  className="mb-1 border-none px-4 py-1 last:mb-0"
+                  className="overflow-hidden rounded-2xl border-b border-slate-100 transition-colors last:border-none hover:bg-slate-50/50 dark:border-slate-800/60 dark:hover:bg-slate-800/30"
                 >
-                  <AccordionTrigger className="group py-5 hover:no-underline">
-                    <div className="flex flex-col items-start gap-2 text-left">
+                  <AccordionTrigger className="group px-4 py-5 hover:no-underline data-[state=open]:bg-slate-50/30 dark:data-[state=open]:bg-slate-800/20">
+                    <div className="flex w-full flex-col items-start gap-2.5 pr-4 text-left">
                       <div className="flex items-center gap-2">
                         <Badge
                           variant="secondary"
                           className={cn(
-                            'h-5 px-1.5 text-xs font-bold',
+                            'h-5 rounded-md px-2 text-[11px] font-bold tracking-wide transition-colors',
                             notice.category === '업데이트' &&
-                              'bg-orange-50 text-orange-600',
+                              'bg-orange-50 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400',
                             notice.category === '공지' &&
                               'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
                           )}
                         >
                           {notice.category}
                         </Badge>
-                        {/* 조건부 렌더링: 일주일 이내일 때만 노출 */}
                         {showNewBadge && (
-                          <div className="flex items-center gap-1 text-[10px] font-bold text-blue-500">
-                            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-blue-500" />
+                          <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-1.5 py-0.5 text-[10px] font-bold text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
+                            <span className="h-1 w-1 animate-pulse rounded-full bg-blue-500 dark:bg-blue-400" />
                             NEW
-                          </div>
+                          </span>
                         )}
                       </div>
-                      <span className="text-base font-bold text-slate-800 transition-colors group-hover:text-blue-600 md:text-lg dark:text-slate-200">
+                      <span className="line-clamp-2 text-base font-semibold text-slate-800 transition-colors group-hover:text-blue-600 md:text-lg dark:text-slate-200 dark:group-hover:text-blue-400">
                         {notice.title}
                       </span>
-                      <span className="text-xs font-medium text-slate-400">
+                      <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
                         {notice.date}
                       </span>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="px-1 pt-1 pb-6 md:pt-2">
-                    <div className="rounded-2xl bg-slate-50 p-2 text-sm leading-relaxed text-slate-600 md:p-5 md:text-base dark:bg-slate-800/40 dark:text-slate-400">
+                  <AccordionContent className="p-0">
+                    <div className="border-t border-slate-100/50 bg-slate-50/50 px-5 py-6 dark:border-slate-800/40 dark:bg-slate-950/40">
                       <div
-                        className="notice-content text-sm text-slate-600 md:text-base dark:text-slate-400"
+                        className="notice-content prose dark:prose-invert prose-a:text-blue-600 dark:prose-a:text-blue-400 hover:prose-a:underline max-w-none space-y-3 text-sm leading-relaxed text-slate-600 md:text-base dark:text-slate-300"
                         dangerouslySetInnerHTML={{ __html: notice.content }}
                       />
                     </div>
@@ -168,8 +164,13 @@ export default function NoticePage() {
           </Accordion>
         ) : (
           <div className="flex flex-col items-center justify-center py-24 text-slate-400">
-            <AlertCircle size={48} className="mb-4 opacity-10" />
-            <p className="text-sm font-medium">
+            <div className="mb-4 rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50">
+              <AlertCircle
+                size={32}
+                className="text-slate-300 dark:text-slate-600"
+              />
+            </div>
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
               검색어와 일치하는 소식이 없어요.
             </p>
           </div>
