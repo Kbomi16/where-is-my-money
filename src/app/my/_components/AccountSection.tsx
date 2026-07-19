@@ -12,7 +12,7 @@ import {
 
 export default function AccountSection({ user }: { user: User }) {
   return (
-    <Card className="overflow-hidden rounded-4xl border-none bg-white/40 shadow-xl backdrop-blur-md dark:bg-slate-900/40">
+    <Card className="overflow-hidden rounded-4xl border-none bg-white/40 backdrop-blur-md dark:bg-slate-900/40">
       <CardContent className="p-0">
         <div className="flex flex-col">
           {/* 상단 헤더 부분 - 닉네임 강조 */}

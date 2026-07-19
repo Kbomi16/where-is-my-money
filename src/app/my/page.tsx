@@ -1,18 +1,70 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/app/store/useAuthStore'
 import { Button } from '@/components/ui/button'
-import { auth } from '@/lib/firebase'
+import { auth, db } from '@/lib/firebase'
 import { signOut } from 'firebase/auth'
+import { collection, onSnapshot, query, where } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { LogOut, Settings2, User } from 'lucide-react'
+import { LogOut, User } from 'lucide-react'
 import AccountSection from './_components/AccountSection'
 import ProfileSection from './_components/ProfileSection'
+import RecurringExpensesSection from './_components/RecurringExpensesSection'
+import { Transaction } from '@/app/type/transaction.type'
 
 export default function MyPage() {
   const { user } = useAuthStore()
   const router = useRouter()
+  const [recurringExpenses, setRecurringExpenses] = useState<Transaction[]>([])
+  const [recurringLoading, setRecurringLoading] = useState(true)
+
+  useEffect(() => {
+    if (!user) {
+      setRecurringExpenses([])
+      setRecurringLoading(false)
+      return
+    }
+
+    setRecurringLoading(true)
+
+    const q = query(
+      collection(db, 'transactions'),
+      where('userId', '==', user.uid),
+    )
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const items = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Array<
+          Transaction & {
+            userId?: string
+            recurringEnabled?: boolean
+            recurringEndType?: 'none' | 'months'
+            recurringMonths?: number
+          }
+        >
+
+        const recurringItems = items
+          .filter((item) => item.type === 'expense' && item.recurringEnabled)
+          .sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))
+
+        setRecurringExpenses(recurringItems)
+        setRecurringLoading(false)
+      },
+      (error) => {
+        console.error('Recurring expenses listener error:', error)
+        setRecurringExpenses([])
+        setRecurringLoading(false)
+      },
+    )
+
+    return () => unsubscribe()
+  }, [user])
 
   const handleLogout = async () => {
     try {
@@ -42,14 +94,9 @@ export default function MyPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3 lg:gap-8">
-        {/* 왼쪽 */}
-        <div className="order-1 lg:col-span-2">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:gap-8">
+        <div className="order-1 flex flex-col gap-6">
           <ProfileSection user={user} />
-        </div>
-
-        {/* 오른쪽 */}
-        <div className="order-2 flex flex-col gap-6">
           <AccountSection user={user} />
 
           <Button
@@ -60,6 +107,14 @@ export default function MyPage() {
             <LogOut className="mr-2 h-5 w-5" />
             로그아웃
           </Button>
+        </div>
+
+        <div className="order-2 flex flex-col gap-6">
+          <RecurringExpensesSection
+            recurringExpenses={recurringExpenses}
+            recurringLoading={recurringLoading}
+            userId={user?.uid}
+          />
         </div>
       </div>
     </div>

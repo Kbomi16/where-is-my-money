@@ -47,7 +47,7 @@ export default function ProfileSection({ user }: { user: User }) {
   }
 
   return (
-    <Card className="overflow-hidden rounded-4xl border-none bg-white/60 shadow-xl backdrop-blur-xl dark:bg-slate-900/60">
+    <Card className="overflow-hidden rounded-4xl border-none bg-white/60 backdrop-blur-xl dark:bg-slate-900/60">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-xl font-bold">프로필 수정</CardTitle>
         {isChanged && (
