@@ -16,24 +16,23 @@ function ToastStatusIcon({
   children: ReactNode
 }) {
   const variantStyles: Record<ToastIconVariant, string> = {
-    success: 'bg-primary',
+    success: 'bg-[#1677ff]',
     info: 'bg-blue-600',
     warning: 'bg-[#F5C518]',
-    error: 'bg-red-400',
-    loading:
-      'bg-foreground/10 text-foreground dark:bg-white/20 dark:text-white',
+    error: 'bg-red-500',
+    loading: 'bg-slate-700 text-white dark:bg-slate-600',
   }
 
   const iconColorClass =
     variant === 'loading'
-      ? '[&_svg]:text-foreground dark:[&_svg]:text-white'
+      ? 'text-white [&_svg]:text-white'
       : 'text-white [&_svg]:text-white'
 
   return (
     <span
       className={cn(
         'toast-status-icon inline-flex size-7 shrink-0 items-center justify-center rounded-full leading-none',
-        '[&_svg]:block [&_svg]:size-3.5 [&_svg]:shrink-0',
+        '[&_svg]:block [&_svg]:size-3.5 [&_svg]:shrink-0 [&_svg]:text-current',
         iconColorClass,
         variantStyles[variant],
       )}
@@ -83,6 +82,7 @@ const sonnerStyles = `
     flex-shrink: 0;
     align-self: center !important;
     line-height: 0;
+    color: inherit !important;
   }
 
   [data-sonner-toast][data-styled='true'] [data-icon] {
@@ -95,11 +95,16 @@ const sonnerStyles = `
     align-items: center !important;
     justify-content: center !important;
     margin: 0 !important;
+    width: 100%;
+    height: 100%;
   }
 
   [data-sonner-toaster] [data-sonner-toast] [data-icon] svg {
     margin: 0 !important;
     display: block !important;
+    width: 0.875rem !important;
+    height: 0.875rem !important;
+    color: inherit !important;
   }
 
   [data-sonner-toaster] [data-sonner-toast] .toast-status-icon {

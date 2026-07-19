@@ -1,6 +1,17 @@
 'use client'
 
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { db } from '@/lib/firebase'
 import { Transaction } from '@/app/type/transaction.type'
 import { doc, serverTimestamp, updateDoc } from 'firebase/firestore'
@@ -17,24 +28,31 @@ export default function RecurringExpensesSection({
   recurringLoading,
   userId,
 }: RecurringExpensesSectionProps) {
-  const handleStopRecurring = async (item: Transaction) => {
-    if (!userId) return
+  const [targetItem, setTargetItem] = useState<Transaction | null>(null)
+  const [isStopping, setIsStopping] = useState(false)
 
+  const handleStopRecurring = async () => {
+    if (!userId || !targetItem) return
+
+    setIsStopping(true)
     try {
-      await updateDoc(doc(db, 'transactions', item.id), {
+      await updateDoc(doc(db, 'transactions', targetItem.id), {
         recurringEnabled: false,
         updatedAt: serverTimestamp(),
       })
 
       toast.success('반복 지출을 중단했어요.')
+      setTargetItem(null)
     } catch (error) {
       console.error('Failed to stop recurring expense:', error)
       toast.error('반복 지출을 중단하지 못했어요.')
+    } finally {
+      setIsStopping(false)
     }
   }
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+    <div className="rounded-3xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-sm font-black text-slate-800 dark:text-slate-100">
@@ -95,7 +113,7 @@ export default function RecurringExpensesSection({
                   variant="outline"
                   size="sm"
                   className="h-8 rounded-full border-slate-200 px-3 text-xs font-semibold text-slate-600 hover:border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-                  onClick={() => handleStopRecurring(item)}
+                  onClick={() => setTargetItem(item)}
                 >
                   중단하기
                 </Button>
@@ -104,6 +122,37 @@ export default function RecurringExpensesSection({
           ))
         )}
       </div>
+
+      <AlertDialog
+        open={!!targetItem}
+        onOpenChange={(open) => !open && setTargetItem(null)}
+      >
+        <AlertDialogContent className="max-w-[90vw] rounded-3xl border-none">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-base">
+              정말 중단할까요?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm">
+              반복 지출을 중단하면 앞으로는 이 항목이 자동으로 등록되지 않아요.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-4 flex-row gap-2">
+            <AlertDialogCancel className="flex-1 rounded-xl border-none bg-slate-100 text-slate-600">
+              취소
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault()
+                handleStopRecurring()
+              }}
+              disabled={isStopping}
+              className="flex-1 rounded-xl bg-rose-500 text-white hover:bg-rose-600"
+            >
+              {isStopping ? '중단 중...' : '중단'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
