@@ -65,7 +65,7 @@ export default function NoticePage() {
     <div className="animate-in fade-in slide-in-from-bottom-4 base-layout mx-auto min-h-[calc(100vh-64px)] max-w-4xl px-4 py-8 duration-500 lg:py-16">
       {/* 1. 헤더 섹션 */}
       <div className="mb-10 text-center md:text-left">
-        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 shadow-sm ring-1 ring-blue-100/50 md:mx-0 dark:bg-blue-950/50 dark:text-blue-400 dark:ring-0">
+        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 shadow-sm ring-1 ring-blue-100/50 md:mx-0 dark:bg-blue-950/40 dark:text-blue-400 dark:ring-blue-900/30">
           <Megaphone
             size={26}
             className="animate-bounce"
@@ -80,11 +80,12 @@ export default function NoticePage() {
         </p>
       </div>
 
+      {/* 2. 검색 바 */}
       <div className="group relative mb-8">
-        <Search className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-blue-500" />
+        <Search className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-blue-500 dark:text-slate-500 dark:group-focus-within:text-blue-400" />
         <Input
           placeholder="궁금한 소식을 검색해보세요"
-          className="h-14 rounded-2xl border-slate-200 bg-white pr-12 pl-12 shadow-sm transition-all focus-visible:border-transparent focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-slate-800 dark:bg-slate-950"
+          className="h-14 rounded-2xl border-slate-200 bg-white pr-12 pl-12 shadow-sm transition-all focus-visible:border-transparent focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus-visible:ring-blue-400"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -92,7 +93,7 @@ export default function NoticePage() {
           <Button
             size="icon"
             variant="ghost"
-            className="absolute top-1/2 right-3 h-8 w-8 -translate-y-1/2 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
+            className="absolute top-1/2 right-3 h-8 w-8 -translate-y-1/2 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-300"
             onClick={() => setSearchQuery('')}
           >
             <X size={16} />
@@ -101,10 +102,10 @@ export default function NoticePage() {
       </div>
 
       {/* 3. 공지사항 리스트 */}
-      <div className="rounded-3xl border border-slate-100 bg-white p-2 shadow-sm backdrop-blur-sm dark:border-slate-800/60 dark:bg-slate-900/50">
+      <div className="rounded-3xl border border-slate-100 bg-white p-2 shadow-sm backdrop-blur-sm dark:border-slate-800/60 dark:bg-slate-900/40">
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-24 text-slate-400">
-            <Loader2 className="mb-4 h-8 w-8 animate-spin text-blue-500" />
+          <div className="flex flex-col items-center justify-center py-24 text-slate-400 dark:text-slate-500">
+            <Loader2 className="mb-4 h-8 w-8 animate-spin text-blue-500 dark:text-blue-400" />
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
               데이터를 불러오는 중입니다...
             </p>
@@ -151,9 +152,9 @@ export default function NoticePage() {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="p-0">
-                    <div className="border-t border-slate-100/50 bg-slate-50/50 px-5 py-6 dark:border-slate-800/40 dark:bg-slate-950/40">
+                    <div className="border-t border-slate-100/50 bg-slate-50/50 px-5 py-6 dark:border-slate-800/40 dark:bg-slate-950/30">
                       <div
-                        className="notice-content prose dark:prose-invert prose-a:text-blue-600 dark:prose-a:text-blue-400 hover:prose-a:underline max-w-none space-y-3 text-sm leading-relaxed text-slate-600 md:text-base dark:text-slate-300"
+                        className="notice-content prose dark:prose-invert prose-slate dark:prose-neutral prose-a:text-blue-600 dark:prose-a:text-blue-400 hover:prose-a:underline max-w-none text-sm leading-relaxed text-slate-600 md:text-base dark:text-slate-300"
                         dangerouslySetInnerHTML={{ __html: notice.content }}
                       />
                     </div>
@@ -163,8 +164,8 @@ export default function NoticePage() {
             })}
           </Accordion>
         ) : (
-          <div className="flex flex-col items-center justify-center py-24 text-slate-400">
-            <div className="mb-4 rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50">
+          <div className="flex flex-col items-center justify-center py-24 text-slate-400 dark:text-slate-500">
+            <div className="mb-4 rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/40">
               <AlertCircle
                 size={32}
                 className="text-slate-300 dark:text-slate-600"

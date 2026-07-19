@@ -412,13 +412,13 @@ export function AddTransactionModal({
               <TabsList className="grid h-12 w-full grid-cols-2 rounded-2xl bg-slate-100 p-1 dark:bg-slate-800">
                 <TabsTrigger
                   value="expense"
-                  className="cursor-pointer rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:text-red-500 data-[state=active]:shadow-sm"
+                  className="cursor-pointer rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:text-red-500 data-[state=active]:shadow-sm dark:data-[state=active]:bg-slate-900"
                 >
                   지출
                 </TabsTrigger>
                 <TabsTrigger
                   value="income"
-                  className="cursor-pointer rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:text-emerald-500 data-[state=active]:shadow-sm"
+                  className="cursor-pointer rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:text-emerald-500 data-[state=active]:shadow-sm dark:data-[state=active]:bg-slate-900"
                 >
                   수입
                 </TabsTrigger>
