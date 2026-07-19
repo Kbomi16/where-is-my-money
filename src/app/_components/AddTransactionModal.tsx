@@ -81,6 +81,9 @@ type FormData = {
   memo?: string
   installmentMonths?: number
   isExclude?: boolean
+  recurringEnabled?: boolean
+  recurringEndType?: 'none' | 'months'
+  recurringMonths?: number
 }
 
 type AddTransactionModalProps = {
@@ -117,6 +120,10 @@ export function AddTransactionModal({
     method: null,
     memo: '',
     installmentMonths: 1,
+    isExclude: false,
+    recurringEnabled: false,
+    recurringEndType: 'none',
+    recurringMonths: 12,
   })
 
   useEffect(() => {
@@ -132,6 +139,9 @@ export function AddTransactionModal({
         memo: editingItem.memo || '',
         installmentMonths: editingItem.installmentTotal || 1,
         isExclude: editingItem.isExclude || false,
+        recurringEnabled: editingItem.recurringEnabled || false,
+        recurringEndType: editingItem.recurringEndType || 'none',
+        recurringMonths: editingItem.recurringMonths || 12,
       })
     } else {
       setFormData({
@@ -144,6 +154,9 @@ export function AddTransactionModal({
         memo: '',
         installmentMonths: 1,
         isExclude: false,
+        recurringEnabled: false,
+        recurringEndType: 'none',
+        recurringMonths: 12,
       })
     }
   }, [editingItem, open])
@@ -153,7 +166,11 @@ export function AddTransactionModal({
     setFormData((prev) => ({
       ...prev,
       [field]: value,
-      ...(field === 'type' && { category: '' }),
+      ...(field === 'type' && {
+        category: '',
+        isRecurring: value === 'expense' ? prev.recurringEnabled : false,
+        recurringEndType: value === 'expense' ? prev.recurringEndType : 'none',
+      }),
       ...(field === 'method' && value !== 'credit' && { installmentMonths: 1 }),
     }))
   }
@@ -238,6 +255,20 @@ export function AddTransactionModal({
         method: formData.type === 'expense' ? formData.method : null,
         memo: formData.memo || '',
         isExclude: formData.isExclude || false,
+        recurringEnabled:
+          formData.type === 'expense'
+            ? formData.recurringEnabled || false
+            : false,
+        recurringEndType:
+          formData.type === 'expense' && formData.recurringEnabled
+            ? formData.recurringEndType || 'none'
+            : 'none',
+        recurringMonths:
+          formData.type === 'expense' &&
+          formData.recurringEnabled &&
+          formData.recurringEndType === 'months'
+            ? formData.recurringMonths || 12
+            : null,
         userId: currentUser.uid,
         updatedAt: serverTimestamp(),
       }
@@ -300,6 +331,10 @@ export function AddTransactionModal({
         method: null,
         memo: '',
         installmentMonths: 1,
+        isExclude: false,
+        recurringEnabled: false,
+        recurringEndType: 'none',
+        recurringMonths: 12,
       })
       onOpenChange(false)
     } catch (error) {
@@ -525,6 +560,139 @@ export function AddTransactionModal({
                   회차만 변경돼요.
                 </p>
               )}
+
+            {formData.type === 'expense' && (
+              <div className="space-y-3">
+                <div
+                  onClick={() =>
+                    handleFieldChange(
+                      'recurringEnabled',
+                      !formData.recurringEnabled,
+                    )
+                  }
+                  className={cn(
+                    'group flex cursor-pointer items-center justify-between rounded-2xl border-2 p-4 transition-all duration-200 select-none',
+                    formData.recurringEnabled
+                      ? 'border-slate-400 bg-slate-50 dark:bg-slate-800/50'
+                      : 'border-transparent bg-slate-50/50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800',
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={cn(
+                        'flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all',
+                        formData.recurringEnabled
+                          ? 'border-slate-600 bg-slate-600 text-white'
+                          : 'border-slate-300 bg-white dark:bg-slate-800',
+                      )}
+                    >
+                      {formData.recurringEnabled && (
+                        <Check size={14} strokeWidth={4} />
+                      )}
+                    </div>
+                    <div className="flex flex-col">
+                      <span
+                        className={cn(
+                          'text-sm font-bold transition-colors',
+                          formData.recurringEnabled
+                            ? 'text-slate-700 dark:text-slate-200'
+                            : 'text-slate-500',
+                        )}
+                      >
+                        매달 반복하기
+                      </span>
+                      <span className="text-[11px] font-medium text-slate-400">
+                        매월 자동으로 같은 지출을 등록해요.
+                      </span>
+                    </div>
+                  </div>
+
+                  <div
+                    className={cn(
+                      'relative h-5 w-9 rounded-full transition-colors duration-200',
+                      formData.recurringEnabled
+                        ? 'bg-slate-600'
+                        : 'bg-slate-200 dark:bg-slate-700',
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        'absolute top-1 h-3 w-3 rounded-full bg-white transition-all duration-200',
+                        formData.recurringEnabled ? 'left-5' : 'left-1',
+                      )}
+                    />
+                  </div>
+                </div>
+
+                {formData.recurringEnabled && (
+                  <div className="space-y-3 rounded-2xl border border-slate-200 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-950/40">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-black tracking-wider text-slate-400 uppercase">
+                        종료일
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleFieldChange('recurringEndType', 'none')
+                        }
+                        className={cn(
+                          'rounded-2xl border px-3 py-2 text-left text-sm font-semibold transition-all',
+                          formData.recurringEndType === 'none'
+                            ? 'border-slate-600 bg-slate-600 text-white'
+                            : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200',
+                        )}
+                      >
+                        없음(계속 반복)
+                      </button>
+
+                      <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleFieldChange('recurringEndType', 'months')
+                          }
+                          className={cn(
+                            'rounded-xl px-3 py-2 text-sm font-semibold transition-all',
+                            formData.recurringEndType === 'months'
+                              ? 'bg-slate-600 text-white'
+                              : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
+                          )}
+                        >
+                          기간 설정
+                        </button>
+                        <Select
+                          value={String(formData.recurringMonths || 12)}
+                          onValueChange={(value) =>
+                            handleFieldChange('recurringMonths', Number(value))
+                          }
+                          disabled={formData.recurringEndType !== 'months'}
+                        >
+                          <SelectTrigger className="h-10 w-24 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold dark:border-slate-700 dark:bg-slate-900">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="rounded-2xl border border-slate-100 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900">
+                            {Array.from(
+                              { length: 24 },
+                              (_, index) => index + 1,
+                            ).map((month) => (
+                              <SelectItem key={month} value={String(month)}>
+                                {month}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <span className="text-sm font-medium text-slate-500">
+                          개월 동안
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label className="ml-1 flex items-center gap-1.5 text-xs font-black tracking-wider text-slate-400 uppercase md:text-sm">
