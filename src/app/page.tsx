@@ -10,7 +10,7 @@ import {
   onSnapshot,
 } from 'firebase/firestore'
 import { onAuthStateChanged } from 'firebase/auth'
-import { startOfMonth, endOfMonth, format } from 'date-fns' // 추가됨
+import { startOfMonth, endOfMonth, format } from 'date-fns'
 
 import { SummaryCards } from './_components/SummaryCards'
 import { TransactionList } from './_components/TransactionList'
@@ -18,6 +18,7 @@ import { AddTransactionBtn } from './_components/AddTransactionBtn'
 import { MonthNavigator } from './_components/MonthNavigator'
 import { Transaction } from './type/transaction.type'
 import { TransactionCalendar } from './_components/TransactionCalendar'
+import { syncRecurringTransactions } from './utils/recurring'
 
 export default function Home() {
   const [items, setItems] = useState<Transaction[]>([])
@@ -46,26 +47,27 @@ export default function Home() {
 
     setLoading(true)
 
-    // 해당 월의 시작일과 종료일 계산 (예: '2024-02-01' ~ '2024-02-29')
-    const start = format(startOfMonth(currentDate), 'yyyy-MM-dd')
-    const end = format(endOfMonth(currentDate), 'yyyy-MM-dd')
-
     const q = query(
       collection(db, 'transactions'),
       where('userId', '==', user.uid),
-      where('date', '>=', start), // 해당 월 시작보다 크거나 같고
-      where('date', '<=', end), // 해당 월 끝보다 작거나 같은 것만!
       orderBy('date', 'desc'),
       orderBy('createdAt', 'desc'),
     )
 
     const unsubscribeData = onSnapshot(
       q,
-      (snapshot) => {
+      async (snapshot) => {
         const transactionData = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         })) as Transaction[]
+
+        await syncRecurringTransactions({
+          currentDate,
+          transactions: transactionData,
+          userId: user.uid,
+          firestoreDb: db,
+        })
 
         setItems(transactionData)
         setLoading(false)
@@ -79,8 +81,12 @@ export default function Home() {
     return () => unsubscribeData()
   }, [user, currentDate])
 
-  // 합계 계산 로직
-  const displayItems = items.filter((item) => !item.isExclude)
+  const start = format(startOfMonth(currentDate), 'yyyy-MM-dd')
+  const end = format(endOfMonth(currentDate), 'yyyy-MM-dd')
+
+  const displayItems = items.filter(
+    (item) => !item.isExclude && item.date >= start && item.date <= end,
+  )
 
   const totalIncome = displayItems
     .filter((item) => item.type === 'income')
@@ -110,13 +116,13 @@ export default function Home() {
       <SummaryCards income={totalIncome} expense={totalExpense} />
 
       {viewMode === 'calendar' ? (
-        <TransactionCalendar currentDate={currentDate} items={items} />
-      ) : items.length === 0 ? (
+        <TransactionCalendar currentDate={currentDate} items={displayItems} />
+      ) : displayItems.length === 0 ? (
         <div className="py-20 text-center text-slate-400">
           이번 달에는 기록이 없어요!
         </div>
       ) : (
-        <TransactionList items={items} />
+        <TransactionList items={displayItems} />
       )}
 
       <AddTransactionBtn />

@@ -1,5 +1,6 @@
 export type Transaction = {
   id: string // Firestore 문서 ID
+  userId?: string // 사용자 ID
   title: string // 거래명
   date: string // 'YYYY-MM-DD' 형식
   category: string // '식비', '교통', '생활' 등
@@ -20,7 +21,10 @@ export type Transaction = {
   recurringEnabled?: boolean // 매달 반복 여부
   recurringEndType?: 'none' | 'months' // 반복 종료 방식
   recurringMonths?: number // 반복 종료 개월 수
+  recurringParentId?: string // 반복 생성된 자식 항목의 부모 ID
   installmentTotal?: number // 총 할부 개월
   installmentIndex?: number // 현재 할부 회차 (1부터)
   installmentGroupId?: string // 같은 할부 건을 묶는 ID
+  createdAt?: unknown // Firestore 생성 시각
+  updatedAt?: unknown // Firestore 수정 시각
 }
