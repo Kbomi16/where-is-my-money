@@ -139,7 +139,8 @@ export function AddTransactionModal({
         memo: editingItem.memo || '',
         installmentMonths: editingItem.installmentTotal || 1,
         isExclude: editingItem.isExclude || false,
-        recurringEnabled: editingItem.recurringEnabled || false,
+        recurringEnabled:
+          editingItem.recurringEnabled || !!editingItem.recurringParentId,
         recurringEndType: editingItem.recurringEndType || 'none',
         recurringMonths: editingItem.recurringMonths || 12,
       })
@@ -168,11 +169,22 @@ export function AddTransactionModal({
       [field]: value,
       ...(field === 'type' && {
         category: '',
-        isRecurring: value === 'expense' ? prev.recurringEnabled : false,
+        recurringEnabled: value === 'expense' ? prev.recurringEnabled : false,
         recurringEndType: value === 'expense' ? prev.recurringEndType : 'none',
       }),
       ...(field === 'method' && value !== 'credit' && { installmentMonths: 1 }),
     }))
+  }
+
+  const handleToggleRecurring = () => {
+    if (editingItem?.recurringParentId) {
+      toast.error('이 달 내역은 반복 지출로 자동 등록됐어요.', {
+        description: '앞으로의 반복을 끄려면 마이페이지에서 중단하세요.',
+      })
+      return
+    }
+
+    handleFieldChange('recurringEnabled', !formData.recurringEnabled)
   }
 
   const isCreditInstallment =
@@ -274,11 +286,22 @@ export function AddTransactionModal({
       }
 
       if (editingItem) {
+        const isGeneratedRecurring = !!editingItem.recurringParentId
         const docRef = doc(db, 'transactions', editingItem.id)
         await updateDoc(docRef, {
           ...basePayload,
           amount: totalAmount,
           date: format(formData.date, 'yyyy-MM-dd'),
+          ...(isGeneratedRecurring
+            ? {
+                recurringEnabled: false,
+                recurringParentId: formData.recurringEnabled
+                  ? editingItem.recurringParentId
+                  : null,
+                recurringEndType: 'none',
+                recurringMonths: null,
+              }
+            : {}),
         })
 
         toast.success('내역이 수정되었습니다! ✨')
@@ -561,15 +584,22 @@ export function AddTransactionModal({
                 </p>
               )}
 
+            <div className="space-y-2">
+              <Label className="ml-1 flex items-center gap-1.5 text-xs font-black tracking-wider text-slate-400 uppercase md:text-sm">
+                <PencilLine size={12} /> 상세 메모
+              </Label>
+              <Textarea
+                value={formData.memo}
+                onChange={(e) => handleFieldChange('memo', e.target.value)}
+                placeholder="예: 점심 식사, 친구와 함께"
+                className="focus-visible:ring-accent min-h-24 resize-none rounded-3xl border border-slate-100 bg-slate-50/50 p-4 font-medium focus-visible:ring-1 dark:border-slate-800 dark:bg-slate-900"
+              />
+            </div>
+
             {formData.type === 'expense' && (
               <div className="space-y-3">
                 <div
-                  onClick={() =>
-                    handleFieldChange(
-                      'recurringEnabled',
-                      !formData.recurringEnabled,
-                    )
-                  }
+                  onClick={handleToggleRecurring}
                   className={cn(
                     'group flex cursor-pointer items-center justify-between rounded-2xl border-2 p-4 transition-all duration-200 select-none',
                     formData.recurringEnabled
@@ -624,7 +654,7 @@ export function AddTransactionModal({
                   </div>
                 </div>
 
-                {formData.recurringEnabled && (
+                {formData.recurringEnabled && !editingItem?.recurringParentId && (
                   <div className="space-y-3 rounded-2xl border border-slate-200 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-950/40">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-black tracking-wider text-slate-400 uppercase">
@@ -693,18 +723,6 @@ export function AddTransactionModal({
                 )}
               </div>
             )}
-
-            <div className="space-y-2">
-              <Label className="ml-1 flex items-center gap-1.5 text-xs font-black tracking-wider text-slate-400 uppercase md:text-sm">
-                <PencilLine size={12} /> 상세 메모
-              </Label>
-              <Textarea
-                value={formData.memo}
-                onChange={(e) => handleFieldChange('memo', e.target.value)}
-                placeholder="예: 점심 식사, 친구와 함께"
-                className="focus-visible:ring-accent min-h-24 resize-none rounded-3xl border border-slate-100 bg-slate-50/50 p-4 font-medium focus-visible:ring-1 dark:border-slate-800 dark:bg-slate-900"
-              />
-            </div>
 
             <div
               onClick={() =>

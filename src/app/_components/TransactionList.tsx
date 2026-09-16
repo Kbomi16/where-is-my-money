@@ -181,6 +181,11 @@ export function TransactionList({ items }: { items: Transaction[] }) {
                         {item.installmentIndex}/{item.installmentTotal}
                       </span>
                     )}
+                    {(item.recurringEnabled || item.recurringParentId) && (
+                      <span className="rounded-full bg-blue-50 px-1.5 py-0.5 text-[9px] font-bold text-blue-500 dark:bg-blue-950/40 dark:text-blue-300">
+                        반복
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>

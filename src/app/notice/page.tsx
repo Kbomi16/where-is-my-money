@@ -62,15 +62,11 @@ export default function NoticePage() {
   )
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 base-layout mx-auto min-h-[calc(100vh-64px)] max-w-4xl px-4 py-8 duration-500 lg:py-16">
+    <div className="base-layout mx-auto min-h-[calc(100vh-64px)] max-w-4xl px-4 py-8 lg:py-16">
       {/* 1. 헤더 섹션 */}
       <div className="mb-10 text-center md:text-left">
         <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 shadow-sm ring-1 ring-blue-100/50 md:mx-0 dark:bg-blue-950/40 dark:text-blue-400 dark:ring-blue-900/30">
-          <Megaphone
-            size={26}
-            className="animate-bounce"
-            style={{ animationDuration: '3s' }}
-          />
+          <Megaphone size={26} />
         </div>
         <h1 className="text-3xl font-black tracking-tight text-slate-900 md:text-4xl dark:text-slate-50">
           공지사항
