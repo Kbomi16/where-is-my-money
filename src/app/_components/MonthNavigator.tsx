@@ -1,7 +1,6 @@
 'use client'
 
-import { format, addMonths, subMonths, setYear, setMonth } from 'date-fns'
-import { ko } from 'date-fns/locale'
+import { addMonths, isSameMonth, setMonth, setYear, subMonths } from 'date-fns'
 import {
   ChevronLeft,
   ChevronRight,
@@ -33,6 +32,12 @@ export function MonthNavigator({
 }: MonthNavigatorProps) {
   const nextMonth = () => onChange(addMonths(currentDate, 1))
   const prevMonth = () => onChange(subMonths(currentDate, 1))
+  const today = new Date()
+  const isCurrentMonth = isSameMonth(currentDate, today)
+
+  const handleToday = () => {
+    onChange(today)
+  }
 
   const currentYear = new Date().getFullYear()
 
@@ -125,6 +130,16 @@ export function MonthNavigator({
           className="hover:bg-accent/10 hover:text-accent rounded-xl"
         >
           <ChevronRight className="h-5 w-5" />
+        </Button>
+
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={handleToday}
+          disabled={isCurrentMonth}
+          className="hover:bg-accent/10 hover:text-accent h-8 rounded-xl px-3 text-xs font-bold"
+        >
+          오늘
         </Button>
       </div>
 

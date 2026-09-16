@@ -40,14 +40,7 @@ export default function MyPage() {
         const items = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-        })) as Array<
-          Transaction & {
-            userId?: string
-            recurringEnabled?: boolean
-            recurringEndType?: 'none' | 'months'
-            recurringMonths?: number
-          }
-        >
+        })) as Transaction[]
 
         const recurringItems = items
           .filter((item) => item.type === 'expense' && item.recurringEnabled)

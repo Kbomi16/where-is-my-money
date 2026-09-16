@@ -16,6 +16,7 @@ import { SummaryCards } from './_components/SummaryCards'
 import { TransactionList } from './_components/TransactionList'
 import { AddTransactionBtn } from './_components/AddTransactionBtn'
 import { MonthNavigator } from './_components/MonthNavigator'
+import MonthlyCompareSection from './_components/MonthlyCompareSection'
 import { Transaction } from './type/transaction.type'
 import { TransactionCalendar } from './_components/TransactionCalendar'
 import { syncRecurringTransactions } from './utils/recurring'
@@ -114,6 +115,12 @@ export default function Home() {
       />
 
       <SummaryCards income={totalIncome} expense={totalExpense} />
+
+      <MonthlyCompareSection
+        items={items}
+        currentDate={currentDate}
+        loading={loading}
+      />
 
       {viewMode === 'calendar' ? (
         <TransactionCalendar currentDate={currentDate} items={displayItems} />
