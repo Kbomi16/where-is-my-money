@@ -100,19 +100,21 @@ export default function Home() {
   const start = format(startOfMonth(currentDate), 'yyyy-MM-dd')
   const end = format(endOfMonth(currentDate), 'yyyy-MM-dd')
 
-  const displayItems = items.filter(
-    (item) => !item.isExclude && item.date >= start && item.date <= end,
+  const monthItems = items.filter(
+    (item) => item.date >= start && item.date <= end,
   )
 
-  const totalIncome = displayItems
+  const statItems = monthItems.filter((item) => !item.isExclude)
+
+  const totalIncome = statItems
     .filter((item) => item.type === 'income')
     .reduce((acc, cur) => acc + cur.amount, 0)
 
-  const totalExpense = displayItems
+  const totalExpense = statItems
     .filter((item) => item.type === 'expense')
     .reduce((acc, cur) => acc + cur.amount, 0)
 
-  if (loading && displayItems.length === 0) {
+  if (loading && monthItems.length === 0) {
     return (
       <div className="flex h-screen items-center justify-center">
         데이터 로딩 중...
@@ -139,13 +141,13 @@ export default function Home() {
         <SummaryCards income={totalIncome} expense={totalExpense} />
 
         {viewMode === 'calendar' ? (
-          <TransactionCalendar currentDate={currentDate} items={displayItems} />
-        ) : displayItems.length === 0 ? (
+          <TransactionCalendar currentDate={currentDate} items={monthItems} />
+        ) : monthItems.length === 0 ? (
           <div className="py-20 text-center text-slate-400">
             이번 달에는 기록이 없어요!
           </div>
         ) : (
-          <TransactionList items={displayItems} />
+          <TransactionList items={monthItems} />
         )}
       </div>
 

@@ -57,7 +57,7 @@ const categoryIcons: Record<string, React.ReactNode> = {
 
 const methodColors: Record<
   string,
-  { label: string; bg: string; text: string }
+  { label: string; bg: string; text: string; logo?: string }
 > = {
   check: { label: '체크카드', bg: 'bg-blue-50', text: 'text-blue-500' },
   credit: { label: '신용카드', bg: 'bg-purple-50', text: 'text-purple-500' },
@@ -67,10 +67,26 @@ const methodColors: Record<
     label: '카카오페이',
     bg: 'bg-yellow-50',
     text: 'text-yellow-500',
+    logo: '/imgs/payments/kakao-pay.svg',
   },
-  naverPay: { label: '네이버페이', bg: 'bg-green-50', text: 'text-green-500' },
-  applePay: { label: '애플페이', bg: 'bg-gray-50', text: 'text-gray-500' },
-  tossPay: { label: '토스페이', bg: 'bg-sky-50', text: 'text-sky-500' },
+  naverPay: {
+    label: '네이버페이',
+    bg: 'bg-green-50',
+    text: 'text-green-500',
+    logo: '/imgs/payments/naver-pay.svg',
+  },
+  applePay: {
+    label: '애플페이',
+    bg: 'bg-gray-50',
+    text: 'text-gray-500',
+    logo: '/imgs/payments/apple-pay.png',
+  },
+  tossPay: {
+    label: '토스페이',
+    bg: 'bg-sky-50',
+    text: 'text-sky-500',
+    logo: '/imgs/payments/toss-pay.png',
+  },
   etc: { label: '기타', bg: 'bg-slate-50', text: 'text-slate-500' },
 }
 
@@ -159,7 +175,7 @@ export function TransactionList({ items }: { items: Transaction[] }) {
                     {item.method && (
                       <span
                         className={cn(
-                          'rounded-full px-1.5 py-0.5 text-[9px] font-bold',
+                          'inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9px] font-bold',
                           (
                             methodColors[
                               item.method as keyof typeof methodColors
@@ -172,6 +188,18 @@ export function TransactionList({ items }: { items: Transaction[] }) {
                           ).text,
                         )}
                       >
+                        {methodColors[item.method as keyof typeof methodColors]
+                          ?.logo && (
+                          <img
+                            src={
+                              methodColors[
+                                item.method as keyof typeof methodColors
+                              ].logo
+                            }
+                            alt=""
+                            className="size-4 rounded-[3px] object-contain"
+                          />
+                        )}
                         {methodColors[item.method as keyof typeof methodColors]
                           ?.label || item.method}
                       </span>
