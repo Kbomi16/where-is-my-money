@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { auth, db } from '@/lib/firebase'
 import {
   collection,
@@ -31,6 +31,9 @@ export default function Home() {
 
   // 현재 선택된 월 상태
   const [currentDate, setCurrentDate] = useState(new Date())
+
+  const viewSectionRef = useRef<HTMLDivElement>(null)
+  const isFirstViewMode = useRef(true)
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
@@ -82,6 +85,18 @@ export default function Home() {
     return () => unsubscribeData()
   }, [user, currentDate])
 
+  useEffect(() => {
+    if (isFirstViewMode.current) {
+      isFirstViewMode.current = false
+      return
+    }
+
+    viewSectionRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+  }, [viewMode])
+
   const start = format(startOfMonth(currentDate), 'yyyy-MM-dd')
   const end = format(endOfMonth(currentDate), 'yyyy-MM-dd')
 
@@ -107,30 +122,32 @@ export default function Home() {
 
   return (
     <main className="base-layout min-h-[calc(100vh-4rem)] space-y-6 py-6 pb-24">
-      <MonthNavigator
-        currentDate={currentDate}
-        onChange={setCurrentDate}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
-      />
-
-      <SummaryCards income={totalIncome} expense={totalExpense} />
-
       <MonthlyCompareSection
         items={items}
         currentDate={currentDate}
         loading={loading}
       />
 
-      {viewMode === 'calendar' ? (
-        <TransactionCalendar currentDate={currentDate} items={displayItems} />
-      ) : displayItems.length === 0 ? (
-        <div className="py-20 text-center text-slate-400">
-          이번 달에는 기록이 없어요!
-        </div>
-      ) : (
-        <TransactionList items={displayItems} />
-      )}
+      <div ref={viewSectionRef} className="scroll-mt-20 space-y-6">
+        <MonthNavigator
+          currentDate={currentDate}
+          onChange={setCurrentDate}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+        />
+
+        <SummaryCards income={totalIncome} expense={totalExpense} />
+
+        {viewMode === 'calendar' ? (
+          <TransactionCalendar currentDate={currentDate} items={displayItems} />
+        ) : displayItems.length === 0 ? (
+          <div className="py-20 text-center text-slate-400">
+            이번 달에는 기록이 없어요!
+          </div>
+        ) : (
+          <TransactionList items={displayItems} />
+        )}
+      </div>
 
       <AddTransactionBtn />
     </main>
