@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, User } from 'lucide-react'
+import { Home, List, User } from 'lucide-react'
 import { useAuthStore } from '@/app/store/useAuthStore'
 import { cn } from '@/lib/utils'
 
@@ -12,6 +12,12 @@ const tabs = [
     label: '홈',
     icon: Home,
     isActive: (pathname: string) => pathname === '/',
+  },
+  {
+    href: '/history',
+    label: '내역',
+    icon: List,
+    isActive: (pathname: string) => pathname.startsWith('/history'),
   },
   {
     href: '/my',
@@ -33,7 +39,7 @@ export default function BottomNav() {
       aria-label="하단 메뉴"
       className="border-border bg-card fixed inset-x-0 bottom-0 z-50 border-t pb-[env(safe-area-inset-bottom)]"
     >
-      <div className="mx-auto grid h-16 max-w-lg grid-cols-2">
+      <div className="mx-auto grid h-16 max-w-lg grid-cols-3">
         {tabs.map((tab) => {
           const active = tab.isActive(pathname)
           const Icon = tab.icon
