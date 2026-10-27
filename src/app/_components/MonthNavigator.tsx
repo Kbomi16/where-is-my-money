@@ -22,6 +22,7 @@ type MonthNavigatorProps = {
   onChange: (date: Date) => void
   viewMode: 'list' | 'calendar'
   setViewMode: (mode: 'list' | 'calendar') => void
+  showViewToggle?: boolean
 }
 
 export function MonthNavigator({
@@ -29,6 +30,7 @@ export function MonthNavigator({
   onChange,
   viewMode,
   setViewMode,
+  showViewToggle = true,
 }: MonthNavigatorProps) {
   const nextMonth = () => onChange(addMonths(currentDate, 1))
   const prevMonth = () => onChange(subMonths(currentDate, 1))
@@ -143,6 +145,7 @@ export function MonthNavigator({
         </Button>
       </div>
 
+      {showViewToggle && (
       <Tabs
         value={viewMode}
         onValueChange={(v) => setViewMode(v as 'list' | 'calendar')}
@@ -165,6 +168,7 @@ export function MonthNavigator({
           </TabsTrigger>
         </TabsList>
       </Tabs>
+      )}
     </section>
   )
 }

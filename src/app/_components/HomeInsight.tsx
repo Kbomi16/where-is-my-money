@@ -43,8 +43,8 @@ function SpendDonut({
 }: {
   slices: { amount: number; color: string }[]
 }) {
-  const size = 128
-  const stroke = 18
+  const size = 168
+  const stroke = 22
   const radius = (size - stroke) / 2
   const circumference = 2 * Math.PI * radius
   const center = size / 2
@@ -124,7 +124,7 @@ export function HomeInsight({
 
   if (loading) {
     return (
-      <section className="border-border bg-card rounded-[20px] border px-4 py-8 text-center">
+      <section className="border-border bg-card rounded-[28px] border px-5 py-16 text-center">
         <p className="text-muted text-sm font-medium">
           이번 달 인사이트를 불러오고 있어요.
         </p>
@@ -134,9 +134,9 @@ export function HomeInsight({
 
   if (!top) {
     return (
-      <section className="border-border bg-card rounded-[20px] border px-4 py-5">
-        <p className="text-muted text-[11px] font-bold">이번 달 인사이트</p>
-        <h2 className="mt-2 text-[19px] leading-snug font-extrabold tracking-tight">
+      <section className="border-border bg-card rounded-[28px] border px-5 py-8">
+        <p className="text-muted text-xs font-bold">이번 달 인사이트</p>
+        <h2 className="mt-2 text-2xl leading-snug font-extrabold tracking-tight">
           이번 달 지출이 아직 없어요
         </h2>
         <p className="text-muted mt-2 text-sm leading-relaxed">
@@ -149,37 +149,37 @@ export function HomeInsight({
   const comparison = insight.comparison
 
   return (
-    <div className="space-y-2.5">
-      <section className="border-border bg-card rounded-[20px] border px-4 pt-4 pb-3.5">
-        <div className="mb-1.5 flex items-center justify-between">
-          <p className="text-muted text-[11px] font-bold">이번 달 인사이트</p>
-          <span className="bg-accent/10 text-accent rounded-full px-2 py-0.5 text-[10px] font-bold">
+    <div className="space-y-3">
+      <section className="border-border bg-card rounded-[28px] border px-5 pt-5 pb-4">
+        <div className="mb-2 flex items-center justify-between">
+          <p className="text-muted text-xs font-bold">이번 달 인사이트</p>
+          <span className="bg-accent/10 text-accent rounded-full px-2.5 py-1 text-[11px] font-bold">
             최대 카테고리
           </span>
         </div>
-        <h2 className="mb-3.5 text-[19px] leading-snug font-extrabold tracking-tight">
+        <h2 className="mb-5 text-2xl leading-snug font-extrabold tracking-tight">
           이번 달, <em className="text-accent not-italic">{top.category}</em>에
           <br />
           제일 많이 썼어요
         </h2>
-        <div className="flex items-center gap-4">
-          <div className="relative size-32 shrink-0">
+        <div className="flex items-center gap-5">
+          <div className="relative size-[168px] shrink-0">
             <SpendDonut slices={slices} />
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-              <p className="text-accent text-[28px] leading-none font-extrabold tracking-tight">
+              <p className="text-accent text-4xl leading-none font-extrabold tracking-tight">
                 {formatShare(top.percent, top.amount)}
               </p>
-              <p className="mt-1 text-xs font-bold">{top.category}</p>
+              <p className="mt-1.5 text-sm font-bold">{top.category}</p>
             </div>
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-accent mb-1 text-[11px] font-bold">
+            <p className="text-accent mb-1 text-xs font-bold">
               1위 · {top.category}
             </p>
-            <p className="text-2xl font-extrabold tracking-tight">
+            <p className="text-3xl leading-none font-extrabold tracking-tight">
               {top.amount.toLocaleString()}원
             </p>
-            <p className="text-muted mt-1 text-xs font-medium">
+            <p className="text-muted mt-2 text-sm font-medium">
               전체 지출의{' '}
               <b className="text-foreground font-bold">
                 {formatShare(top.percent, top.amount)}
@@ -190,7 +190,7 @@ export function HomeInsight({
         {comparison && (
           <p
             className={cn(
-              'mt-3 rounded-xl border px-3 py-2.5 text-xs leading-relaxed font-medium',
+              'mt-4 rounded-2xl border px-3.5 py-3 text-sm leading-relaxed font-medium',
               comparison.trend === 'down'
                 ? 'border-income/25 bg-income/10'
                 : comparison.trend === 'up'
@@ -213,8 +213,8 @@ export function HomeInsight({
         )}
       </section>
 
-      <section className="border-border bg-card rounded-[18px] border px-3.5 pt-3.5 pb-1">
-        <h3 className="mb-1 flex items-baseline gap-1.5 text-[13px] font-bold">
+      <section className="border-border bg-card rounded-3xl border px-4 pt-4 pb-1">
+        <h3 className="mb-1 flex items-baseline gap-1.5 text-sm font-bold">
           카테고리 Top 3
           <span className="text-muted text-[10px] font-medium">금액 · 비율</span>
         </h3>
@@ -224,7 +224,7 @@ export function HomeInsight({
           return (
             <div
               key={item.category}
-              className="border-border flex items-center gap-2.5 border-b py-2.5 last:border-b-0"
+              className="border-border flex items-center gap-3 border-b py-3 last:border-b-0"
             >
               <span
                 className={cn(
@@ -240,8 +240,8 @@ export function HomeInsight({
                 <Icon size={14} strokeWidth={2.25} />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-bold">{item.category}</p>
-                <div className="bg-border mt-1.5 h-1.5 overflow-hidden rounded-full">
+                <p className="text-sm font-bold">{item.category}</p>
+                <div className="bg-border mt-2 h-2 overflow-hidden rounded-full">
                   <div
                     className={cn(
                       'h-full rounded-full',
@@ -254,7 +254,7 @@ export function HomeInsight({
                 </div>
               </div>
               <div className="shrink-0 text-right">
-                <p className="text-[13px] font-bold">
+                <p className="text-sm font-bold">
                   {item.amount.toLocaleString()}원
                 </p>
                 <p className="text-muted text-[11px] font-semibold">

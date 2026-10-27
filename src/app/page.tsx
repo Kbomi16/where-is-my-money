@@ -14,9 +14,10 @@ import { startOfMonth, endOfMonth, format } from 'date-fns'
 
 import { SummaryCards } from './_components/SummaryCards'
 import { TransactionList } from './_components/TransactionList'
-import { AddTransactionBtn } from './_components/AddTransactionBtn'
 import { MonthNavigator } from './_components/MonthNavigator'
 import { HomeInsight } from './_components/HomeInsight'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Calendar as CalendarIcon, List } from 'lucide-react'
 import { Transaction } from './type/transaction.type'
 import { TransactionCalendar } from './_components/TransactionCalendar'
 import { syncRecurringTransactions } from './utils/recurring'
@@ -115,38 +116,59 @@ export default function Home() {
     .reduce((acc, cur) => acc + cur.amount, 0)
 
   return (
-    <main className="base-layout min-h-[calc(100vh-4rem)] space-y-3 py-4 pb-8">
-      <MonthNavigator
-        currentDate={currentDate}
-        onChange={setCurrentDate}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
-      />
+    <main className="base-layout min-h-[calc(100vh-4rem)] py-4 pb-8">
+      <div className="mx-auto flex w-full max-w-lg flex-col gap-4">
+        <MonthNavigator
+          currentDate={currentDate}
+          onChange={setCurrentDate}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          showViewToggle={false}
+        />
 
-      <HomeInsight
-        items={items}
-        currentDate={currentDate}
-        loading={loading && items.length === 0}
-      />
+        <HomeInsight
+          items={items}
+          currentDate={currentDate}
+          loading={loading && items.length === 0}
+        />
 
-      <SummaryCards income={totalIncome} expense={totalExpense} />
+        <SummaryCards income={totalIncome} expense={totalExpense} />
 
-      <AddTransactionBtn />
-
-      <div ref={viewSectionRef} className="scroll-mt-20">
-        {loading && items.length === 0 ? (
-          <p className="text-muted py-16 text-center text-sm">
-            기록을 불러오고 있어요.
-          </p>
-        ) : viewMode === 'calendar' ? (
-          <TransactionCalendar currentDate={currentDate} items={monthItems} />
-        ) : monthItems.length === 0 ? (
-          <p className="text-muted py-16 text-center text-sm">
-            이번 달에는 기록이 없어요.
-          </p>
-        ) : (
-          <TransactionList items={monthItems} />
-        )}
+        <section ref={viewSectionRef} className="scroll-mt-20 space-y-2 pt-1">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-muted text-xs font-semibold">이번 달 내역</h2>
+            <Tabs
+              value={viewMode}
+              onValueChange={(value) =>
+                setViewMode(value as 'list' | 'calendar')
+              }
+            >
+              <TabsList className="h-8 bg-slate-200/50 dark:bg-slate-800/50">
+                <TabsTrigger value="list" className="px-2.5 text-xs">
+                  <List className="size-3.5" />
+                  리스트
+                </TabsTrigger>
+                <TabsTrigger value="calendar" className="px-2.5 text-xs">
+                  <CalendarIcon className="size-3.5" />
+                  달력
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+          {loading && items.length === 0 ? (
+            <p className="text-muted py-6 text-center text-sm">
+              기록을 불러오고 있어요.
+            </p>
+          ) : viewMode === 'calendar' ? (
+            <TransactionCalendar currentDate={currentDate} items={monthItems} />
+          ) : monthItems.length === 0 ? (
+            <p className="text-muted py-6 text-center text-sm">
+              이번 달에는 기록이 없어요.
+            </p>
+          ) : (
+            <TransactionList items={monthItems} />
+          )}
+        </section>
       </div>
     </main>
   )

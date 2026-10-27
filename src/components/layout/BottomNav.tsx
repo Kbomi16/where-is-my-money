@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Pencil, User } from 'lucide-react'
+import { Home, User } from 'lucide-react'
 import { useAuthStore } from '@/app/store/useAuthStore'
 import { cn } from '@/lib/utils'
 
@@ -14,14 +14,8 @@ const tabs = [
     isActive: (pathname: string) => pathname === '/',
   },
   {
-    href: '/record',
-    label: '수입지출 기록',
-    icon: Pencil,
-    isActive: (pathname: string) => pathname.startsWith('/record'),
-  },
-  {
     href: '/my',
-    label: '마이페이지',
+    label: '마이',
     icon: User,
     isActive: (pathname: string) => pathname.startsWith('/my'),
   },
@@ -39,7 +33,7 @@ export default function BottomNav() {
       aria-label="하단 메뉴"
       className="border-border bg-card fixed inset-x-0 bottom-0 z-50 border-t pb-[env(safe-area-inset-bottom)]"
     >
-      <div className="mx-auto grid h-[4.25rem] max-w-lg grid-cols-3">
+      <div className="mx-auto grid h-16 max-w-lg grid-cols-2">
         {tabs.map((tab) => {
           const active = tab.isActive(pathname)
           const Icon = tab.icon
@@ -49,7 +43,7 @@ export default function BottomNav() {
               href={tab.href}
               aria-current={active ? 'page' : undefined}
               className={cn(
-                'flex flex-col items-center justify-center gap-1 px-1 text-[10px] leading-tight font-semibold',
+                'flex flex-col items-center justify-center gap-1 text-xs font-semibold',
                 active ? 'text-accent' : 'text-muted',
               )}
             >
