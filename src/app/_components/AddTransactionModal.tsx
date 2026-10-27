@@ -90,6 +90,7 @@ type AddTransactionModalProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   editingItem?: Transaction | null
+  defaultType?: 'income' | 'expense'
 }
 
 const methods: Record<string, string> = {
@@ -108,6 +109,7 @@ export function AddTransactionModal({
   open,
   onOpenChange,
   editingItem = null,
+  defaultType = 'expense',
 }: AddTransactionModalProps) {
   const [loading, setLoading] = useState(false)
 
@@ -146,7 +148,7 @@ export function AddTransactionModal({
       })
     } else {
       setFormData({
-        type: 'expense',
+        type: defaultType,
         amount: 0,
         title: '',
         date: new Date(),
@@ -160,7 +162,7 @@ export function AddTransactionModal({
         recurringMonths: 12,
       })
     }
-  }, [editingItem, open])
+  }, [editingItem, open, defaultType])
 
   // ! formData 업데이트 핸들러
   const handleFieldChange = (field: keyof FormData, value: any) => {
