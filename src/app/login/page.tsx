@@ -16,21 +16,34 @@ import {
 } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
-import { Mail, Lock, Wallet, ArrowRight } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, Wallet, ArrowRight } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword((current) => !current)
+  }
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    await signIn(email, password)
+  }
+
+  const handleTestLogin = async () => {
+    await signIn('whereismymoney@test.com', 'Abcd1234')
+  }
+
+  const signIn = async (nextEmail: string, nextPassword: string) => {
     setIsLoading(true)
 
     try {
-      await signInWithEmailAndPassword(auth, email, password)
+      await signInWithEmailAndPassword(auth, nextEmail, nextPassword)
       toast.success('로그인 성공! 기록을 시작해보세요.')
       router.push('/')
     } catch (error: any) {
@@ -125,13 +138,26 @@ export default function LoginPage() {
                 <Lock className="text-muted group-focus-within:text-accent absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transition-colors" />
                 <Input
                   id="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="비밀번호를 입력하세요"
-                  className="bg-background/50 border-border/50 focus:border-accent focus:ring-accent/20 h-12 rounded-xl pl-10 transition-all"
+                  className="bg-background/50 border-border/50 focus:border-accent focus:ring-accent/20 h-12 rounded-xl pr-10 pl-10 transition-all"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+                <button
+                  type="button"
+                  onClick={handleTogglePasswordVisibility}
+                  className="text-muted hover:text-foreground focus-visible:ring-accent absolute top-1/2 right-3 -translate-y-1/2 rounded-md p-1 transition-colors outline-none focus-visible:ring-2"
+                  aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 표시'}
+                  aria-pressed={showPassword}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
               </div>
             </div>
           </CardContent>
@@ -144,6 +170,16 @@ export default function LoginPage() {
             >
               {isLoading ? '로그인 중...' : '로그인하기'}
               {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
+            </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="h-12 w-full rounded-xl text-base font-bold"
+              disabled={isLoading}
+              onClick={handleTestLogin}
+            >
+              테스트 계정으로 둘러보기
             </Button>
 
             <div className="text-center">
