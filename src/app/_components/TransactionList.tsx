@@ -1,27 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  CreditCard,
-  Wallet,
-  Utensils,
-  ShoppingBag,
-  Coffee,
-  MoreHorizontal,
-  Bus,
-  Stethoscope,
-  Coins,
-  Banknote,
-  Gift,
-  TrendingUp,
-  Receipt,
-  MessageSquare,
-  Pencil,
-  Trash2,
-  Gamepad2,
-  Users2,
-} from 'lucide-react'
+import { MessageSquare, Pencil, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { getCategoryIconSrc } from '../constants/categoryIcons'
 import { Transaction } from '../type/transaction.type'
 
 import {
@@ -38,22 +20,6 @@ import { deleteDoc, doc } from 'firebase/firestore'
 import { toast } from 'sonner'
 import app, { db } from '@/lib/firebase'
 import { AddTransactionModal } from './AddTransactionModal'
-
-const categoryIcons: Record<string, React.ReactNode> = {
-  식비: <Utensils size={20} />,
-  교통: <Bus size={20} />,
-  생활: <Receipt size={20} />,
-  의료: <Stethoscope size={20} />,
-  쇼핑: <ShoppingBag size={20} />,
-  카페: <Coffee size={20} />,
-  오락: <Gamepad2 size={20} />,
-  월급: <Banknote size={20} />,
-  부수입: <Coins size={20} />,
-  용돈: <Gift size={20} />,
-  금융수익: <TrendingUp size={20} />,
-  정산: <Users2 size={20} />,
-  기타: <MoreHorizontal size={20} />,
-}
 
 const methodColors: Record<
   string,
@@ -90,7 +56,13 @@ const methodColors: Record<
   etc: { label: '기타', bg: 'bg-slate-50', text: 'text-slate-500' },
 }
 
-export function TransactionList({ items }: { items: Transaction[] }) {
+export function TransactionList({
+  items,
+  className,
+}: {
+  items: Transaction[]
+  className?: string
+}) {
   const [openMemoId, setOpenMemoId] = useState<string | null>(null)
 
   const [isOpenEditModal, setIsOpenEditModal] = useState(false)
@@ -116,7 +88,7 @@ export function TransactionList({ items }: { items: Transaction[] }) {
   }
 
   return (
-    <div className="space-y-2 md:space-y-3">
+    <div className={cn('space-y-2 md:space-y-3', className)}>
       {items.length > 0 ? (
         items.map((item) => (
           <div
@@ -126,20 +98,12 @@ export function TransactionList({ items }: { items: Transaction[] }) {
             <div className="flex items-center justify-between p-3 md:p-4">
               <div className="flex items-center gap-3 md:gap-4">
                 {/* 카테고리 아이콘 */}
-                <div
-                  className={cn(
-                    'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors md:h-12 md:w-12 md:rounded-2xl',
-                    item.type === 'income'
-                      ? 'bg-emerald-50 text-emerald-500'
-                      : 'bg-slate-50 text-slate-500',
-                  )}
-                >
-                  {categoryIcons[item.category] ||
-                    (item.type === 'income' ? (
-                      <Wallet size={18} />
-                    ) : (
-                      <CreditCard size={18} />
-                    ))}
+                <div className="h-10 w-10 shrink-0 overflow-hidden rounded-xl md:h-12 md:w-12 md:rounded-2xl">
+                  <img
+                    src={getCategoryIconSrc(item.category)}
+                    alt=""
+                    className="size-full object-cover"
+                  />
                 </div>
 
                 <div className="min-w-0 space-y-0.5">

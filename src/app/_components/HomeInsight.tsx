@@ -1,31 +1,10 @@
 'use client'
 
 import { useMemo } from 'react'
-import {
-  Bus,
-  Coffee,
-  Gamepad2,
-  MoreHorizontal,
-  Receipt,
-  ShoppingBag,
-  Stethoscope,
-  Utensils,
-  type LucideIcon,
-} from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { getCategoryIconSrc } from '../constants/categoryIcons'
 import { Transaction } from '../type/transaction.type'
 import { getHomeSpendInsight } from '../utils/monthComparison'
-
-const CATEGORY_ICONS: Record<string, LucideIcon> = {
-  식비: Utensils,
-  교통: Bus,
-  생활: Receipt,
-  의료: Stethoscope,
-  쇼핑: ShoppingBag,
-  카페: Coffee,
-  오락: Gamepad2,
-  기타: MoreHorizontal,
-}
 
 const SLICE_COLORS = [
   'var(--accent)',
@@ -53,9 +32,8 @@ function SpendDonut({
 
   return (
     <svg
-      width={size}
-      height={size}
       viewBox={`0 0 ${size} ${size}`}
+      className="size-full"
       aria-hidden
     >
       <circle
@@ -157,13 +135,13 @@ export function HomeInsight({
             최대 카테고리
           </span>
         </div>
-        <h2 className="mb-5 text-2xl leading-snug font-extrabold tracking-tight">
+        <h2 className="mb-5 text-2xl leading-snug font-extrabold tracking-tight md:text-3xl">
           이번 달, <em className="text-accent not-italic">{top.category}</em>에
           <br />
           제일 많이 썼어요
         </h2>
         <div className="flex items-center gap-5">
-          <div className="relative size-[168px] shrink-0">
+          <div className="relative size-[168px] shrink-0 md:size-[200px]">
             <SpendDonut slices={slices} />
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
               <p className="text-accent text-4xl leading-none font-extrabold tracking-tight">
@@ -176,7 +154,7 @@ export function HomeInsight({
             <p className="text-accent mb-1 text-xs font-bold">
               1위 · {top.category}
             </p>
-            <p className="text-3xl leading-none font-extrabold tracking-tight">
+            <p className="text-3xl leading-none font-extrabold tracking-tight md:text-4xl">
               {top.amount.toLocaleString()}원
             </p>
             <p className="text-muted mt-2 text-sm font-medium">
@@ -219,7 +197,6 @@ export function HomeInsight({
           <span className="text-muted text-[10px] font-medium">금액 · 비율</span>
         </h3>
         {top3.map((item, index) => {
-          const Icon = CATEGORY_ICONS[item.category] ?? MoreHorizontal
           const width = top.amount > 0 ? (item.amount / top.amount) * 100 : 0
           return (
             <div
@@ -228,7 +205,7 @@ export function HomeInsight({
             >
               <span
                 className={cn(
-                  'flex size-[22px] shrink-0 items-center justify-center rounded-[7px] text-[11px] font-extrabold text-white',
+                  'grid size-[22px] shrink-0 place-items-center rounded-[7px] text-center text-[11px] leading-none font-extrabold text-white',
                   index === 0 && 'bg-accent',
                   index === 1 && 'bg-accent/70',
                   index === 2 && 'bg-accent/40',
@@ -236,8 +213,12 @@ export function HomeInsight({
               >
                 {index + 1}
               </span>
-              <span className="bg-background flex size-7 shrink-0 items-center justify-center rounded-[9px]">
-                <Icon size={14} strokeWidth={2.25} />
+              <span className="size-7 shrink-0 overflow-hidden rounded-[9px]">
+                <img
+                  src={getCategoryIconSrc(item.category)}
+                  alt=""
+                  className="size-full object-cover"
+                />
               </span>
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-bold">{item.category}</p>
