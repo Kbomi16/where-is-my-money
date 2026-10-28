@@ -41,11 +41,11 @@ export default function RecurringExpensesSection({
         updatedAt: serverTimestamp(),
       })
 
-      toast.success('반복 지출을 중단했어요.')
+      toast.success('반복을 중단했어요.')
       setTargetItem(null)
     } catch (error) {
       console.error('Failed to stop recurring expense:', error)
-      toast.error('반복 지출을 중단하지 못했어요.')
+      toast.error('반복을 중단하지 못했어요.')
     } finally {
       setIsStopping(false)
     }
@@ -56,10 +56,10 @@ export default function RecurringExpensesSection({
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-sm font-black text-slate-800 dark:text-slate-100">
-            매달 반복되는 지출
+            매달 반복되는 내역
           </p>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            정기적으로 기록한 지출을 한눈에 확인해요.
+            정기적으로 기록한 수입과 지출을 한눈에 확인해요.
           </p>
         </div>
         <div className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
@@ -74,7 +74,7 @@ export default function RecurringExpensesSection({
           </div>
         ) : recurringExpenses.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/60 px-4 py-4 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-950/40">
-            아직 정기 지출이 없어요.
+            아직 정기 내역이 없어요.
           </div>
         ) : (
           recurringExpenses.map((item) => (
@@ -88,10 +88,15 @@ export default function RecurringExpensesSection({
                     {item.title}
                   </p>
                   <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                    {item.category}
+                    {item.type === 'income' ? '수입' : '지출'} · {item.category}
                   </p>
                 </div>
-                <p className="shrink-0 text-sm font-black text-rose-500">
+                <p
+                  className={`shrink-0 text-sm font-black ${
+                    item.type === 'income' ? 'text-emerald-500' : 'text-rose-500'
+                  }`}
+                >
+                  {item.type === 'income' ? '+' : ''}
                   {item.amount.toLocaleString()}원
                 </p>
               </div>
@@ -133,7 +138,7 @@ export default function RecurringExpensesSection({
               정말 중단할까요?
             </AlertDialogTitle>
             <AlertDialogDescription className="text-sm">
-              반복 지출을 중단하면 앞으로는 이 항목이 자동으로 등록되지 않아요.
+              반복을 중단하면 앞으로는 이 항목이 자동으로 등록되지 않아요.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-4 flex-row gap-2">

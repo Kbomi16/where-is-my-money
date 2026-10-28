@@ -20,7 +20,6 @@ export async function syncRecurringTransactions({
   const recurringTemplates = transactions.filter(
     (item) =>
       item.userId === userId &&
-      item.type === 'expense' &&
       item.recurringEnabled &&
       !!item.date,
   )
