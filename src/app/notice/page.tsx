@@ -12,11 +12,41 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import PageHeader from '@/components/common/PageHeader'
+import PageLayout from '@/components/common/PageLayout'
 
 import { db } from '@/lib/firebase'
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore'
 import { Notice } from '../type/notice.type'
 import { useEffect, useState } from 'react'
+
+const formatNoticeContent = (html: string) =>
+  html
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu, '')
+    .replace(/class="([^"]*)"/g, (_, classes: string) => {
+      if (
+        classes.includes('bg-yellow') ||
+        classes.includes('text-yellow') ||
+        classes.includes('underline')
+      ) {
+        return ''
+      }
+      if (classes.includes('border-b')) return 'class="notice-em"'
+      if (classes.includes('list-decimal') || classes.includes('list-none')) {
+        return 'class="notice-steps"'
+      }
+      if (classes.includes('list-disc')) return 'class="notice-points"'
+      if (classes.includes('italic')) return 'class="notice-note"'
+      if (classes.includes('font-bold') && /mb-[0-9]/.test(classes)) {
+        return 'class="notice-label"'
+      }
+      if (classes.includes('rounded-2xl') || classes.includes('rounded-xl')) {
+        return 'class="notice-card"'
+      }
+      return ''
+    })
+    .replace(/>\s{2,}/g, '>')
+    .replace(/[ \t]{2,}/g, ' ')
 
 const isWithinAWeek = (dateString: string) => {
   try {
@@ -62,26 +92,19 @@ export default function NoticePage() {
   )
 
   return (
-    <div className="base-layout mx-auto min-h-[calc(100vh-64px)] max-w-4xl px-4 py-8 lg:py-16">
-      {/* 1. 헤더 섹션 */}
-      <div className="mb-10 text-center md:text-left">
-        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 shadow-sm ring-1 ring-blue-100/50 md:mx-0 dark:bg-blue-950/40 dark:text-blue-400 dark:ring-blue-900/30">
-          <Megaphone size={26} />
-        </div>
-        <h1 className="text-3xl font-black tracking-tight text-slate-900 md:text-4xl dark:text-slate-50">
-          공지사항
-        </h1>
-        <p className="mt-2.5 text-sm text-slate-500 md:text-base dark:text-slate-400">
-          서비스의 새로운 소식과 안내를 전해드립니다.
-        </p>
-      </div>
+    <PageLayout>
+      <PageHeader
+        icon={Megaphone}
+        title="공지사항"
+        description="서비스의 새로운 소식과 안내를 전해드립니다."
+      />
 
       {/* 2. 검색 바 */}
       <div className="group relative mb-8">
         <Search className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-blue-500 dark:text-slate-500 dark:group-focus-within:text-blue-400" />
         <Input
           placeholder="궁금한 소식을 검색해보세요"
-          className="h-14 rounded-2xl border-slate-200 bg-white pr-12 pl-12 shadow-sm transition-all focus-visible:border-transparent focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus-visible:ring-blue-400"
+          className="h-14 rounded-2xl border-slate-200 bg-white pr-12 pl-12 shadow-none transition-all focus-visible:border-transparent focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus-visible:ring-blue-400"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -98,7 +121,7 @@ export default function NoticePage() {
       </div>
 
       {/* 3. 공지사항 리스트 */}
-      <div className="rounded-3xl border border-slate-100 bg-white p-2 shadow-sm backdrop-blur-sm dark:border-slate-800/60 dark:bg-slate-900/40">
+      <div className="rounded-3xl border border-slate-100 bg-white p-2 backdrop-blur-sm dark:border-slate-800/60 dark:bg-slate-900/40">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 text-slate-400 dark:text-slate-500">
             <Loader2 className="mb-4 h-8 w-8 animate-spin text-blue-500 dark:text-blue-400" />
@@ -148,10 +171,12 @@ export default function NoticePage() {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="p-0">
-                    <div className="border-t border-slate-100/50 bg-slate-50/50 px-5 py-6 dark:border-slate-800/40 dark:bg-slate-950/30">
+                    <div className="border-t border-slate-100/70 bg-slate-50/70 px-4 py-4 md:px-5 dark:border-slate-800/50 dark:bg-slate-950/40">
                       <div
-                        className="notice-content prose dark:prose-invert prose-slate dark:prose-neutral prose-a:text-blue-600 dark:prose-a:text-blue-400 hover:prose-a:underline max-w-none text-sm leading-relaxed text-slate-600 md:text-base dark:text-slate-300"
-                        dangerouslySetInnerHTML={{ __html: notice.content }}
+                        className="notice-content"
+                        dangerouslySetInnerHTML={{
+                          __html: formatNoticeContent(notice.content),
+                        }}
                       />
                     </div>
                   </AccordionContent>
@@ -173,6 +198,6 @@ export default function NoticePage() {
           </div>
         )}
       </div>
-    </div>
+    </PageLayout>
   )
 }

@@ -31,6 +31,13 @@ export default function BottomNav() {
   const { user } = useAuthStore()
   const pathname = usePathname()
 
+  const handleHomeClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (pathname !== '/') return
+
+    event.preventDefault()
+    window.scrollTo({ top: 0, behavior: 'auto' })
+  }
+
   if (!user) return null
   if (pathname === '/login' || pathname === '/signup') return null
 
@@ -47,6 +54,7 @@ export default function BottomNav() {
             <Link
               key={tab.href}
               href={tab.href}
+              onClick={tab.href === '/' ? handleHomeClick : undefined}
               aria-current={active ? 'page' : undefined}
               className={cn(
                 'flex flex-col items-center justify-center gap-1 text-xs font-semibold',

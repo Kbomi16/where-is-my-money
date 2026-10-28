@@ -40,9 +40,9 @@ export default function RootLayout({
       >
         <AuthProvider>
           <Header />
-          <div className="pb-20">
+          <div>
             <AuthGuard>
-              <div className="min-h-screen">{children}</div>
+              <div className="min-h-[calc(100vh-3.5rem)]">{children}</div>
             </AuthGuard>
             <Footer />
           </div>

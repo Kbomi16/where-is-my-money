@@ -61,7 +61,7 @@ export function MonthNavigator({
   }
 
   return (
-    <section className="flex flex-col gap-2 rounded-2xl border border-white/20 bg-white/40 p-2 shadow-sm backdrop-blur-md sm:flex-row sm:items-center sm:justify-between dark:bg-slate-900/40">
+    <section className="border-border bg-card flex flex-col gap-2 rounded-2xl border p-2 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex min-w-0 items-center justify-center gap-1 sm:justify-start">
         <Button
           variant="ghost"
