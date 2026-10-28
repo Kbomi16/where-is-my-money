@@ -58,67 +58,63 @@ export default function MonthlyCompareSection({
     },
   ]
 
+  const comparisonText =
+    insight.percent !== null && insight.trend !== 'same'
+      ? `지출이 전달보다 ${insight.percent}% ${insight.trend === 'down' ? '줄었어요' : '늘었어요'}`
+      : insight.message
+
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
-      <div>
-        <p className="text-sm font-black text-slate-800 dark:text-slate-100">
-          {lastLabel}과 {currentLabel} 비교
-        </p>
-        <p
-          className={cn(
-            'mt-2 text-sm font-bold',
-              insight.trend === 'down' && 'text-income',
-              insight.trend === 'up' && 'text-expense',
-            (insight.trend === 'same' || insight.trend === 'empty') &&
-              'text-slate-500 dark:text-slate-400',
-          )}
-        >
-          {insight.percent !== null && insight.trend !== 'same' ? (
-            <>
-              전달보다{' '}
-              <span className="text-xl font-black tracking-tight">
-                {insight.percent}%
-              </span>{' '}
-              {insight.trend === 'down' ? '줄었어요.' : '늘었어요.'}
-            </>
-          ) : (
-            insight.message
-          )}
-        </p>
-      </div>
+    <section className="border-border bg-card rounded-[28px] border px-5 pt-5 pb-4">
+      <p className="text-muted text-xs font-bold">전달과 비교</p>
+      <h2 className="mt-1 text-lg font-extrabold tracking-tight">
+        {lastLabel}과 {currentLabel}
+      </h2>
+      <p
+        className={cn(
+          'mt-1 text-sm font-medium',
+          insight.trend === 'down' && 'text-income',
+          insight.trend === 'up' && 'text-expense',
+          (insight.trend === 'same' || insight.trend === 'empty') &&
+            'text-muted',
+        )}
+      >
+        {comparisonText}
+      </p>
 
       {loading ? (
-        <div className="mt-6 rounded-2xl border border-slate-100 bg-slate-50/70 px-4 py-16 text-center text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-950/40">
-          불러오는 중...
-        </div>
+        <p className="text-muted py-16 text-center text-sm">
+          비교를 불러오고 있어요.
+        </p>
       ) : (
-        <div className="mt-6 h-64 w-full">
+        <div className="mt-4 h-56 w-full md:h-72">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} barGap={8} barCategoryGap="28%">
               <CartesianGrid
                 strokeDasharray="3 3"
                 vertical={false}
-                stroke="#e2e8f0"
+                stroke="var(--border)"
               />
               <XAxis
                 dataKey="name"
                 tickLine={false}
                 axisLine={false}
-                tick={{ fill: '#64748b', fontSize: 12, fontWeight: 700 }}
+                tick={{ fill: 'var(--foreground)', fontSize: 12, fontWeight: 700 }}
               />
               <YAxis
                 tickLine={false}
                 axisLine={false}
-                tick={{ fill: '#94a3b8', fontSize: 11 }}
+                tick={{ fill: 'var(--muted)', fontSize: 11 }}
                 tickFormatter={formatAxis}
                 width={42}
               />
               <Tooltip
-                cursor={{ fill: 'rgba(148, 163, 184, 0.08)' }}
+                cursor={{ fill: 'color-mix(in srgb, var(--muted) 16%, transparent)' }}
                 formatter={(value) => formatWon(Number(value ?? 0))}
                 contentStyle={{
                   borderRadius: 16,
-                  border: '1px solid #e2e8f0',
+                  border: '1px solid var(--border)',
+                  background: 'var(--card)',
+                  color: 'var(--foreground)',
                   fontSize: 12,
                   fontWeight: 600,
                 }}
@@ -130,7 +126,7 @@ export default function MonthlyCompareSection({
               <Bar
                 dataKey="last"
                 name={lastLabel}
-                fill="#94a3b8"
+                fill="var(--muted)"
                 radius={[8, 8, 0, 0]}
                 maxBarSize={42}
                 isAnimationActive={false}
@@ -138,7 +134,7 @@ export default function MonthlyCompareSection({
               <Bar
                 dataKey="current"
                 name={currentLabel}
-                fill="#1677ff"
+                fill="var(--accent)"
                 radius={[8, 8, 0, 0]}
                 maxBarSize={42}
                 isAnimationActive={false}
@@ -147,6 +143,6 @@ export default function MonthlyCompareSection({
           </ResponsiveContainer>
         </div>
       )}
-    </div>
+    </section>
   )
 }

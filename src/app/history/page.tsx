@@ -5,6 +5,7 @@ import { MonthNavigator } from '../_components/MonthNavigator'
 import { TransactionCalendar } from '../_components/TransactionCalendar'
 import { TransactionList } from '../_components/TransactionList'
 import { useMonthTransactions } from '../hooks/useMonthTransactions'
+import PageLayout from '@/components/common/PageLayout'
 
 export default function HistoryPage() {
   const [currentDate, setCurrentDate] = useState(new Date())
@@ -12,9 +13,9 @@ export default function HistoryPage() {
   const { monthItems, loading } = useMonthTransactions(currentDate)
 
   return (
-    <main className="base-layout min-h-[calc(100vh-4rem)] py-4 pb-8">
-      <div className="mx-auto flex w-full max-w-lg flex-col gap-4">
-        <h1 className="px-1 text-lg font-bold">내역</h1>
+    <PageLayout>
+      <div className="flex flex-col gap-4 md:gap-6">
+        <h1 className="px-1 text-lg font-bold md:text-3xl">내역</h1>
         <MonthNavigator
           currentDate={currentDate}
           onChange={setCurrentDate}
@@ -32,9 +33,12 @@ export default function HistoryPage() {
             이번 달 내역이 없어요.
           </p>
         ) : (
-          <TransactionList items={monthItems} />
+          <TransactionList
+            items={monthItems}
+            className="md:grid md:grid-cols-2 md:gap-3 md:space-y-0"
+          />
         )}
       </div>
-    </main>
+    </PageLayout>
   )
 }

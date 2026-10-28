@@ -57,9 +57,9 @@ export function TransactionCalendar({
   }, [selectedDate, items])
 
   return (
-    <div className="flex w-full flex-col gap-6 lg:flex-row">
+    <div className="flex w-full flex-col items-start gap-6 md:flex-row">
       {/* 달력 영역 */}
-      <div className="w-full flex-1 overflow-hidden rounded-3xl border border-slate-100 bg-white p-2 shadow-sm md:p-6 dark:border-slate-800 dark:bg-slate-900">
+      <div className="w-full min-w-0 flex-1 overflow-hidden rounded-3xl border border-slate-100 bg-white p-2 shadow-sm md:p-6 dark:border-slate-800 dark:bg-slate-900">
         <Calendar
           mode="single"
           locale={ko}
@@ -145,7 +145,7 @@ export function TransactionCalendar({
       </div>
 
       {/* 하단 리스트 영역 */}
-      <div className="flex w-full flex-col gap-4 lg:w-96">
+      <div className="flex w-full shrink-0 flex-col gap-4 md:w-80 lg:w-96">
         <div className="flex items-center justify-between px-2">
           <h3 className="text-lg font-black text-slate-800 dark:text-slate-100">
             {selectedDate
