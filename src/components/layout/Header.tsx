@@ -1,58 +1,36 @@
 'use client'
 
-import { Wallet, Bell, User, Megaphone } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Megaphone } from 'lucide-react'
 import Link from 'next/link'
-import { Avatar } from 'radix-ui'
 import { useAuthStore } from '@/app/store/useAuthStore'
-import Image from 'next/image'
-import { GHOST_IMAGES } from '@/app/constants/ghosts'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 
 export default function Header() {
   const { user } = useAuthStore()
-  const router = useRouter()
-
-  const userProfile =
-    GHOST_IMAGES.find((ghost) => ghost.id === user?.photoURL) || GHOST_IMAGES[0]
 
   if (!user) return null
 
   return (
     <header className="border-border bg-background/80 sticky top-0 z-50 w-full border-b backdrop-blur-md">
-      <div className="base-layout flex h-16 items-center justify-between">
-        <Link href={'/'} className="flex items-center gap-2">
-          <Wallet className="text-accent h-6 w-6" />
-          <span className="text-xl font-bold tracking-tight">
-            내 돈 다 어디갔니?
+      <div className="base-layout flex h-14 items-center justify-between">
+        <Link href="/" className="flex min-w-0 items-center gap-2.5">
+          <img
+            src="/imgs/logo.png"
+            alt="내 돈 어디갔지"
+            width={36}
+            height={36}
+            className="size-9 shrink-0 rounded-xl object-contain"
+          />
+          <span className="truncate text-[15px] font-bold tracking-tight">
+            내 돈 어디갔지
           </span>
         </Link>
-        <div className="flex items-center gap-4">
-          <button
-            className="hover:bg-accent/10 rounded-full p-2 transition-all duration-300"
-            onClick={() => router.push('/notice')}
-          >
-            <Megaphone className="text-accent size-5 cursor-pointer" />
-          </button>
-          <Link
-            href={'/my'}
-            className="bg-accent/20 border-accent/30 flex h-8 w-8 items-center justify-center rounded-full border"
-          >
-            {userProfile ? (
-              <Image
-                src={userProfile.src}
-                alt="User Avatar"
-                width={40}
-                height={40}
-                priority
-                className="rounded-full"
-              />
-            ) : (
-              <User className="text-accent h-4 w-4" />
-            )}
-          </Link>
-        </div>
+        <Link
+          href="/notice"
+          className="border-border bg-card flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-bold"
+        >
+          <Megaphone className="text-accent size-4" />
+          공지
+        </Link>
       </div>
     </header>
   )

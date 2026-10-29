@@ -9,6 +9,8 @@ import { collection, onSnapshot, query, where } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { LogOut, User } from 'lucide-react'
+import PageHeader from '@/components/common/PageHeader'
+import PageLayout from '@/components/common/PageLayout'
 import AccountSection from './_components/AccountSection'
 import ProfileSection from './_components/ProfileSection'
 import RecurringExpensesSection from './_components/RecurringExpensesSection'
@@ -43,7 +45,7 @@ export default function MyPage() {
         })) as Transaction[]
 
         const recurringItems = items
-          .filter((item) => item.type === 'expense' && item.recurringEnabled)
+          .filter((item) => item.recurringEnabled)
           .sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))
 
         setRecurringExpenses(recurringItems)
@@ -72,22 +74,14 @@ export default function MyPage() {
   if (!user) return null
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 base-layout min-h-[calc(100vh-64px)] py-6 duration-500 lg:py-12">
-      <div className="mx-auto pb-10">
-        <div className="flex flex-col items-start text-center">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
-            <User size={28} className="text-accent" />
-          </div>
-        </div>
-        <h1 className="text-3xl font-black tracking-tight text-slate-900 md:text-4xl dark:text-slate-50">
-          마이페이지
-        </h1>
-        <p className="mt-3 text-slate-500 dark:text-slate-400">
-          {user?.displayName}님의 정보를 확인하고 관리해보세요.
-        </p>
-      </div>
+    <PageLayout className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <PageHeader
+        icon={User}
+        title="마이페이지"
+        description={`${user.displayName}님의 정보를 확인하고 관리해보세요.`}
+      />
 
-      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:gap-8">
+      <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] md:gap-8">
         <div className="order-1 flex flex-col gap-6">
           <ProfileSection user={user} />
           <AccountSection user={user} />
@@ -110,6 +104,6 @@ export default function MyPage() {
           />
         </div>
       </div>
-    </div>
+    </PageLayout>
   )
 }

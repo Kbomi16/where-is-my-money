@@ -83,3 +83,141 @@ body {
   font-family: var(--font-sans), sans-serif;
   transition: all 0.2s ease-in-out;
 }
+
+.notice-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #526170;
+}
+
+.notice-content p,
+.notice-content h1,
+.notice-content h2 {
+  margin: 0;
+}
+
+.notice-content h1,
+.notice-content h2,
+.notice-content .notice-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+.notice-content strong {
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.notice-content .notice-em {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.notice-content .notice-card {
+  border: 1px solid var(--border);
+  background: var(--card);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.notice-content .notice-card > p:not(.notice-label) {
+  margin-top: 8px;
+}
+
+.notice-content .notice-steps,
+.notice-content .notice-points {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notice-content .notice-steps {
+  counter-reset: notice;
+}
+
+.notice-content .notice-steps > li,
+.notice-content .notice-points > li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.notice-content .notice-steps:not(:has(> li > span)) > li::before,
+.notice-content .notice-steps > li > span:first-child {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: 7px;
+  background: var(--accent);
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.notice-content .notice-steps:not(:has(> li > span)) > li::before {
+  counter-increment: notice;
+  content: counter(notice);
+}
+
+.notice-content .notice-steps > li:nth-child(2)::before,
+.notice-content .notice-steps > li:nth-child(2) > span:first-child {
+  background: color-mix(in srgb, var(--accent) 70%, white);
+}
+
+.notice-content .notice-steps > li:nth-child(n + 3)::before,
+.notice-content .notice-steps > li:nth-child(n + 3) > span:first-child {
+  background: color-mix(in srgb, var(--accent) 45%, white);
+}
+
+.notice-content .notice-points > li::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  margin-top: 8px;
+  flex: none;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.notice-content a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--accent);
+  border-radius: 16px;
+  padding: 12px 16px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.notice-content a::after {
+  content: '→';
+}
+
+.notice-content .notice-note {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.notice-content span:empty {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .notice-content {
+    color: #d4d4d8;
+  }
+}

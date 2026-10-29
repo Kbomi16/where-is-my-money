@@ -20,8 +20,9 @@ import {
 type MonthNavigatorProps = {
   currentDate: Date
   onChange: (date: Date) => void
-  viewMode: 'list' | 'calendar'
-  setViewMode: (mode: 'list' | 'calendar') => void
+  viewMode?: 'list' | 'calendar'
+  setViewMode?: (mode: 'list' | 'calendar') => void
+  showViewToggle?: boolean
 }
 
 export function MonthNavigator({
@@ -29,6 +30,7 @@ export function MonthNavigator({
   onChange,
   viewMode,
   setViewMode,
+  showViewToggle = true,
 }: MonthNavigatorProps) {
   const nextMonth = () => onChange(addMonths(currentDate, 1))
   const prevMonth = () => onChange(subMonths(currentDate, 1))
@@ -59,7 +61,7 @@ export function MonthNavigator({
   }
 
   return (
-    <section className="flex flex-col gap-2 rounded-2xl border border-white/20 bg-white/40 p-2 shadow-sm backdrop-blur-md sm:flex-row sm:items-center sm:justify-between dark:bg-slate-900/40">
+    <section className="border-border bg-card flex flex-col gap-2 rounded-2xl border p-2 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex min-w-0 items-center justify-center gap-1 sm:justify-start">
         <Button
           variant="ghost"
@@ -143,9 +145,10 @@ export function MonthNavigator({
         </Button>
       </div>
 
+      {showViewToggle && viewMode && setViewMode && (
       <Tabs
         value={viewMode}
-        onValueChange={(v) => setViewMode(v as 'list' | 'calendar')}
+        onValueChange={(value) => setViewMode(value as 'list' | 'calendar')}
         className="w-full sm:w-auto"
       >
         <TabsList className="grid h-9 w-full shrink-0 grid-cols-2 rounded-xl bg-slate-200/50 sm:w-40 dark:bg-slate-800/50">
@@ -165,6 +168,7 @@ export function MonthNavigator({
           </TabsTrigger>
         </TabsList>
       </Tabs>
+      )}
     </section>
   )
 }

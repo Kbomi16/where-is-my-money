@@ -1,41 +1,61 @@
-import { ArrowUpCircle, ArrowDownCircle, History } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
+
+type ExpenseComparison = {
+  percent: number | null
+  trend: 'up' | 'down' | 'same' | 'empty'
+}
 
 type SummaryProps = {
   income: number
   expense: number
+  expenseComparison?: ExpenseComparison | null
 }
 
-export function SummaryCards({ income, expense }: SummaryProps) {
-  return (
-    <section className="grid gap-4 md:grid-cols-2">
-      <Card className="rounded-3xl border-slate-200 bg-white p-5 shadow-none dark:border-slate-800 dark:bg-slate-900">
-        <CardHeader className="flex flex-row items-center justify-between px-0 pb-2">
-          <CardTitle className="text-muted text-sm font-medium">
-            이번 달 수입
-          </CardTitle>
-          <ArrowUpCircle className="text-income h-4 w-4" />
-        </CardHeader>
-        <CardContent className="px-0">
-          <div className="text-income text-2xl font-bold">
-            + {income.toLocaleString()} 원
-          </div>
-        </CardContent>
-      </Card>
+export function SummaryCards({
+  income,
+  expense,
+  expenseComparison,
+}: SummaryProps) {
+  const showComparison =
+    expenseComparison &&
+    expenseComparison.trend !== 'empty' &&
+    (expenseComparison.trend === 'same' || expenseComparison.percent !== null)
 
-      <Card className="rounded-3xl border-slate-200 bg-white p-5 shadow-none dark:border-slate-800 dark:bg-slate-900">
-        <CardHeader className="flex flex-row items-center justify-between px-0 pb-2">
-          <CardTitle className="text-muted text-sm font-medium">
-            이번 달 지출
-          </CardTitle>
-          <ArrowDownCircle className="text-expense h-4 w-4" />
-        </CardHeader>
-        <CardContent className="px-0">
-          <div className="text-expense text-2xl font-bold">
-            - {expense.toLocaleString()} 원
-          </div>
-        </CardContent>
-      </Card>
+  return (
+    <section className="grid grid-cols-2 gap-2">
+      <div className="border-border bg-card rounded-2xl border px-3.5 py-3">
+        <p className="text-muted text-[11px] font-semibold">이번 달 수입</p>
+        <p className="text-income mt-1 text-[15px] font-extrabold tracking-tight md:text-xl">
+          + {income.toLocaleString()}
+        </p>
+      </div>
+      <div className="border-border bg-card rounded-2xl border px-3.5 py-3">
+        <p className="text-muted text-[11px] font-semibold">이번 달 지출</p>
+        <p className="text-expense mt-1 text-[15px] font-extrabold tracking-tight md:text-xl">
+          − {expense.toLocaleString()}
+        </p>
+        {showComparison && expenseComparison.trend === 'same' && (
+          <p className="text-muted mt-1 text-[11px] font-medium">
+            전달과 같아요
+          </p>
+        )}
+        {showComparison && expenseComparison.trend !== 'same' && (
+          <p className="text-muted mt-1 text-[11px] leading-snug font-medium">
+            전달보다{' '}
+            <span
+              className={cn(
+                'font-bold',
+                expenseComparison.trend === 'down'
+                  ? 'text-income'
+                  : 'text-expense',
+              )}
+            >
+              {expenseComparison.percent}%
+            </span>{' '}
+            {expenseComparison.trend === 'down' ? '줄었어요' : '늘었어요'}
+          </p>
+        )}
+      </div>
     </section>
   )
 }

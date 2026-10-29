@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
+import BottomNav from '@/components/layout/BottomNav'
+import AddTransactionFab from '@/components/layout/AddTransactionFab'
 import AuthProvider from '@/components/layout/AuthProvider'
 import AuthGuard from '@/components/layout/AuthGuard'
 import { Toaster } from '@/components/ui/sonner'
@@ -38,10 +40,14 @@ export default function RootLayout({
       >
         <AuthProvider>
           <Header />
-          <AuthGuard>
-            <div className="min-h-screen">{children}</div>
-          </AuthGuard>
-          <Footer />
+          <div>
+            <AuthGuard>
+              <div className="min-h-[calc(100vh-3.5rem)]">{children}</div>
+            </AuthGuard>
+            <Footer />
+          </div>
+          <BottomNav />
+          <AddTransactionFab />
           <Toaster position="top-right" />
         </AuthProvider>
       </body>

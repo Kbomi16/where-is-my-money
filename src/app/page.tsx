@@ -1,157 +1,58 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { auth, db } from '@/lib/firebase'
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  onSnapshot,
-} from 'firebase/firestore'
-import { onAuthStateChanged } from 'firebase/auth'
-import { startOfMonth, endOfMonth, format } from 'date-fns'
-
+import { useState } from 'react'
+import { subMonths } from 'date-fns'
 import { SummaryCards } from './_components/SummaryCards'
-import { TransactionList } from './_components/TransactionList'
-import { AddTransactionBtn } from './_components/AddTransactionBtn'
 import { MonthNavigator } from './_components/MonthNavigator'
+import { HomeInsight } from './_components/HomeInsight'
 import MonthlyCompareSection from './_components/MonthlyCompareSection'
-import { Transaction } from './type/transaction.type'
-import { TransactionCalendar } from './_components/TransactionCalendar'
-import { syncRecurringTransactions } from './utils/recurring'
+import { useMonthTransactions } from './hooks/useMonthTransactions'
+import PageLayout from '@/components/common/PageLayout'
+import { getExpenseInsight, getMonthTotals } from './utils/monthComparison'
 
 export default function Home() {
-  const [items, setItems] = useState<Transaction[]>([])
-
-  const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState<any>(null)
-
-  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list')
-
-  // 현재 선택된 월 상태
   const [currentDate, setCurrentDate] = useState(new Date())
 
-  const viewSectionRef = useRef<HTMLDivElement>(null)
-  const isFirstViewMode = useRef(true)
+  const { items, loading, totalIncome, totalExpense } =
+    useMonthTransactions(currentDate)
 
-  useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser)
-      if (!currentUser) {
-        setItems([])
-        setLoading(false)
-      }
-    })
-    return () => unsubscribeAuth()
-  }, [])
-
-  useEffect(() => {
-    if (!user) return
-
-    setLoading(true)
-
-    const q = query(
-      collection(db, 'transactions'),
-      where('userId', '==', user.uid),
-      orderBy('date', 'desc'),
-      orderBy('createdAt', 'desc'),
-    )
-
-    const unsubscribeData = onSnapshot(
-      q,
-      async (snapshot) => {
-        const transactionData = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Transaction[]
-
-        await syncRecurringTransactions({
-          currentDate,
-          transactions: transactionData,
-          userId: user.uid,
-          firestoreDb: db,
-        })
-
-        setItems(transactionData)
-        setLoading(false)
-      },
-      (error) => {
-        console.error('Firestore error:', error)
-        setLoading(false)
-      },
-    )
-
-    return () => unsubscribeData()
-  }, [user, currentDate])
-
-  useEffect(() => {
-    if (isFirstViewMode.current) {
-      isFirstViewMode.current = false
-      return
-    }
-
-    viewSectionRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-    })
-  }, [viewMode])
-
-  const start = format(startOfMonth(currentDate), 'yyyy-MM-dd')
-  const end = format(endOfMonth(currentDate), 'yyyy-MM-dd')
-
-  const monthItems = items.filter(
-    (item) => item.date >= start && item.date <= end,
-  )
-
-  const statItems = monthItems.filter((item) => !item.isExclude)
-
-  const totalIncome = statItems
-    .filter((item) => item.type === 'income')
-    .reduce((acc, cur) => acc + cur.amount, 0)
-
-  const totalExpense = statItems
-    .filter((item) => item.type === 'expense')
-    .reduce((acc, cur) => acc + cur.amount, 0)
-
-  if (loading && monthItems.length === 0) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        데이터 로딩 중...
-      </div>
-    )
-  }
+  const lastMonthExpense = getMonthTotals(
+    items,
+    subMonths(currentDate, 1),
+  ).expense
+  const expenseComparison = getExpenseInsight(totalExpense, lastMonthExpense)
 
   return (
-    <main className="base-layout min-h-[calc(100vh-4rem)] space-y-6 py-6 pb-24">
-      <MonthlyCompareSection
-        items={items}
-        currentDate={currentDate}
-        loading={loading}
-      />
-
-      <div ref={viewSectionRef} className="scroll-mt-20 space-y-6">
+    <PageLayout>
+      <div className="flex flex-col gap-4 md:gap-6">
         <MonthNavigator
           currentDate={currentDate}
           onChange={setCurrentDate}
-          viewMode={viewMode}
-          setViewMode={setViewMode}
+          showViewToggle={false}
         />
 
-        <SummaryCards income={totalIncome} expense={totalExpense} />
+        <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] md:gap-6">
+          <HomeInsight
+            items={items}
+            currentDate={currentDate}
+            loading={loading && items.length === 0}
+          />
 
-        {viewMode === 'calendar' ? (
-          <TransactionCalendar currentDate={currentDate} items={monthItems} />
-        ) : monthItems.length === 0 ? (
-          <div className="py-20 text-center text-slate-400">
-            이번 달에는 기록이 없어요!
+          <div className="flex flex-col gap-4 md:gap-6">
+            <SummaryCards
+              income={totalIncome}
+              expense={totalExpense}
+              expenseComparison={expenseComparison}
+            />
+
+            <MonthlyCompareSection
+              items={items}
+              currentDate={currentDate}
+              loading={loading && items.length === 0}
+            />
           </div>
-        ) : (
-          <TransactionList items={monthItems} />
-        )}
+        </div>
       </div>
-
-      <AddTransactionBtn />
-    </main>
+    </PageLayout>
   )
 }

@@ -5,7 +5,6 @@ import { format, parseISO, addMonths } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import {
   CalendarIcon,
-  Plus,
   CreditCard,
   PencilLine,
   BanknoteArrowDown,
@@ -31,7 +30,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -90,6 +88,7 @@ type AddTransactionModalProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   editingItem?: Transaction | null
+  defaultType?: 'income' | 'expense'
 }
 
 const methods: Record<string, string> = {
@@ -108,6 +107,7 @@ export function AddTransactionModal({
   open,
   onOpenChange,
   editingItem = null,
+  defaultType = 'expense',
 }: AddTransactionModalProps) {
   const [loading, setLoading] = useState(false)
 
@@ -146,7 +146,7 @@ export function AddTransactionModal({
       })
     } else {
       setFormData({
-        type: 'expense',
+        type: defaultType,
         amount: 0,
         title: '',
         date: new Date(),
@@ -160,7 +160,7 @@ export function AddTransactionModal({
         recurringMonths: 12,
       })
     }
-  }, [editingItem, open])
+  }, [editingItem, open, defaultType])
 
   // ! formData 업데이트 핸들러
   const handleFieldChange = (field: keyof FormData, value: any) => {
@@ -169,8 +169,6 @@ export function AddTransactionModal({
       [field]: value,
       ...(field === 'type' && {
         category: '',
-        recurringEnabled: value === 'expense' ? prev.recurringEnabled : false,
-        recurringEndType: value === 'expense' ? prev.recurringEndType : 'none',
       }),
       ...(field === 'method' && value !== 'credit' && { installmentMonths: 1 }),
     }))
@@ -178,7 +176,7 @@ export function AddTransactionModal({
 
   const handleToggleRecurring = () => {
     if (editingItem?.recurringParentId) {
-      toast.error('이 달 내역은 반복 지출로 자동 등록됐어요.', {
+      toast.error('이 달 내역은 반복으로 자동 등록됐어요.', {
         description: '앞으로의 반복을 끄려면 마이페이지에서 중단하세요.',
       })
       return
@@ -267,18 +265,12 @@ export function AddTransactionModal({
         method: formData.type === 'expense' ? formData.method : null,
         memo: formData.memo || '',
         isExclude: formData.isExclude || false,
-        recurringEnabled:
-          formData.type === 'expense'
-            ? formData.recurringEnabled || false
-            : false,
-        recurringEndType:
-          formData.type === 'expense' && formData.recurringEnabled
-            ? formData.recurringEndType || 'none'
-            : 'none',
+        recurringEnabled: formData.recurringEnabled || false,
+        recurringEndType: formData.recurringEnabled
+          ? formData.recurringEndType || 'none'
+          : 'none',
         recurringMonths:
-          formData.type === 'expense' &&
-          formData.recurringEnabled &&
-          formData.recurringEndType === 'months'
+          formData.recurringEnabled && formData.recurringEndType === 'months'
             ? formData.recurringMonths || 12
             : null,
         userId: currentUser.uid,
@@ -370,17 +362,11 @@ export function AddTransactionModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        <Button className="bg-accent shadow-accent/40 hover:bg-accent/90 fixed right-6 bottom-6 z-50 h-14 w-14 rounded-full shadow-xl ring-4 ring-white transition-all hover:scale-110 active:scale-95 dark:ring-slate-950">
-          <Plus className="h-8 w-8 text-white" />
-        </Button>
-      </DialogTrigger>
-
-      {/* 
-        모바일: max-sm:h-full로 전체 화면을 채우고, 모달 전체가 위아래로 스크롤 (overflow-y-auto)
-        PC(sm 이상): 높이를 최대 85vh로 고정하고, 내부 구조를 flex-col로 배치 (sm:max-h-[85vh] sm:overflow-hidden)
+      {/*
+        모바일: 전체 화면.
+        PC: 넓은 카드. 금액은 위, 입력칸은 두 줄이라 세로 스크롤이 짧다.
       */}
-      <DialogContent className="w-full max-w-md gap-0 rounded-4xl border border-slate-100 bg-white p-0 shadow-2xl transition-all duration-300 max-sm:h-full max-sm:max-w-none max-sm:overflow-y-auto max-sm:rounded-none sm:flex sm:max-h-[85vh] sm:flex-col sm:overflow-hidden dark:border-slate-800 dark:bg-slate-950">
+      <DialogContent className="w-full max-w-md gap-0 rounded-4xl border border-slate-100 bg-white p-0 shadow-2xl max-sm:h-full max-sm:max-w-none max-sm:overflow-y-auto max-sm:rounded-none sm:flex sm:max-h-[calc(100vh-2rem)] sm:max-w-lg sm:flex-col sm:overflow-hidden md:max-w-3xl dark:border-slate-800 dark:bg-slate-950">
         {/* 금액 입력 영역 (PC에서는 고정 / 모바일에서는 상단에 자연스럽게 위치) */}
         <div
           className={cn(
@@ -432,16 +418,16 @@ export function AddTransactionModal({
               className="w-full"
               onValueChange={(v) => handleFieldChange('type', v)}
             >
-              <TabsList className="grid h-12 w-full grid-cols-2 rounded-2xl bg-slate-100 p-1 dark:bg-slate-800">
+              <TabsList className="group-data-[orientation=horizontal]/tabs:h-12 grid h-12 w-full grid-cols-2 rounded-2xl bg-slate-100 p-1 dark:bg-slate-800">
                 <TabsTrigger
                   value="expense"
-                  className="cursor-pointer rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:text-red-500 data-[state=active]:shadow-sm dark:data-[state=active]:bg-slate-900"
+                  className="h-full cursor-pointer rounded-xl font-bold focus-visible:ring-inset data-[state=active]:bg-white data-[state=active]:text-red-500 data-[state=active]:shadow-sm dark:data-[state=active]:bg-slate-900"
                 >
                   지출
                 </TabsTrigger>
                 <TabsTrigger
                   value="income"
-                  className="cursor-pointer rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:text-emerald-500 data-[state=active]:shadow-sm dark:data-[state=active]:bg-slate-900"
+                  className="h-full cursor-pointer rounded-xl font-bold focus-visible:ring-inset data-[state=active]:bg-white data-[state=active]:text-emerald-500 data-[state=active]:shadow-sm dark:data-[state=active]:bg-slate-900"
                 >
                   수입
                 </TabsTrigger>
@@ -584,6 +570,7 @@ export function AddTransactionModal({
                 </p>
               )}
 
+            <div className="grid grid-cols-1 items-start gap-5 md:grid-cols-2">
             <div className="space-y-2">
               <Label className="ml-1 flex items-center gap-1.5 text-xs font-black tracking-wider text-slate-400 uppercase md:text-sm">
                 <PencilLine size={12} /> 상세 메모
@@ -592,12 +579,12 @@ export function AddTransactionModal({
                 value={formData.memo}
                 onChange={(e) => handleFieldChange('memo', e.target.value)}
                 placeholder="예: 점심 식사, 친구와 함께"
-                className="focus-visible:ring-accent min-h-24 resize-none rounded-3xl border border-slate-100 bg-slate-50/50 p-4 font-medium focus-visible:ring-1 dark:border-slate-800 dark:bg-slate-900"
+                className="focus-visible:ring-accent min-h-24 resize-none rounded-3xl border border-slate-100 bg-slate-50/50 p-4 font-medium focus-visible:ring-1 md:min-h-40 dark:border-slate-800 dark:bg-slate-900"
               />
             </div>
 
-            {formData.type === 'expense' && (
-              <div className="space-y-3">
+            <div className="space-y-5">
+            <div className="space-y-3">
                 <div
                   onClick={handleToggleRecurring}
                   className={cn(
@@ -632,7 +619,9 @@ export function AddTransactionModal({
                         매달 반복하기
                       </span>
                       <span className="text-[11px] font-medium text-slate-400">
-                        매월 자동으로 같은 지출을 등록해요.
+                        {formData.type === 'income'
+                          ? '매월 자동으로 같은 수입을 등록해요.'
+                          : '매월 자동으로 같은 지출을 등록해요.'}
                       </span>
                     </div>
                   </div>
@@ -721,8 +710,7 @@ export function AddTransactionModal({
                     </div>
                   </div>
                 )}
-              </div>
-            )}
+            </div>
 
             <div
               onClick={() =>
@@ -778,6 +766,8 @@ export function AddTransactionModal({
                   )}
                 />
               </div>
+            </div>
+            </div>
             </div>
 
             <Button
