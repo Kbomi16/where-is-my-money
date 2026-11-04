@@ -366,7 +366,7 @@ export function AddTransactionModal({
         모바일: 전체 화면.
         PC: 넓은 카드. 금액은 위, 입력칸은 두 줄이라 세로 스크롤이 짧다.
       */}
-      <DialogContent className="w-full max-w-md gap-0 rounded-4xl border border-slate-100 bg-white p-0 shadow-2xl max-sm:h-full max-sm:max-w-none max-sm:overflow-y-auto max-sm:rounded-none sm:flex sm:max-h-[calc(100vh-2rem)] sm:max-w-lg sm:flex-col sm:overflow-hidden md:max-w-3xl dark:border-slate-800 dark:bg-slate-950">
+      <DialogContent className="w-full max-w-md gap-0 rounded-4xl border border-slate-100 bg-white p-0 max-sm:h-full max-sm:max-w-none max-sm:overflow-y-auto max-sm:rounded-none sm:flex sm:max-h-[calc(100vh-2rem)] sm:max-w-lg sm:flex-col sm:overflow-hidden md:max-w-3xl dark:border-slate-800 dark:bg-slate-950">
         {/* 금액 입력 영역 (PC에서는 고정 / 모바일에서는 상단에 자연스럽게 위치) */}
         <div
           className={cn(
@@ -411,7 +411,7 @@ export function AddTransactionModal({
           모바일: 기존 느낌 그대로 마이너스 마진(-mt-6) 유지하며 자연스럽게 흐름
           PC(sm 이상): 겹침을 해제하고 이 영역 내부에서만 독립 스크롤이 되도록 구성 (sm:flex-1 sm:overflow-y-auto sm:mt-0)
         */}
-        <div className="relative -mt-6 rounded-t-4xl bg-white p-8 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] sm:mt-0 sm:flex-1 sm:overflow-y-auto sm:rounded-none sm:shadow-none dark:bg-slate-950">
+        <div className="relative -mt-6 rounded-t-4xl bg-white p-8 sm:mt-0 sm:flex-1 sm:overflow-y-auto sm:rounded-none dark:bg-slate-950">
           <div className="space-y-5 pb-2">
             <Tabs
               value={formData.type || 'expense'}
@@ -460,7 +460,7 @@ export function AddTransactionModal({
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent
-                    className="z-110 w-auto rounded-3xl border border-slate-100 bg-white p-0 shadow-2xl dark:border-slate-800 dark:bg-slate-900"
+                    className="z-110 w-auto rounded-3xl border border-slate-100 bg-white p-0 dark:border-slate-800 dark:bg-slate-900"
                     align="center"
                   >
                     <Calendar
@@ -488,7 +488,7 @@ export function AddTransactionModal({
                   </SelectTrigger>
                   <SelectContent
                     position="popper"
-                    className="z-110 rounded-2xl border border-slate-100 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900"
+                    className="z-110 rounded-2xl border border-slate-100 bg-white dark:border-slate-800 dark:bg-slate-900"
                   >
                     {CATEGORIES[formData.type || 'expense'].map((cat) => (
                       <SelectItem key={cat} value={cat}>
@@ -513,7 +513,7 @@ export function AddTransactionModal({
                     </SelectTrigger>
                     <SelectContent
                       position="popper"
-                      className="z-110 rounded-2xl border border-slate-100 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900"
+                      className="z-110 rounded-2xl border border-slate-100 bg-white dark:border-slate-800 dark:bg-slate-900"
                     >
                       {Object.entries(methods).map(([key, label]) => (
                         <SelectItem key={key} value={key}>
@@ -544,7 +544,7 @@ export function AddTransactionModal({
                     </SelectTrigger>
                     <SelectContent
                       position="popper"
-                      className="z-110 rounded-2xl border border-slate-100 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900"
+                      className="z-110 rounded-2xl border border-slate-100 bg-white dark:border-slate-800 dark:bg-slate-900"
                     >
                       {INSTALLMENT_MONTH_OPTIONS.map((month) => (
                         <SelectItem key={month} value={String(month)}>
@@ -692,7 +692,7 @@ export function AddTransactionModal({
                           <SelectTrigger className="h-10 w-24 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold dark:border-slate-700 dark:bg-slate-900">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent className="rounded-2xl border border-slate-100 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900">
+                          <SelectContent className="rounded-2xl border border-slate-100 bg-white dark:border-slate-800 dark:bg-slate-900">
                             {Array.from(
                               { length: 24 },
                               (_, index) => index + 1,

@@ -61,7 +61,7 @@ export default function ProfileSection({ user }: { user: User }) {
         {/* 중앙 프리뷰 영역 */}
         <div className="flex justify-center py-4">
           <div className="group relative">
-            <div className="relative rounded-4xl bg-white p-6 shadow-[0_10px_40px_rgba(0,0,0,0.05)] transition-all duration-500 dark:bg-slate-800">
+            <div className="relative rounded-4xl bg-white p-6 transition-all duration-500 dark:bg-slate-800">
               <Image
                 key={previewGhost.id}
                 src={previewGhost.src}
@@ -71,7 +71,7 @@ export default function ProfileSection({ user }: { user: User }) {
                 className="object-contain"
               />
             </div>
-            <div className="bg-accent absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full px-4 py-1.5 text-xs font-bold text-white shadow-lg">
+            <div className="bg-accent absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full px-4 py-1.5 text-xs font-bold text-white">
               {user.displayName}
             </div>
           </div>

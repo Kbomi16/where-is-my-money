@@ -60,7 +60,7 @@ export default function BudgetPage() {
         }
       />
 
-      <section className="border-border bg-card rounded-[20px] border px-4 py-4 shadow-[0_6px_18px_rgba(44,62,80,0.05)]">
+      <section className="border-border bg-card rounded-[20px] border px-4 py-4">
         <p className="text-muted text-[11px] font-bold">
           {formatMonthLabel(today)} · 월 예산
         </p>

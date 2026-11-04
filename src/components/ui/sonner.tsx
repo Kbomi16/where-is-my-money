@@ -48,7 +48,7 @@ const sonnerStyles = `
     --sonner-toast-text: #111827;
     --sonner-toast-text-muted: #687280;
     --sonner-toast-border: #e5e7eb;
-    --sonner-toast-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.06);
+    --sonner-toast-shadow: none;
   }
 
   .dark {
@@ -56,7 +56,7 @@ const sonnerStyles = `
     --sonner-toast-text: #ffffff;
     --sonner-toast-text-muted: rgba(255, 255, 255, 0.7);
     --sonner-toast-border: rgba(255, 255, 255, 0.1);
-    --sonner-toast-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.25), 0 4px 6px -4px rgb(0 0 0 / 0.15);
+    --sonner-toast-shadow: none;
   }
 
   [data-sonner-toaster] [data-sonner-toast] {

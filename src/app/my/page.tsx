@@ -64,7 +64,7 @@ export default function MyPage() {
       <div className="grid grid-cols-1 items-start gap-3 md:grid-cols-2 md:gap-6">
       <Link
         href="/my/profile"
-        className="border-border bg-card hover:bg-accent/5 flex items-center gap-3 rounded-[20px] border p-3 shadow-[0_6px_18px_rgba(44,62,80,0.05)] transition-colors md:p-5"
+        className="border-border bg-card hover:bg-accent/5 flex items-center gap-3 rounded-[20px] border p-3 transition-colors md:p-5"
       >
         <span className="border-accent/20 bg-accent/10 flex size-14 shrink-0 items-center justify-center rounded-[18px] border-2">
           <Image

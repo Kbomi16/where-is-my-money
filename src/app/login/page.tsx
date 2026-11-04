@@ -90,9 +90,9 @@ export default function LoginPage() {
       <div className="bg-accent/5 absolute -top-[10%] -left-[10%] h-[40%] w-[40%] rounded-full blur-[120px]" />
       <div className="bg-income/5 absolute -right-[10%] -bottom-[10%] h-[40%] w-[40%] rounded-full blur-[120px]" />
 
-      <Card className="bg-card/60 w-full max-w-md border-none shadow-2xl backdrop-blur-xl">
+      <Card className="bg-card/60 w-full max-w-md border-none backdrop-blur-xl">
         <CardHeader className="space-y-3 pb-8 text-center">
-          <div className="bg-accent shadow-accent/30 mx-auto flex h-16 w-16 items-center justify-center rounded-2xl shadow-lg">
+          <div className="bg-accent mx-auto flex h-16 w-16 items-center justify-center rounded-2xl">
             <Wallet className="h-8 w-8 text-white" />
           </div>
           <div className="space-y-1">

@@ -117,9 +117,9 @@ export default function SignUpPage() {
       <div className="absolute -top-[15%] -right-[10%] h-[50%] w-[50%] rounded-full bg-[#1677ff]/10 blur-[120px]" />
       <div className="absolute -bottom-[10%] -left-[10%] h-[40%] w-[40%] rounded-full bg-[#1677ff]/5 blur-[120px]" />
 
-      <Card className="bg-card/60 w-full max-w-md border-none shadow-2xl backdrop-blur-xl">
+      <Card className="bg-card/60 w-full max-w-md border-none backdrop-blur-xl">
         <CardHeader className="space-y-3 pb-8 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#1677ff] shadow-lg shadow-[#1677ff]/30">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#1677ff]">
             <UserPlus className="h-8 w-8 text-white" />
           </div>
           <div className="space-y-1">
