@@ -29,7 +29,10 @@ export default function SettingsPage() {
 
   return (
     <MyShell className="gap-3">
-      <MyDetailHeader title="알림 · 테마" />
+      <MyDetailHeader
+        title="알림 · 테마"
+        description="알림과 화면 테마를 확인해요"
+      />
 
       <section className="border-border bg-card divide-border divide-y overflow-hidden rounded-[18px] border">
         <div className="flex items-center gap-3 px-3.5 py-3.5">

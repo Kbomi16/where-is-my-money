@@ -17,7 +17,10 @@ export default function HelpPage() {
 
   return (
     <MyShell className="gap-3">
-      <MyDetailHeader title="공지 · 도움말" />
+      <MyDetailHeader
+        title="공지 · 도움말"
+        description="안내와 문의는 여기서 봐요"
+      />
 
       <section className="border-border bg-card divide-border divide-y overflow-hidden rounded-[18px] border">
         <HubRow

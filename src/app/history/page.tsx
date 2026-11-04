@@ -5,6 +5,7 @@ import { MonthNavigator } from '../_components/MonthNavigator'
 import { TransactionCalendar } from '../_components/TransactionCalendar'
 import { TransactionList } from '../_components/TransactionList'
 import { useMonthTransactions } from '../hooks/useMonthTransactions'
+import PageHeader from '@/components/common/PageHeader'
 import PageLayout from '@/components/common/PageLayout'
 
 export default function HistoryPage() {
@@ -14,8 +15,11 @@ export default function HistoryPage() {
 
   return (
     <PageLayout>
+      <PageHeader
+        title="내역"
+        description="기록한 수입과 지출을 확인해요"
+      />
       <div className="flex flex-col gap-4 md:gap-6">
-        <h1 className="px-1 text-lg font-bold md:text-3xl">내역</h1>
         <MonthNavigator
           currentDate={currentDate}
           onChange={setCurrentDate}

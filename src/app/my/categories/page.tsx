@@ -20,10 +20,10 @@ export default function CategoriesPage() {
 
   return (
     <MyShell className="gap-3">
-      <MyDetailHeader title="카테고리" />
-      <p className="text-muted text-xs font-medium">
-        기록에 쓰는 기본 분류예요. 직접 추가하는 기능은 아직 없어요.
-      </p>
+      <MyDetailHeader
+        title="카테고리"
+        description="기록에 쓰는 기본 분류예요. 직접 추가는 아직 없어요."
+      />
 
       {groups.map((group) => (
         <section

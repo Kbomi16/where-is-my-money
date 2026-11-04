@@ -7,6 +7,7 @@ import { MonthNavigator } from './_components/MonthNavigator'
 import { HomeInsight } from './_components/HomeInsight'
 import MonthlyCompareSection from './_components/MonthlyCompareSection'
 import { useMonthTransactions } from './hooks/useMonthTransactions'
+import PageHeader from '@/components/common/PageHeader'
 import PageLayout from '@/components/common/PageLayout'
 import { getExpenseInsight, getMonthTotals } from './utils/monthComparison'
 
@@ -24,6 +25,7 @@ export default function Home() {
 
   return (
     <PageLayout>
+      <PageHeader title="홈" description="이번 달 소비를 한눈에 봐요" />
       <div className="flex flex-col gap-4 md:gap-6">
         <MonthNavigator
           currentDate={currentDate}

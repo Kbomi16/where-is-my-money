@@ -13,7 +13,10 @@ export default function ProfilePage() {
 
   return (
     <MyShell className="gap-6">
-      <MyDetailHeader title="프로필" />
+      <MyDetailHeader
+        title="프로필"
+        description="아바타와 계정 정보를 확인해요"
+      />
       <ProfileSection user={user} />
       <AccountSection user={user} />
     </MyShell>

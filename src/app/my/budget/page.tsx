@@ -48,6 +48,7 @@ export default function BudgetPage() {
     <MyShell className="gap-3">
       <MyDetailHeader
         title="예산 · 한도"
+        description="이번 달 지출과 한도를 봐요"
         action={
           <button
             type="button"

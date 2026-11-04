@@ -14,8 +14,13 @@ export default function MyShell({
   layoutClassName?: string
 }) {
   return (
-    <PageLayout className={cn('py-4 md:py-8', layoutClassName)}>
-      <div className={cn('mx-auto flex w-full max-w-lg flex-col', className)}>
+    <PageLayout className={layoutClassName}>
+      <div
+        className={cn(
+          'mx-auto flex w-full max-w-lg flex-col md:max-w-3xl',
+          className,
+        )}
+      >
         {children}
       </div>
     </PageLayout>

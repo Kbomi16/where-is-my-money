@@ -11,6 +11,7 @@ import { GHOST_IMAGES } from '@/app/constants/ghosts'
 import { CATEGORIES } from '@/app/constants/categories'
 import { useAuthStore } from '@/app/store/useAuthStore'
 import { auth } from '@/lib/firebase'
+import PageHeader from '@/components/common/PageHeader'
 import { Button } from '@/components/ui/button'
 import { HubRow } from './_components/HubRow'
 import MyShell from './_components/MyShell'
@@ -57,15 +58,13 @@ export default function MyPage() {
   const categoryHint = `${CATEGORIES.expense.slice(0, 3).join(' · ')} … 관리`
 
   return (
-    <MyShell layoutClassName="pt-3 pb-2 md:py-8">
-      <h1 className="text-[22px] font-extrabold tracking-tight">마이</h1>
-      <p className="text-muted mt-0.5 mb-3 text-[13px] font-semibold">
-        안녕하세요, {name}님 👋
-      </p>
+    <MyShell className="md:max-w-none">
+      <PageHeader title="마이" description={`안녕하세요, ${name}님 👋`} />
 
+      <div className="grid grid-cols-1 items-start gap-3 md:grid-cols-2 md:gap-6">
       <Link
         href="/my/profile"
-        className="border-border bg-card hover:bg-accent/5 mb-3 flex items-center gap-3 rounded-[20px] border p-3 shadow-[0_6px_18px_rgba(44,62,80,0.05)] transition-colors"
+        className="border-border bg-card hover:bg-accent/5 flex items-center gap-3 rounded-[20px] border p-3 shadow-[0_6px_18px_rgba(44,62,80,0.05)] transition-colors md:p-5"
       >
         <span className="border-accent/20 bg-accent/10 flex size-14 shrink-0 items-center justify-center rounded-[18px] border-2">
           <Image
@@ -89,6 +88,7 @@ export default function MyPage() {
         </span>
       </Link>
 
+      <div>
       <h2 className="text-muted mb-2 px-0.5 text-[11px] font-bold">
         계정 · 예산
       </h2>
@@ -162,6 +162,8 @@ export default function MyPage() {
       >
         로그아웃
       </Button>
+      </div>
+      </div>
     </MyShell>
   )
 }
