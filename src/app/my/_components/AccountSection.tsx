@@ -18,7 +18,7 @@ export default function AccountSection({ user }: { user: User }) {
           {/* 상단 헤더 부분 - 닉네임 강조 */}
           <div className="border-b border-[#1677ff]/10 bg-[#1677ff]/5 p-6">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1677ff] text-white shadow-lg shadow-[#1677ff]/20">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1677ff] text-white">
                 <MessageCircleQuestionMark className="size-6" />
               </div>
               <div>

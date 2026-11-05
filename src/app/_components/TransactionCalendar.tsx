@@ -59,7 +59,7 @@ export function TransactionCalendar({
   return (
     <div className="flex w-full flex-col items-start gap-6 md:flex-row">
       {/* 달력 영역 */}
-      <div className="w-full min-w-0 flex-1 overflow-hidden rounded-3xl border border-slate-100 bg-white p-2 shadow-sm md:p-6 dark:border-slate-800 dark:bg-slate-900">
+      <div className="w-full min-w-0 flex-1 overflow-hidden rounded-3xl border border-slate-100 bg-white p-2 md:p-6 dark:border-slate-800 dark:bg-slate-900">
         <Calendar
           mode="single"
           locale={ko}

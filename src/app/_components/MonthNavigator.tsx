@@ -84,7 +84,7 @@ export function MonthNavigator({
 
             <SelectContent
               position="popper"
-              className="max-h-40 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-2xl dark:bg-slate-800"
+              className="max-h-40 overflow-hidden rounded-2xl border border-slate-100 bg-white dark:bg-slate-800"
             >
               <div className="max-h-40 overflow-y-auto [ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {years.map((y) => (
@@ -108,7 +108,7 @@ export function MonthNavigator({
             </SelectTrigger>
             <SelectContent
               position="popper"
-              className="max-h-40 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-2xl dark:bg-slate-800"
+              className="max-h-40 overflow-hidden rounded-2xl border border-slate-100 bg-white dark:bg-slate-800"
             >
               <div className="max-h-40 overflow-y-auto [ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {months.map((m) => (

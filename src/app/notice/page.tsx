@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Search, Megaphone, AlertCircle, Loader2, X } from 'lucide-react'
+import { Search, AlertCircle, Loader2, X } from 'lucide-react'
 import {
   Accordion,
   AccordionContent,
@@ -93,14 +93,13 @@ export default function NoticePage() {
 
   return (
     <PageLayout>
+      <div className="mx-auto flex w-full max-w-lg flex-col md:max-w-3xl">
       <PageHeader
-        icon={Megaphone}
-        title="공지사항"
-        description="서비스의 새로운 소식과 안내를 전해드립니다."
+        title="공지"
+        description="새로운 소식과 안내를 모았어요"
       />
 
-      {/* 2. 검색 바 */}
-      <div className="group relative mb-8">
+      <div className="group relative mb-3 md:mb-5">
         <Search className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-blue-500 dark:text-slate-500 dark:group-focus-within:text-blue-400" />
         <Input
           placeholder="궁금한 소식을 검색해보세요"
@@ -197,6 +196,7 @@ export default function NoticePage() {
             </p>
           </div>
         )}
+      </div>
       </div>
     </PageLayout>
   )
