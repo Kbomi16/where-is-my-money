@@ -2,9 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import { collection, onSnapshot, query, where } from 'firebase/firestore'
-import { endOfMonth, format, startOfMonth } from 'date-fns'
 import { db } from '@/lib/firebase'
 import { Transaction } from '@/app/type/transaction.type'
+import {
+  filterMonthExpenses,
+  filterRecurring,
+  sumAmount,
+} from '../_lib/transactionMonth'
+
+export { filterMonthExpenses, filterRecurring, sumAmount }
 
 export function useUserTransactions(userId?: string | null) {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -46,27 +52,4 @@ export function useUserTransactions(userId?: string | null) {
   }, [userId])
 
   return { transactions, loading }
-}
-
-export function filterMonthExpenses(transactions: Transaction[], date: Date) {
-  const start = format(startOfMonth(date), 'yyyy-MM-dd')
-  const end = format(endOfMonth(date), 'yyyy-MM-dd')
-
-  return transactions.filter(
-    (item) =>
-      item.type === 'expense' &&
-      !item.isExclude &&
-      item.date >= start &&
-      item.date <= end,
-  )
-}
-
-export function filterRecurring(transactions: Transaction[]) {
-  return transactions
-    .filter((item) => item.recurringEnabled)
-    .sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))
-}
-
-export function sumAmount(items: Transaction[]) {
-  return items.reduce((sum, item) => sum + item.amount, 0)
 }

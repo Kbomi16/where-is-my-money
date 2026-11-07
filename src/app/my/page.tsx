@@ -16,12 +16,14 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { HubRow } from './_components/HubRow'
 import MyShell from './_components/MyShell'
+import { useMonthBudget } from './_hooks/useMonthBudget'
 import {
   filterMonthExpenses,
   filterRecurring,
   sumAmount,
   useUserTransactions,
 } from './_hooks/useUserTransactions'
+import { hubGoalDescription } from './_lib/budgetGoal'
 import {
   formatCompactAmount,
   maskEmail,
@@ -33,6 +35,7 @@ export default function MyPage() {
   const router = useRouter()
   const today = useMemo(() => new Date(), [])
   const { transactions, loading } = useUserTransactions(user?.uid)
+  const budget = useMonthBudget(user?.uid, today)
 
   const monthExpense = useMemo(
     () => sumAmount(filterMonthExpenses(transactions, today)),
@@ -107,10 +110,12 @@ export default function MyPage() {
           tone="green"
           title="예산 · 목표"
           description={
-            loading ? (
+            loading || budget.loading ? (
               <Skeleton className="h-3 w-36" />
+            ) : budget.currentError ? (
+              `이번 달 ${monthExpense.toLocaleString()}원 · 목표 확인 실패`
             ) : (
-              `이번 달 ${monthExpense.toLocaleString()}원 · 목표 미설정`
+              hubGoalDescription(monthExpense, budget.savedAmount)
             )
           }
           pill={
