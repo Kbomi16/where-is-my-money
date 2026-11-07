@@ -21,6 +21,7 @@ import {
   addDoc,
   serverTimestamp,
   doc,
+  getDoc,
   updateDoc,
   writeBatch,
 } from 'firebase/firestore'
@@ -127,12 +128,45 @@ export function AddTransactionModal({
   })
 
   useEffect(() => {
-    if (editingItem) {
+    if (!open) return
+
+    const applyForm = async () => {
+      if (!editingItem) {
+        setFormData({
+          type: defaultType,
+          amount: 0,
+          title: '',
+          date: new Date(),
+          category: '',
+          method: null,
+          memo: '',
+          installmentMonths: 1,
+          isExclude: false,
+          recurringEnabled: false,
+          recurringEndType: 'none',
+          recurringMonths: 12,
+        })
+        return
+      }
+
+      let recurringEndType = editingItem.recurringEndType || 'none'
+      let recurringMonths = editingItem.recurringMonths || 12
+
+      if (editingItem.recurringParentId) {
+        const parentSnap = await getDoc(
+          doc(db, 'transactions', editingItem.recurringParentId),
+        )
+        if (parentSnap.exists()) {
+          const parent = parentSnap.data()
+          recurringEndType = parent.recurringEndType || 'none'
+          recurringMonths = parent.recurringMonths || 12
+        }
+      }
+
       setFormData({
         type: editingItem.type,
         amount: editingItem.amount,
         title: editingItem.title,
-        // string 형태의 date를 Date 객체로 변환
         date: parseISO(editingItem.date),
         category: editingItem.category,
         method: editingItem.method || null,
@@ -141,25 +175,12 @@ export function AddTransactionModal({
         isExclude: editingItem.isExclude || false,
         recurringEnabled:
           editingItem.recurringEnabled || !!editingItem.recurringParentId,
-        recurringEndType: editingItem.recurringEndType || 'none',
-        recurringMonths: editingItem.recurringMonths || 12,
-      })
-    } else {
-      setFormData({
-        type: defaultType,
-        amount: 0,
-        title: '',
-        date: new Date(),
-        category: '',
-        method: null,
-        memo: '',
-        installmentMonths: 1,
-        isExclude: false,
-        recurringEnabled: false,
-        recurringEndType: 'none',
-        recurringMonths: 12,
+        recurringEndType,
+        recurringMonths,
       })
     }
+
+    applyForm()
   }, [editingItem, open, defaultType])
 
   // ! formData 업데이트 핸들러
@@ -280,6 +301,16 @@ export function AddTransactionModal({
       if (editingItem) {
         const isGeneratedRecurring = !!editingItem.recurringParentId
         const docRef = doc(db, 'transactions', editingItem.id)
+        const recurringSchedule = {
+          recurringEndType: formData.recurringEnabled
+            ? formData.recurringEndType || 'none'
+            : 'none',
+          recurringMonths:
+            formData.recurringEnabled && formData.recurringEndType === 'months'
+              ? formData.recurringMonths || 12
+              : null,
+        }
+
         await updateDoc(docRef, {
           ...basePayload,
           amount: totalAmount,
@@ -295,6 +326,13 @@ export function AddTransactionModal({
               }
             : {}),
         })
+
+        if (isGeneratedRecurring && editingItem.recurringParentId) {
+          await updateDoc(doc(db, 'transactions', editingItem.recurringParentId), {
+            ...recurringSchedule,
+            updatedAt: serverTimestamp(),
+          })
+        }
 
         toast.success('내역이 수정되었습니다! ✨')
       } else if (installmentMonths > 1) {
@@ -643,7 +681,7 @@ export function AddTransactionModal({
                   </div>
                 </div>
 
-                {formData.recurringEnabled && !editingItem?.recurringParentId && (
+                {formData.recurringEnabled && (
                   <div className="space-y-3 rounded-2xl border border-slate-200 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-950/40">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-black tracking-wider text-slate-400 uppercase">

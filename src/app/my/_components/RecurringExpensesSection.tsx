@@ -12,6 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { AddTransactionModal } from '@/app/_components/AddTransactionModal'
 import { db } from '@/lib/firebase'
 import { Transaction } from '@/app/type/transaction.type'
 import { doc, serverTimestamp, updateDoc } from 'firebase/firestore'
@@ -29,6 +30,7 @@ export default function RecurringExpensesSection({
   userId,
 }: RecurringExpensesSectionProps) {
   const [targetItem, setTargetItem] = useState<Transaction | null>(null)
+  const [editingItem, setEditingItem] = useState<Transaction | null>(null)
   const [isStopping, setIsStopping] = useState(false)
 
   const handleStopRecurring = async () => {
@@ -113,15 +115,26 @@ export default function RecurringExpensesSection({
                   </span>
                 </div>
 
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-8 rounded-full border-slate-200 px-3 text-xs font-semibold text-slate-600 hover:border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-                  onClick={() => setTargetItem(item)}
-                >
-                  중단하기
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 rounded-full border-slate-200 px-3 text-xs font-semibold text-slate-600 hover:border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                    onClick={() => setEditingItem(item)}
+                  >
+                    수정
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 rounded-full border-slate-200 px-3 text-xs font-semibold text-slate-600 hover:border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                    onClick={() => setTargetItem(item)}
+                  >
+                    중단하기
+                  </Button>
+                </div>
               </div>
             </div>
           ))
@@ -158,6 +171,14 @@ export default function RecurringExpensesSection({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AddTransactionModal
+        open={!!editingItem}
+        onOpenChange={(open) => {
+          if (!open) setEditingItem(null)
+        }}
+        editingItem={editingItem}
+      />
     </div>
   )
 }
