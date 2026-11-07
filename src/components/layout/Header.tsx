@@ -1,6 +1,5 @@
 'use client'
 
-import { Megaphone } from 'lucide-react'
 import Link from 'next/link'
 import { useAuthStore } from '@/app/store/useAuthStore'
 
@@ -23,13 +22,6 @@ export default function Header() {
           <span className="truncate text-[15px] font-bold tracking-tight">
             내 돈 어디갔지
           </span>
-        </Link>
-        <Link
-          href="/notice"
-          className="border-border bg-card flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-bold"
-        >
-          <Megaphone className="text-accent size-4" />
-          공지
         </Link>
       </div>
     </header>
