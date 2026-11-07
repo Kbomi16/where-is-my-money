@@ -105,12 +105,12 @@ export default function MyPage() {
           href="/my/budget"
           icon={Wallet}
           tone="green"
-          title="예산 · 한도"
+          title="예산 · 목표"
           description={
             loading ? (
               <Skeleton className="h-3 w-36" />
             ) : (
-              `이번 달 ${monthExpense.toLocaleString()}원 · 한도 미설정`
+              `이번 달 ${monthExpense.toLocaleString()}원 · 목표 미설정`
             )
           }
           pill={
