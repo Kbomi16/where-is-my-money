@@ -79,7 +79,7 @@ export default function ProfileSection({ user }: { user: User }) {
 
         {/* 그리드 선택 영역 */}
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="grid grid-cols-3 gap-3">
             {GHOST_IMAGES.map((ghost) => {
               const isSelected = selectedGhostId === ghost.id
               return (
