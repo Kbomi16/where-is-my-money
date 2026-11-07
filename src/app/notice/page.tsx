@@ -97,6 +97,8 @@ export default function NoticePage() {
       <PageHeader
         title="공지"
         description="새로운 소식과 안내를 모았어요"
+        backHref="/my/help"
+        backLabel="도움말로 돌아가기"
       />
 
       <div className="group relative mb-3 md:mb-5">
