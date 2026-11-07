@@ -158,7 +158,7 @@ export default function MyPage() {
         type="button"
         variant="outline"
         onClick={handleLogout}
-        className="text-expense hover:text-expense mt-3 h-11 w-full rounded-[14px] border-[1.5px] text-sm font-bold"
+        className="border-expense/40 text-expense hover:border-expense/60 hover:bg-expense/5 hover:text-expense mt-3 h-11 w-full rounded-[14px] text-sm font-bold shadow-none"
       >
         로그아웃
       </Button>
