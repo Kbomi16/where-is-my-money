@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Search, AlertCircle, Loader2, X } from 'lucide-react'
+import { Search, AlertCircle, X } from 'lucide-react'
 import {
   Accordion,
   AccordionContent,
@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { NoticeListSkeleton } from '@/components/common/ContentSkeleton'
 import PageHeader from '@/components/common/PageHeader'
 import PageLayout from '@/components/common/PageLayout'
 
@@ -124,12 +125,7 @@ export default function NoticePage() {
       {/* 3. 공지사항 리스트 */}
       <div className="rounded-3xl border border-slate-100 bg-white p-2 backdrop-blur-sm dark:border-slate-800/60 dark:bg-slate-900/40">
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-24 text-slate-400 dark:text-slate-500">
-            <Loader2 className="mb-4 h-8 w-8 animate-spin text-blue-500 dark:text-blue-400" />
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-              데이터를 불러오는 중입니다...
-            </p>
-          </div>
+          <NoticeListSkeleton />
         ) : filteredNotices.length > 0 ? (
           <Accordion type="single" collapsible className="w-full">
             {filteredNotices.map((notice) => {

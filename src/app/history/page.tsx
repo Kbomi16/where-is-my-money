@@ -5,6 +5,10 @@ import { MonthNavigator } from '../_components/MonthNavigator'
 import { TransactionCalendar } from '../_components/TransactionCalendar'
 import { TransactionList } from '../_components/TransactionList'
 import { useMonthTransactions } from '../hooks/useMonthTransactions'
+import {
+  CalendarSkeleton,
+  TransactionListSkeleton,
+} from '@/components/common/ContentSkeleton'
 import PageHeader from '@/components/common/PageHeader'
 import PageLayout from '@/components/common/PageLayout'
 
@@ -27,9 +31,11 @@ export default function HistoryPage() {
           setViewMode={setViewMode}
         />
         {loading && monthItems.length === 0 ? (
-          <p className="text-muted py-16 text-center text-sm">
-            내역을 불러오고 있어요.
-          </p>
+          viewMode === 'calendar' ? (
+            <CalendarSkeleton />
+          ) : (
+            <TransactionListSkeleton />
+          )
         ) : viewMode === 'calendar' ? (
           <TransactionCalendar currentDate={currentDate} items={monthItems} />
         ) : monthItems.length === 0 ? (

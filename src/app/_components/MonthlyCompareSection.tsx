@@ -12,6 +12,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { ChartSkeleton } from '@/components/common/ContentSkeleton'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Transaction } from '@/app/type/transaction.type'
 import { cn } from '@/lib/utils'
 import {
@@ -69,22 +71,24 @@ export default function MonthlyCompareSection({
       <h2 className="mt-1 text-lg font-extrabold tracking-tight">
         {lastLabel}과 {currentLabel}
       </h2>
-      <p
-        className={cn(
-          'mt-1 text-sm font-medium',
-          insight.trend === 'down' && 'text-income',
-          insight.trend === 'up' && 'text-expense',
-          (insight.trend === 'same' || insight.trend === 'empty') &&
-            'text-muted',
-        )}
-      >
-        {comparisonText}
-      </p>
+      {loading ? (
+        <Skeleton className="mt-2 h-4 w-40" />
+      ) : (
+        <p
+          className={cn(
+            'mt-1 text-sm font-medium',
+            insight.trend === 'down' && 'text-income',
+            insight.trend === 'up' && 'text-expense',
+            (insight.trend === 'same' || insight.trend === 'empty') &&
+              'text-muted',
+          )}
+        >
+          {comparisonText}
+        </p>
+      )}
 
       {loading ? (
-        <p className="text-muted py-16 text-center text-sm">
-          비교를 불러오고 있어요.
-        </p>
+        <ChartSkeleton />
       ) : (
         <div className="mt-4 h-56 w-full md:h-72">
           <ResponsiveContainer width="100%" height="100%">

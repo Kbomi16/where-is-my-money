@@ -12,6 +12,7 @@ import { CATEGORIES } from '@/app/constants/categories'
 import { useAuthStore } from '@/app/store/useAuthStore'
 import { auth } from '@/lib/firebase'
 import PageHeader from '@/components/common/PageHeader'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { HubRow } from './_components/HubRow'
 import MyShell from './_components/MyShell'
@@ -106,9 +107,11 @@ export default function MyPage() {
           tone="green"
           title="예산 · 한도"
           description={
-            loading
-              ? '이번 달 지출을 불러오는 중'
-              : `이번 달 ${monthExpense.toLocaleString()}원 · 한도 미설정`
+            loading ? (
+              <Skeleton className="h-3 w-36" />
+            ) : (
+              `이번 달 ${monthExpense.toLocaleString()}원 · 한도 미설정`
+            )
           }
           pill={
             !loading && monthExpense > 0
@@ -129,9 +132,11 @@ export default function MyPage() {
           tone="violet"
           title="반복 지출"
           description={
-            loading
-              ? '불러오는 중'
-              : recurringSummary(recurring.map((item) => item.title))
+            loading ? (
+              <Skeleton className="h-3 w-24" />
+            ) : (
+              recurringSummary(recurring.map((item) => item.title))
+            )
           }
         />
       </section>

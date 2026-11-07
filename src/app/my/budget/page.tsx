@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import { CATEGORIES } from '@/app/constants/categories'
 import { getCategoryIconSrc } from '@/app/constants/categoryIcons'
 import { useAuthStore } from '@/app/store/useAuthStore'
+import { Skeleton } from '@/components/ui/skeleton'
 import MyDetailHeader from '../_components/MyDetailHeader'
 import MyShell from '../_components/MyShell'
 import {
@@ -52,18 +53,24 @@ export default function BudgetPage() {
         <p className="mt-1.5 text-[28px] leading-none font-extrabold tracking-tight">
           미설정
         </p>
-        <p className="text-accent mt-2 text-sm font-bold">
-          {loading
-            ? '이번 달 지출을 불러오는 중'
-            : `이번 달 지출 ${total.toLocaleString()}원`}
-        </p>
+        {loading ? (
+          <Skeleton className="mt-2 h-4 w-40" />
+        ) : (
+          <p className="text-accent mt-2 text-sm font-bold">
+            이번 달 지출 {total.toLocaleString()}원
+          </p>
+        )}
 
         <div className="mt-3.5 grid grid-cols-2 gap-2">
           <div className="bg-background border-border rounded-xl border px-3 py-2.5">
             <p className="text-muted text-[10px] font-bold">사용</p>
-            <p className="text-accent mt-0.5 text-[15px] font-extrabold tracking-tight">
-              {loading ? '…' : total.toLocaleString()}
-            </p>
+            {loading ? (
+              <Skeleton className="mt-1.5 h-5 w-16" />
+            ) : (
+              <p className="text-accent mt-0.5 text-[15px] font-extrabold tracking-tight">
+                {total.toLocaleString()}
+              </p>
+            )}
           </div>
           <div className="bg-background border-border rounded-xl border px-3 py-2.5">
             <p className="text-muted text-[10px] font-bold">남음</p>
@@ -110,9 +117,13 @@ export default function BudgetPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline justify-between gap-2">
                     <p className="text-[13px] font-bold">{category}</p>
-                    <p className="text-muted shrink-0 text-[11px] font-semibold">
-                      {loading ? '…' : `${spent.toLocaleString()}원`}
-                    </p>
+                    {loading ? (
+                      <Skeleton className="h-3 w-12" />
+                    ) : (
+                      <p className="text-muted shrink-0 text-[11px] font-semibold">
+                        {spent.toLocaleString()}원
+                      </p>
+                    )}
                   </div>
                   <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[#eef2f6] dark:bg-white/10">
                     <div

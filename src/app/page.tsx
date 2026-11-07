@@ -45,6 +45,7 @@ export default function Home() {
               income={totalIncome}
               expense={totalExpense}
               expenseComparison={expenseComparison}
+              loading={loading && items.length === 0}
             />
 
             <MonthlyCompareSection

@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
+import { InsightSkeleton } from '@/components/common/ContentSkeleton'
 import { cn } from '@/lib/utils'
 import { getCategoryIconSrc } from '../constants/categoryIcons'
 import { Transaction } from '../type/transaction.type'
@@ -101,13 +102,7 @@ export function HomeInsight({
   ]
 
   if (loading) {
-    return (
-      <section className="border-border bg-card rounded-[28px] border px-5 py-16 text-center">
-        <p className="text-muted text-sm font-medium">
-          이번 달 인사이트를 불러오고 있어요.
-        </p>
-      </section>
-    )
+    return <InsightSkeleton />
   }
 
   if (!top) {

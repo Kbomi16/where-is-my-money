@@ -13,6 +13,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { AddTransactionModal } from '@/app/_components/AddTransactionModal'
+import { RecurringListSkeleton } from '@/components/common/ContentSkeleton'
 import { db } from '@/lib/firebase'
 import { Transaction } from '@/app/type/transaction.type'
 import { doc, serverTimestamp, updateDoc } from 'firebase/firestore'
@@ -71,9 +72,7 @@ export default function RecurringExpensesSection({
 
       <div className="mt-4 space-y-3">
         {recurringLoading ? (
-          <div className="rounded-2xl border border-slate-100 bg-slate-50/70 px-4 py-3 text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-950/40">
-            불러오는 중...
-          </div>
+          <RecurringListSkeleton />
         ) : recurringExpenses.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/60 px-4 py-4 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-950/40">
             아직 정기 내역이 없어요.
