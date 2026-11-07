@@ -1,11 +1,9 @@
 'use client'
 
 import { useMemo } from 'react'
-import { toast } from 'sonner'
 import { CATEGORIES } from '@/app/constants/categories'
 import { getCategoryIconSrc } from '@/app/constants/categoryIcons'
 import { useAuthStore } from '@/app/store/useAuthStore'
-import { Button } from '@/components/ui/button'
 import MyDetailHeader from '../_components/MyDetailHeader'
 import MyShell from '../_components/MyShell'
 import {
@@ -38,10 +36,6 @@ export default function BudgetPage() {
   }, [expenses])
   const maxSpent = Math.max(0, ...spentByCategory.values())
 
-  const handleEditBudget = () => {
-    toast('예산 한도 저장은 아직 준비 중이에요.')
-  }
-
   if (!user) return null
 
   return (
@@ -49,15 +43,6 @@ export default function BudgetPage() {
       <MyDetailHeader
         title="예산 · 한도"
         description="이번 달 지출과 한도를 봐요"
-        action={
-          <button
-            type="button"
-            onClick={handleEditBudget}
-            className="text-accent px-2 py-1 text-[13px] font-extrabold"
-          >
-            수정
-          </button>
-        }
       />
 
       <section className="border-border bg-card rounded-[20px] border px-4 py-4">
@@ -141,14 +126,6 @@ export default function BudgetPage() {
           })}
         </ul>
       </section>
-
-      <Button
-        type="button"
-        onClick={handleEditBudget}
-        className="h-12 w-full rounded-[14px] text-[15px] font-extrabold"
-      >
-        예산 · 한도 수정하기
-      </Button>
     </MyShell>
   )
 }
