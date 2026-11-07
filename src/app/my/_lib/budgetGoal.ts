@@ -185,6 +185,60 @@ export function compareWithPreviousMonth(input: {
   }
 }
 
+export function homeGoalCardModel(input: {
+  budgetLoading: boolean
+  transactionsLoading: boolean
+  error: string | null
+  savedAmount: number | null
+  previousAmount: number | null
+  spent: number
+  date: Date
+}) {
+  if (input.budgetLoading || input.transactionsLoading) {
+    return { kind: 'loading' as const }
+  }
+  if (input.error) {
+    return {
+      kind: 'error' as const,
+      permission: input.error.includes('권한'),
+      message: input.error,
+    }
+  }
+  if (!isValidGoalAmount(input.savedAmount)) {
+    return { kind: 'unset' as const }
+  }
+
+  const spent =
+    Number.isFinite(input.spent) && input.spent > 0 ? input.spent : 0
+  const usage = summarizeGoalUsage(spent, input.savedAmount)
+  const daily = dailyRecommendation(usage.remaining, input.date)
+  const percent = usage.percent ?? 0
+  const tone: 'under' | 'watch' | 'over' =
+    percent > 100 ? 'over' : percent >= 70 ? 'watch' : 'under'
+  const toneLabel =
+    tone === 'over' ? '초과' : tone === 'watch' ? '주의' : '여유'
+  const line =
+    usage.overAmount > 0
+      ? `목표보다 ${usage.overAmount.toLocaleString('ko-KR')}원 초과 · 오늘 포함 하루 ${daily.amount?.toLocaleString('ko-KR')}원`
+      : `남음 ${(usage.remaining ?? 0).toLocaleString('ko-KR')}원 · 오늘 포함 하루 ${daily.amount?.toLocaleString('ko-KR')}원`
+
+  return {
+    kind: 'ready' as const,
+    spent,
+    goal: input.savedAmount,
+    percent,
+    percentLabel: formatUsagePercent(percent),
+    barPercent: usage.barPercent,
+    tone,
+    toneLabel,
+    remaining: usage.remaining ?? 0,
+    overAmount: usage.overAmount,
+    dailyAmount: daily.amount ?? 0,
+    daysIncludingToday: daily.daysIncludingToday,
+    line,
+  }
+}
+
 export function hubGoalDescription(spent: number, savedAmount: number | null) {
   const spentLabel = `이번 달 ${spent.toLocaleString('ko-KR')}원`
   if (!isValidGoalAmount(savedAmount)) return `${spentLabel} · 목표 미설정`
