@@ -4,6 +4,7 @@ export const GHOST_IMAGES = [
   { id: 'ghost_3', src: '/imgs/ghost_3.png', label: '유령3' },
   { id: 'ghost_4', src: '/imgs/ghost_4.png', label: '유령4' },
   { id: 'ghost_5', src: '/imgs/ghost_5.png', label: '유령5' },
+  { id: 'ghost_6', src: '/imgs/ghost_6.png', label: '유령6' },
 ] as const
 
 export type GhostId = (typeof GHOST_IMAGES)[number]['id']
