@@ -124,12 +124,7 @@ export function HomeInsight({
   return (
     <div className="space-y-3">
       <section className="border-border bg-card rounded-[28px] border px-5 pt-5 pb-4">
-        <div className="mb-2 flex items-center justify-between">
-          <p className="text-muted text-xs font-bold">이번 달 인사이트</p>
-          <span className="bg-accent/10 text-accent rounded-full px-2.5 py-1 text-[11px] font-bold">
-            최대 카테고리
-          </span>
-        </div>
+        <p className="text-muted mb-2 text-xs font-bold">이번 달 인사이트</p>
         <h2 className="mb-5 text-2xl leading-snug font-extrabold tracking-tight md:text-3xl">
           이번 달, <em className="text-accent not-italic">{top.category}</em>에
           <br />
