@@ -53,6 +53,14 @@ type BudgetDoc = {
   amount?: unknown
 } | null
 
+export function readMonthGoal(goals: unknown, monthKey: string) {
+  if (!isValidMonthKey(monthKey) || !goals || typeof goals !== 'object') {
+    return null
+  }
+  const amount = (goals as Record<string, unknown>)[monthKey]
+  return isValidGoalAmount(amount) ? amount : null
+}
+
 export function readBudgetAmount(
   doc: BudgetDoc,
   userId: string,

@@ -1,15 +1,19 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { doc, onSnapshot, serverTimestamp, setDoc } from 'firebase/firestore'
+import {
+  doc,
+  onSnapshot,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import {
-  budgetDocumentId,
-  buildBudgetWrite,
   monthKeyFromDate,
   parseGoalInput,
   previousMonthKey,
-  readBudgetAmount,
+  readMonthGoal,
 } from '../_lib/budgetGoal'
 
 type DocState = {
@@ -67,51 +71,30 @@ export function useMonthBudget(userId: string | null | undefined, today: Date) {
     setCurrent({ status: 'loading', amount: null, message: null })
     setPrevious({ status: 'loading', amount: null, message: null })
 
-    let currentId = ''
-    let previousId = ''
-    try {
-      currentId = budgetDocumentId(userId, monthKey)
-      previousId = budgetDocumentId(userId, previousKey)
-    } catch (error) {
-      console.error('Budget id error:', error)
-      const message = '목표를 불러오지 못했어요.'
-      setCurrent({ status: 'error', amount: null, message })
-      setPrevious({ status: 'error', amount: null, message })
-      return
-    }
+    const unsubscribe = onSnapshot(
+      doc(db, 'users', userId),
+      (snapshot) => {
+        const goals = snapshot.exists() ? snapshot.data().monthGoals : null
+        setCurrent({
+          status: 'ready',
+          amount: readMonthGoal(goals, monthKey),
+          message: null,
+        })
+        setPrevious({
+          status: 'ready',
+          amount: readMonthGoal(goals, previousKey),
+          message: null,
+        })
+      },
+      (error) => {
+        console.error('Budget listener error:', error)
+        const message = errorMessage(error)
+        setCurrent({ status: 'error', amount: null, message })
+        setPrevious({ status: 'error', amount: null, message })
+      },
+    )
 
-    const listen = (
-      id: string,
-      month: string,
-      setState: (state: DocState) => void,
-    ) =>
-      onSnapshot(
-        doc(db, 'budgets', id),
-        (snapshot) => {
-          const data = snapshot.exists() ? snapshot.data() : null
-          setState({
-            status: 'ready',
-            amount: readBudgetAmount(data, userId, month),
-            message: null,
-          })
-        },
-        (error) => {
-          console.error('Budget listener error:', error)
-          setState({
-            status: 'error',
-            amount: null,
-            message: errorMessage(error),
-          })
-        },
-      )
-
-    const unsubscribeCurrent = listen(currentId, monthKey, setCurrent)
-    const unsubscribePrevious = listen(previousId, previousKey, setPrevious)
-
-    return () => {
-      unsubscribeCurrent()
-      unsubscribePrevious()
-    }
+    return unsubscribe
   }, [monthKey, previousKey, retryToken, userId])
 
   const save = async (raw: string) => {
@@ -131,15 +114,29 @@ export function useMonthBudget(userId: string | null | undefined, today: Date) {
     setSaving(true)
     setSaveError(null)
     try {
-      const write = buildBudgetWrite({
-        authUserId: userId,
-        monthKey,
-        amount: parsed.amount,
-      })
-      await setDoc(doc(db, 'budgets', write.id), {
-        ...write.data,
+      const userRef = doc(db, 'users', userId)
+      const payload = {
+        [`monthGoals.${monthKey}`]: parsed.amount,
         updatedAt: serverTimestamp(),
-      })
+      }
+      try {
+        await updateDoc(userRef, payload)
+      } catch (error) {
+        const code =
+          typeof error === 'object' && error && 'code' in error
+            ? String((error as { code: unknown }).code)
+            : ''
+        if (!code.includes('not-found')) throw error
+        await setDoc(
+          userRef,
+          {
+            uid: userId,
+            monthGoals: { [monthKey]: parsed.amount },
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true },
+        )
+      }
       return { ok: true as const }
     } catch (error) {
       console.error('Budget save error:', error)

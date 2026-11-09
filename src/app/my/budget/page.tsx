@@ -241,7 +241,7 @@ export default function BudgetPage() {
       <section className="border-border bg-card rounded-[18px] border px-3.5 py-3.5">
         <h2 className="text-[13px] font-extrabold">이번 달 목표</h2>
         <p className="text-muted mt-1 text-[11px] font-medium">
-          저장할 때만 이번 달 문서가 만들어져요.
+          저장한 목표는 이 계정에 남아요.
         </p>
         {budget.currentError || budget.previousError ? (
           <div className="mt-3 flex items-center justify-between gap-3">

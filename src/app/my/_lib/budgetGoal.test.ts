@@ -15,6 +15,7 @@ import {
   parseGoalInput,
   previousMonthKey,
   readBudgetAmount,
+  readMonthGoal,
   resolveDisplayedGoal,
   summarizeGoalUsage,
 } from './budgetGoal.ts'
@@ -132,6 +133,8 @@ describe('목표 금액 검증과 표시값', () => {
       '2026-10',
     )
 
+    assert.equal(readMonthGoal({ '2026-11': 80000, bad: 0 }, '2026-11'), 80000)
+    assert.equal(readMonthGoal({ '2026-11': 80000 }, '2026-10'), null)
     assert.equal(saved, 80000)
     assert.equal(foreign, null)
     assert.equal(wrongMonth, null)
