@@ -1,7 +1,8 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
+import { Wallet, X } from 'lucide-react'
 import { useAuthStore } from '@/app/store/useAuthStore'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
@@ -10,7 +11,7 @@ import {
   filterMonthExpenses,
   sumAmount,
 } from '@/app/my/_hooks/useUserTransactions'
-import { homeGoalCardModel } from '@/app/my/_lib/budgetGoal'
+import { homeGoalCardModel, monthKeyFromDate } from '@/app/my/_lib/budgetGoal'
 import type { Transaction } from '@/app/type/transaction.type'
 
 const toneText = {
@@ -25,10 +26,65 @@ const toneBar = {
   over: 'bg-expense',
 } as const
 
+function GoalNudge({ storageKey }: { storageKey: string }) {
+  const [hidden, setHidden] = useState(false)
+
+  useEffect(() => {
+    try {
+      setHidden(window.localStorage.getItem(storageKey) === '1')
+    } catch {
+      setHidden(false)
+    }
+  }, [storageKey])
+
+  const handleDismiss = () => {
+    try {
+      window.localStorage.setItem(storageKey, '1')
+    } catch {
+      setHidden(true)
+      return
+    }
+    setHidden(true)
+  }
+
+  if (hidden) return null
+
+  return (
+    <div className="border-accent/20 bg-accent/5 relative rounded-2xl border">
+      <Link
+        href="/my/budget"
+        className="hover:bg-accent/10 focus-visible:ring-accent flex items-center gap-3 rounded-2xl py-3.5 pr-12 pl-3.5 outline-none focus-visible:ring-2"
+      >
+        <span className="bg-card text-accent flex size-10 shrink-0 items-center justify-center rounded-xl">
+          <Wallet size={18} strokeWidth={2.25} aria-hidden />
+        </span>
+        <span className="min-w-0">
+          <span className="block text-sm font-extrabold tracking-tight">
+            이번 달 목표, 정해 볼까요?
+          </span>
+          <span className="text-muted mt-0.5 block text-[12px] leading-snug font-medium">
+            아직 안 정했어요. 정해 두면 얼마 썼는지 바로 보여요.
+          </span>
+        </span>
+      </Link>
+      <button
+        type="button"
+        aria-label="이번 달 목표 안내 닫기"
+        onClick={handleDismiss}
+        className="text-muted hover:bg-accent/10 hover:text-foreground focus-visible:ring-accent absolute top-2 right-2 flex size-8 cursor-pointer items-center justify-center rounded-full outline-none focus-visible:ring-2"
+      >
+        <X size={16} aria-hidden />
+      </button>
+    </div>
+  )
+}
+
 export function HomeGoalCardView({
   model,
+  nudgeKey,
 }: {
   model: ReturnType<typeof homeGoalCardModel>
+  nudgeKey: string
 }) {
   if (model.kind === 'loading') {
     return (
@@ -59,14 +115,7 @@ export function HomeGoalCardView({
   }
 
   if (model.kind === 'unset') {
-    return (
-      <Link
-        href="/my/budget"
-        className="bg-accent inline-flex h-11 items-center justify-center rounded-2xl px-4 text-sm font-extrabold text-white"
-      >
-        이번 달 목표 정하기
-      </Link>
-    )
+    return <GoalNudge storageKey={nudgeKey} />
   }
 
   return (
@@ -130,5 +179,10 @@ export function HomeGoalCard({
     date: today,
   })
 
-  return <HomeGoalCardView model={model} />
+  return (
+    <HomeGoalCardView
+      model={model}
+      nudgeKey={`goal-nudge:${user?.uid ?? 'local'}:${monthKeyFromDate(today)}`}
+    />
+  )
 }
