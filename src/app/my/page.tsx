@@ -8,7 +8,8 @@ import { signOut } from 'firebase/auth'
 import { Bell, Megaphone, Repeat, Tag, User, Wallet } from 'lucide-react'
 import { toast } from 'sonner'
 import { GHOST_IMAGES } from '@/app/constants/ghosts'
-import { CATEGORIES } from '@/app/constants/categories'
+import { useCategoryPreference } from './_hooks/useCategoryPreference'
+import { categoryHint as buildCategoryHint } from './_lib/categoryPreference'
 import { useAuthStore } from '@/app/store/useAuthStore'
 import { auth } from '@/lib/firebase'
 import PageHeader from '@/components/common/PageHeader'
@@ -36,6 +37,7 @@ export default function MyPage() {
   const today = useMemo(() => new Date(), [])
   const { transactions, loading } = useUserTransactions(user?.uid)
   const budget = useMonthBudget(user?.uid, today)
+  const categories = useCategoryPreference(user?.uid)
 
   const monthExpense = useMemo(
     () => sumAmount(filterMonthExpenses(transactions, today)),
@@ -59,7 +61,9 @@ export default function MyPage() {
   const ghost =
     GHOST_IMAGES.find((item) => item.id === user.photoURL) ?? GHOST_IMAGES[0]
   const name = user.displayName || '회원'
-  const categoryHint = `${CATEGORIES.expense.slice(0, 3).join(' · ')}처럼 나눠요`
+  const categoryHint = categories.loading
+    ? '카테고리를 불러오는 중'
+    : buildCategoryHint(categories.overrides)
 
   return (
     <MyShell className="md:max-w-none">

@@ -51,7 +51,9 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-import { CATEGORIES } from '../constants/categories'
+import { useAuthStore } from '../store/useAuthStore'
+import { useCategoryPreference } from '../my/_hooks/useCategoryPreference'
+import { categoriesForSelect } from '../my/_lib/categoryPreference'
 import { toast } from 'sonner'
 import { Transaction } from '../type/transaction.type'
 import {
@@ -126,6 +128,9 @@ export function AddTransactionModal({
     recurringEndType: 'none',
     recurringMonths: 12,
   })
+
+  const { user } = useAuthStore()
+  const categories = useCategoryPreference(user?.uid)
 
   useEffect(() => {
     if (!open) return
@@ -528,7 +533,11 @@ export function AddTransactionModal({
                     position="popper"
                     className="z-110 rounded-2xl border border-slate-100 bg-white dark:border-slate-800 dark:bg-slate-900"
                   >
-                    {CATEGORIES[formData.type || 'expense'].map((cat) => (
+                    {categoriesForSelect(
+                      formData.type || 'expense',
+                      categories.overrides,
+                      formData.category,
+                    ).map((cat) => (
                       <SelectItem key={cat} value={cat}>
                         {cat}
                       </SelectItem>
