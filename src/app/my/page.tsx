@@ -12,15 +12,18 @@ import { CATEGORIES } from '@/app/constants/categories'
 import { useAuthStore } from '@/app/store/useAuthStore'
 import { auth } from '@/lib/firebase'
 import PageHeader from '@/components/common/PageHeader'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { HubRow } from './_components/HubRow'
 import MyShell from './_components/MyShell'
+import { useMonthBudget } from './_hooks/useMonthBudget'
 import {
   filterMonthExpenses,
   filterRecurring,
   sumAmount,
   useUserTransactions,
 } from './_hooks/useUserTransactions'
+import { hubGoalDescription } from './_lib/budgetGoal'
 import {
   formatCompactAmount,
   maskEmail,
@@ -32,6 +35,7 @@ export default function MyPage() {
   const router = useRouter()
   const today = useMemo(() => new Date(), [])
   const { transactions, loading } = useUserTransactions(user?.uid)
+  const budget = useMonthBudget(user?.uid, today)
 
   const monthExpense = useMemo(
     () => sumAmount(filterMonthExpenses(transactions, today)),
@@ -55,7 +59,7 @@ export default function MyPage() {
   const ghost =
     GHOST_IMAGES.find((item) => item.id === user.photoURL) ?? GHOST_IMAGES[0]
   const name = user.displayName || '회원'
-  const categoryHint = `${CATEGORIES.expense.slice(0, 3).join(' · ')} … 관리`
+  const categoryHint = `${CATEGORIES.expense.slice(0, 3).join(' · ')}처럼 나눠요`
 
   return (
     <MyShell className="md:max-w-none">
@@ -98,17 +102,21 @@ export default function MyPage() {
           icon={User}
           tone="blue"
           title="프로필"
-          description="아바타 · 닉네임 · 계정"
+          description="닉네임과 계정"
         />
         <HubRow
           href="/my/budget"
           icon={Wallet}
           tone="green"
-          title="예산 · 한도"
+          title="예산 · 목표"
           description={
-            loading
-              ? '이번 달 지출을 불러오는 중'
-              : `이번 달 ${monthExpense.toLocaleString()}원 · 한도 미설정`
+            loading || budget.loading ? (
+              <Skeleton className="h-3 w-36" />
+            ) : budget.currentError ? (
+              `이번 달 ${monthExpense.toLocaleString()}원 · 목표 확인 실패`
+            ) : (
+              hubGoalDescription(monthExpense, budget.savedAmount)
+            )
           }
           pill={
             !loading && monthExpense > 0
@@ -129,9 +137,11 @@ export default function MyPage() {
           tone="violet"
           title="반복 지출"
           description={
-            loading
-              ? '불러오는 중'
-              : recurringSummary(recurring.map((item) => item.title))
+            loading ? (
+              <Skeleton className="h-3 w-24" />
+            ) : (
+              recurringSummary(recurring.map((item) => item.title))
+            )
           }
         />
       </section>
@@ -143,14 +153,14 @@ export default function MyPage() {
           icon={Bell}
           tone="blue"
           title="알림 · 테마"
-          description="푸시 · 시스템 테마"
+          description="알림과 화면 밝기"
         />
         <HubRow
           href="/my/help"
           icon={Megaphone}
           tone="rose"
           title="공지 · 도움말"
-          description="업데이트 · 문의"
+          description="소식과 문의"
         />
       </section>
 

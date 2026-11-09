@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { MessageSquare, Pencil, Trash2 } from 'lucide-react'
+import { MessageSquare, Pencil, Plus, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { getCategoryIconSrc } from '../constants/categoryIcons'
 import { Transaction } from '../type/transaction.type'
@@ -59,17 +59,24 @@ const methodColors: Record<
 export function TransactionList({
   items,
   className,
+  emptyMessage = '기록된 내역이 없어요',
 }: {
   items: Transaction[]
   className?: string
+  emptyMessage?: string
 }) {
   const [openMemoId, setOpenMemoId] = useState<string | null>(null)
 
   const [isOpenEditModal, setIsOpenEditModal] = useState(false)
   const [editingItem, setEditingItem] = useState<Transaction | null>(null)
+  const [isOpenAddModal, setIsOpenAddModal] = useState(false)
 
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+
+  const handleOpenAdd = () => {
+    setIsOpenAddModal(true)
+  }
 
   // ! 실제 삭제 수행 함수
   const handleDelete = async () => {
@@ -89,7 +96,12 @@ export function TransactionList({
 
   return (
     <div className={cn('space-y-2 md:space-y-3', className)}>
-      {items.length > 0 ? (
+      {items.length === 0 && (
+        <p className="col-span-full py-10 text-center text-sm text-slate-400 md:py-16">
+          {emptyMessage}
+        </p>
+      )}
+      {items.length > 0 &&
         items.map((item) => (
           <div
             key={item.id}
@@ -232,12 +244,17 @@ export function TransactionList({
               </div>
             )}
           </div>
-        ))
-      ) : (
-        <div className="flex flex-col items-center justify-center py-10 text-slate-400">
-          <p className="text-xs font-medium">기록된 내역이 없어요 👻</p>
-        </div>
-      )}
+        ))}
+
+      <button
+        type="button"
+        onClick={handleOpenAdd}
+        aria-label="오늘 내역 추가"
+        className="flex h-[80px] w-full cursor-pointer flex-col items-center justify-center gap-1.5 self-start rounded-2xl border-2 border-dashed border-slate-200 text-slate-400 transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-600 md:h-[110px] dark:border-slate-700 dark:hover:border-slate-600 dark:hover:bg-slate-900 dark:hover:text-slate-200"
+      >
+        <Plus size={20} strokeWidth={2.25} />
+        <span className="text-xs font-bold">추가</span>
+      </button>
 
       <AlertDialog
         open={!!deleteTargetId}
@@ -275,6 +292,13 @@ export function TransactionList({
           open={isOpenEditModal}
           onOpenChange={setIsOpenEditModal}
           editingItem={editingItem}
+        />
+      )}
+
+      {isOpenAddModal && (
+        <AddTransactionModal
+          open={isOpenAddModal}
+          onOpenChange={setIsOpenAddModal}
         />
       )}
     </div>

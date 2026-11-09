@@ -22,7 +22,7 @@ export default function CategoriesPage() {
     <MyShell className="gap-3">
       <MyDetailHeader
         title="카테고리"
-        description="기록에 쓰는 기본 분류예요. 직접 추가는 아직 없어요."
+        description="지출과 수입을 나누는 이름이에요"
       />
 
       {groups.map((group) => (

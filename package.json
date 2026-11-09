@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "node --experimental-strip-types --test src/app/my/_lib/budgetGoal.test.ts src/app/_lib/homeGoalCard.test.ts"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

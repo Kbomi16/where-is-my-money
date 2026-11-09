@@ -5,6 +5,10 @@ import { MonthNavigator } from '../_components/MonthNavigator'
 import { TransactionCalendar } from '../_components/TransactionCalendar'
 import { TransactionList } from '../_components/TransactionList'
 import { useMonthTransactions } from '../hooks/useMonthTransactions'
+import {
+  CalendarSkeleton,
+  TransactionListSkeleton,
+} from '@/components/common/ContentSkeleton'
 import PageHeader from '@/components/common/PageHeader'
 import PageLayout from '@/components/common/PageLayout'
 
@@ -17,7 +21,7 @@ export default function HistoryPage() {
     <PageLayout>
       <PageHeader
         title="내역"
-        description="기록한 수입과 지출을 확인해요"
+        description="들어온 돈과 나간 돈을 모아 봐요"
       />
       <div className="flex flex-col gap-4 md:gap-6">
         <MonthNavigator
@@ -27,19 +31,18 @@ export default function HistoryPage() {
           setViewMode={setViewMode}
         />
         {loading && monthItems.length === 0 ? (
-          <p className="text-muted py-16 text-center text-sm">
-            내역을 불러오고 있어요.
-          </p>
+          viewMode === 'calendar' ? (
+            <CalendarSkeleton />
+          ) : (
+            <TransactionListSkeleton />
+          )
         ) : viewMode === 'calendar' ? (
           <TransactionCalendar currentDate={currentDate} items={monthItems} />
-        ) : monthItems.length === 0 ? (
-          <p className="text-muted py-16 text-center text-sm">
-            이번 달 내역이 없어요.
-          </p>
         ) : (
           <TransactionList
             items={monthItems}
-            className="md:grid md:grid-cols-2 md:gap-3 md:space-y-0"
+            emptyMessage="이번 달 내역이 없어요."
+            className="md:grid md:grid-cols-2 md:items-start md:gap-3 md:space-y-0"
           />
         )}
       </div>

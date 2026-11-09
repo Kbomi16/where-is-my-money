@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
@@ -20,7 +21,7 @@ type RowContent = {
   icon: LucideIcon
   tone: HubTone
   title: string
-  description: string
+  description: ReactNode
   pill?: string
 }
 

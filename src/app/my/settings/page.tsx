@@ -31,7 +31,7 @@ export default function SettingsPage() {
     <MyShell className="gap-3">
       <MyDetailHeader
         title="알림 · 테마"
-        description="알림과 화면 테마를 확인해요"
+        description="알림과 화면 밝기를 맞춰요"
       />
 
       <section className="border-border bg-card divide-border divide-y overflow-hidden rounded-[18px] border">
@@ -42,7 +42,7 @@ export default function SettingsPage() {
           <span className="min-w-0 flex-1">
             <span className="block text-sm font-extrabold">푸시 알림</span>
             <span className="text-muted mt-0.5 block text-[11px] font-medium">
-              지출 알림은 아직 연결되지 않았어요.
+              지출이 생기면 알려드릴 준비를 하고 있어요.
             </span>
           </span>
           <span
@@ -60,7 +60,7 @@ export default function SettingsPage() {
           <span className="min-w-0 flex-1">
             <span className="block text-sm font-extrabold">테마</span>
             <span className="text-muted mt-0.5 block text-[11px] font-medium">
-              기기의 라이트/다크 설정을 따라요.
+              휴대폰이 어두운 화면이면 여기도 어두워져요.
             </span>
           </span>
           <span className="bg-accent/10 text-accent shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold">

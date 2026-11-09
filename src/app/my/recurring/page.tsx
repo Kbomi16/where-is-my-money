@@ -24,7 +24,7 @@ export default function RecurringPage() {
     <MyShell>
       <MyDetailHeader
         title="반복 지출"
-        description="매달 자동으로 등록되는 내역이에요"
+        description="매달 빠지지 않고 나가는 돈이에요"
       />
       <RecurringExpensesSection
         recurringExpenses={recurringExpenses}

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { subMonths } from 'date-fns'
+import { HomeGoalCard } from './_components/HomeGoalCard'
 import { SummaryCards } from './_components/SummaryCards'
 import { MonthNavigator } from './_components/MonthNavigator'
 import { HomeInsight } from './_components/HomeInsight'
@@ -25,12 +26,17 @@ export default function Home() {
 
   return (
     <PageLayout>
-      <PageHeader title="홈" description="이번 달 소비를 한눈에 봐요" />
+      <PageHeader title="홈" description="이번 달, 돈이 어디로 갔는지 봐요" />
       <div className="flex flex-col gap-4 md:gap-6">
         <MonthNavigator
           currentDate={currentDate}
           onChange={setCurrentDate}
           showViewToggle={false}
+        />
+
+        <HomeGoalCard
+          items={items}
+          transactionsLoading={loading && items.length === 0}
         />
 
         <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] md:gap-6">
@@ -45,6 +51,7 @@ export default function Home() {
               income={totalIncome}
               expense={totalExpense}
               expenseComparison={expenseComparison}
+              loading={loading && items.length === 0}
             />
 
             <MonthlyCompareSection

@@ -15,7 +15,7 @@ export default function ProfilePage() {
     <MyShell className="gap-6">
       <MyDetailHeader
         title="프로필"
-        description="아바타와 계정 정보를 확인해요"
+        description="닉네임과 계정을 여기서 바꿔요"
       />
       <ProfileSection user={user} />
       <AccountSection user={user} />
