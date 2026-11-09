@@ -97,7 +97,7 @@ export default function NoticePage() {
       <div className="mx-auto flex w-full max-w-lg flex-col md:max-w-3xl">
       <PageHeader
         title="공지"
-        description="새로운 소식과 안내를 모았어요"
+        description="새로 올라온 소식과 안내예요"
         backHref="/my/help"
         backLabel="도움말로 돌아가기"
       />

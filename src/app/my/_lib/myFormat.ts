@@ -36,7 +36,7 @@ export function daysUntilMonthEndLabel(date: Date) {
 }
 
 export function recurringSummary(titles: string[]) {
-  if (titles.length === 0) return '아직 없어요'
+  if (titles.length === 0) return '반복되는 지출이 없어요'
 
   const names = titles.slice(0, 2)
   const rest = titles.length - names.length

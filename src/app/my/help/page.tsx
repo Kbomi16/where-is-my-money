@@ -19,7 +19,7 @@ export default function HelpPage() {
     <MyShell className="gap-3">
       <MyDetailHeader
         title="공지 · 도움말"
-        description="안내와 문의는 여기서 봐요"
+        description="소식과 궁금한 점을 확인해요"
       />
 
       <section className="border-border bg-card divide-border divide-y overflow-hidden rounded-[18px] border">
@@ -28,13 +28,13 @@ export default function HelpPage() {
           icon={Megaphone}
           tone="rose"
           title="공지사항"
-          description="업데이트와 안내"
+          description="새로운 소식"
         />
         <HubAction
           icon={MessageCircle}
           tone="blue"
           title="문의하기"
-          description="개발자 오픈채팅"
+          description="카카오톡으로 문의"
           onClick={() => window.open(KAKAO_CHAT_URL)}
         />
       </section>
@@ -47,7 +47,7 @@ export default function HelpPage() {
           <div>
             <h2 className="text-sm font-extrabold">FAQ</h2>
             <p className="text-muted mt-0.5 text-[11px] font-medium">
-              자주 묻는 질문은 아직 준비 중이에요.
+              곧 자주 묻는 질문을 모아 둘게요.
             </p>
           </div>
         </div>

@@ -59,7 +59,7 @@ export default function MyPage() {
   const ghost =
     GHOST_IMAGES.find((item) => item.id === user.photoURL) ?? GHOST_IMAGES[0]
   const name = user.displayName || '회원'
-  const categoryHint = `${CATEGORIES.expense.slice(0, 3).join(' · ')} … 관리`
+  const categoryHint = `${CATEGORIES.expense.slice(0, 3).join(' · ')}처럼 나눠요`
 
   return (
     <MyShell className="md:max-w-none">
@@ -102,7 +102,7 @@ export default function MyPage() {
           icon={User}
           tone="blue"
           title="프로필"
-          description="아바타 · 닉네임 · 계정"
+          description="닉네임과 계정"
         />
         <HubRow
           href="/my/budget"
@@ -153,14 +153,14 @@ export default function MyPage() {
           icon={Bell}
           tone="blue"
           title="알림 · 테마"
-          description="푸시 · 시스템 테마"
+          description="알림과 화면 밝기"
         />
         <HubRow
           href="/my/help"
           icon={Megaphone}
           tone="rose"
           title="공지 · 도움말"
-          description="업데이트 · 문의"
+          description="소식과 문의"
         />
       </section>
 

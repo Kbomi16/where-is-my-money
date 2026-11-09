@@ -62,7 +62,7 @@ export default function RecurringExpensesSection({
             매달 반복되는 내역
           </p>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            정기적으로 기록한 수입과 지출을 한눈에 확인해요.
+            매달 자동으로 빠지는 지출이에요.
           </p>
         </div>
         <div className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
@@ -75,7 +75,7 @@ export default function RecurringExpensesSection({
           <RecurringListSkeleton />
         ) : recurringExpenses.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/60 px-4 py-4 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-950/40">
-            아직 정기 내역이 없어요.
+            아직 매달 반복되는 지출이 없어요.
           </div>
         ) : (
           recurringExpenses.map((item) => (

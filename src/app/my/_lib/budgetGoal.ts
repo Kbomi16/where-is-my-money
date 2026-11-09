@@ -249,6 +249,6 @@ export function homeGoalCardModel(input: {
 
 export function hubGoalDescription(spent: number, savedAmount: number | null) {
   const spentLabel = `이번 달 ${spent.toLocaleString('ko-KR')}원`
-  if (!isValidGoalAmount(savedAmount)) return `${spentLabel} · 목표 미설정`
+  if (!isValidGoalAmount(savedAmount)) return `${spentLabel} · 목표를 정해 보세요`
   return `${spentLabel} · 목표 ${savedAmount.toLocaleString('ko-KR')}원`
 }

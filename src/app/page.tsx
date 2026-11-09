@@ -26,7 +26,7 @@ export default function Home() {
 
   return (
     <PageLayout>
-      <PageHeader title="홈" description="이번 달 소비를 한눈에 봐요" />
+      <PageHeader title="홈" description="이번 달, 돈이 어디로 갔는지 봐요" />
       <div className="flex flex-col gap-4 md:gap-6">
         <MonthNavigator
           currentDate={currentDate}

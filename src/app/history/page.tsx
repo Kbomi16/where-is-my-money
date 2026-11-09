@@ -21,7 +21,7 @@ export default function HistoryPage() {
     <PageLayout>
       <PageHeader
         title="내역"
-        description="기록한 수입과 지출을 확인해요"
+        description="들어온 돈과 나간 돈을 모아 봐요"
       />
       <div className="flex flex-col gap-4 md:gap-6">
         <MonthNavigator

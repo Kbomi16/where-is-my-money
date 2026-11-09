@@ -98,7 +98,7 @@ export default function BudgetPage() {
     <MyShell className="gap-3">
       <MyDetailHeader
         title="예산 · 목표"
-        description="이번 달 지출과 목표를 봐요"
+        description="이번 달 얼마까지 쓸지 정해요"
       />
 
       <section className="border-border bg-card rounded-[20px] border px-4 py-4">
@@ -114,8 +114,7 @@ export default function BudgetPage() {
         )}
         {displayed.source === 'previous' && !budget.loading ? (
           <p className="text-muted mt-2 text-[11px] font-medium">
-            지난달 목표를 기본값으로 보여 줘요. 저장하기 전에는 이번 달 기록이
-            아니에요.
+            지난달 목표를 가져와 두었어요. 저장해야 이번 달 목표가 돼요.
           </p>
         ) : null}
         {transactionsLoading ? (
@@ -184,8 +183,8 @@ export default function BudgetPage() {
               className={usage.overAmount > 0 ? 'text-expense' : 'text-accent'}
             >
               {usage.hasGoal && usage.percent != null
-                ? `${formatUsagePercent(usage.percent)} 사용 중${displayed.source === 'previous' ? ' · 저장 전' : ''}`
-                : '목표를 정하면 사용률이 보여요'}
+                ? `${formatUsagePercent(usage.percent)} 썼어요${displayed.source === 'previous' ? ' · 저장 전' : ''}`
+                : '목표를 정하면 얼마나 썼는지 보여요'}
             </span>
           )}
           <span className="text-muted shrink-0">
@@ -199,9 +198,9 @@ export default function BudgetPage() {
         ) : null}
         {daily.amount != null ? (
           <p className="text-muted mt-2 text-[11px] font-medium">
-            남은 일수는 오늘을 포함해 {daily.daysIncludingToday}일이에요. 하루
-            권장 {daily.amount.toLocaleString()}원
-            {usage.overAmount > 0 ? ' · 초과분은 권장 금액에 넣지 않아요' : ''}
+            {usage.overAmount > 0
+              ? `목표는 이미 넘겼어요. 오늘 포함 ${daily.daysIncludingToday}일이 남았어요.`
+              : `오늘 포함 ${daily.daysIncludingToday}일 남았어요. 하루에 ${daily.amount.toLocaleString()}원이면 목표 안에 들어요.`}
           </p>
         ) : null}
       </section>
@@ -210,8 +209,7 @@ export default function BudgetPage() {
         <section className="border-border bg-card rounded-[18px] border px-3.5 py-3.5">
           <h2 className="text-[13px] font-extrabold">지난달과 비교</h2>
           <p className="text-muted mt-1 text-[11px] font-medium">
-            지난달 결과는 그달이 끝난 기준이에요. 이번 달 지출은 아직 진행
-            중이라 지난달 전체보다 적어 보일 수 있어요.
+            지난달은 한 달이 끝난 금액이고, 이번 달은 아직 진행 중이에요.
           </p>
           <p className="mt-3 text-[13px] font-bold">
             지난달 목표 {budget.previousAmount?.toLocaleString()}원 · 지출{' '}
@@ -227,13 +225,12 @@ export default function BudgetPage() {
               ? '지난달과 같은 금액이에요'
               : comparison.spentDelta > 0
                 ? `지난달보다 ${comparison.spentDelta.toLocaleString()}원 더 썼어요`
-                : `지난달보다 ${Math.abs(comparison.spentDelta).toLocaleString()}원 덜 썼어요`}{' '}
-            (진행 중)
+                : `지난달보다 ${Math.abs(comparison.spentDelta).toLocaleString()}원 덜 썼어요`}
           </p>
           <p className="text-muted mt-1 text-[11px] font-medium">
             {comparison.ratio == null
-              ? '지난달 지출이 0원이라 비율은 계산하지 않아요.'
-              : `이번 달 지출은 지난달 지출의 ${formatUsagePercent(comparison.ratio * 100)}예요.`}
+              ? '지난달에는 지출이 없어서 비교가 어려워요.'
+              : `이번 달 지출은 지난달의 ${formatUsagePercent(comparison.ratio * 100)}예요.`}
           </p>
         </section>
       ) : null}
@@ -241,7 +238,7 @@ export default function BudgetPage() {
       <section className="border-border bg-card rounded-[18px] border px-3.5 py-3.5">
         <h2 className="text-[13px] font-extrabold">이번 달 목표</h2>
         <p className="text-muted mt-1 text-[11px] font-medium">
-          저장한 목표는 이 계정에 남아요.
+          이번 달 쓸 수 있는 금액을 정해 두세요.
         </p>
         {budget.currentError || budget.previousError ? (
           <div className="mt-3 flex items-center justify-between gap-3">
@@ -286,8 +283,7 @@ export default function BudgetPage() {
             />
             {displayed.source === 'previous' ? (
               <p className="text-muted text-[11px] font-medium">
-                지난달 금액을 채워 두었어요. 그대로 저장하거나 바꾼 뒤 저장해
-                주세요.
+                지난달 금액을 넣어 두었어요. 그대로 두거나 바꿔서 저장하세요.
               </p>
             ) : null}
             {budget.saveError ? (
@@ -307,9 +303,9 @@ export default function BudgetPage() {
       </section>
 
       <section className="border-border bg-card rounded-[18px] border px-3.5 py-3.5">
-        <h2 className="text-[13px] font-extrabold">카테고리 목표</h2>
+        <h2 className="text-[13px] font-extrabold">카테고리별 지출</h2>
         <p className="text-muted mt-1 mb-1 text-[11px] font-medium">
-          이번 달 쓴 금액이에요. 카테고리 목표는 아직 저장되지 않아요.
+          어디에 얼마를 썼는지 봐요.
         </p>
 
         <ul>
