@@ -160,15 +160,10 @@ export function TransactionCalendar({
         </div>
 
         <div className="custom-scrollbar max-h-125 overflow-y-auto pr-2">
-          {selectedDayItems.length > 0 ? (
-            <TransactionList items={selectedDayItems} />
-          ) : (
-            <div className="flex flex-col items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-slate-100 py-20 text-center dark:border-slate-800">
-              <p className="text-sm font-medium text-slate-400">
-                이날은 기록된 내역이 없어요
-              </p>
-            </div>
-          )}
+          <TransactionList
+            items={selectedDayItems}
+            emptyMessage="이날은 기록된 내역이 없어요"
+          />
         </div>
       </div>
     </div>

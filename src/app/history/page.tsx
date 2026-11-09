@@ -38,14 +38,11 @@ export default function HistoryPage() {
           )
         ) : viewMode === 'calendar' ? (
           <TransactionCalendar currentDate={currentDate} items={monthItems} />
-        ) : monthItems.length === 0 ? (
-          <p className="text-muted py-16 text-center text-sm">
-            이번 달 내역이 없어요.
-          </p>
         ) : (
           <TransactionList
             items={monthItems}
-            className="md:grid md:grid-cols-2 md:gap-3 md:space-y-0"
+            emptyMessage="이번 달 내역이 없어요."
+            className="md:grid md:grid-cols-2 md:items-start md:gap-3 md:space-y-0"
           />
         )}
       </div>
