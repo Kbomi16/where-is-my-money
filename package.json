@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "node --experimental-strip-types --test src/app/my/_lib/budgetGoal.test.ts src/app/my/_lib/categoryPreference.test.ts src/app/_lib/homeGoalCard.test.ts"
+    "test": "node --experimental-strip-types --test src/app/my/_lib/budgetGoal.test.ts src/app/my/_lib/categoryPreference.test.ts src/app/_lib/homeGoalCard.test.ts src/app/_lib/homeGoalNudge.test.ts"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type MouseEvent } from 'react'
 import Link from 'next/link'
-import { Wallet, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { useAuthStore } from '@/app/store/useAuthStore'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
@@ -12,6 +12,12 @@ import {
   sumAmount,
 } from '@/app/my/_hooks/useUserTransactions'
 import { homeGoalCardModel, monthKeyFromDate } from '@/app/my/_lib/budgetGoal'
+import {
+  goalNudgeDismissValue,
+  goalNudgeStorageKey,
+  isGoalNudgeDismissed,
+  monthLabelFromDate,
+} from '@/app/_lib/homeGoalNudge'
 import type { Transaction } from '@/app/type/transaction.type'
 
 const toneText = {
@@ -26,44 +32,112 @@ const toneBar = {
   over: 'bg-expense',
 } as const
 
-function GoalNudge({ storageKey }: { storageKey: string }) {
-  const [hidden, setHidden] = useState(false)
+const clayInset =
+  'shadow-[inset_-6px_-8px_14px_rgba(0,0,0,.14),inset_6px_8px_14px_rgba(255,255,255,.75),8px_12px_20px_rgba(49,130,246,.18)]'
+
+function ClayTarget({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn('relative size-24 shrink-0', className)}
+      aria-hidden
+    >
+      <div
+        className={cn(
+          'absolute inset-0 rounded-full bg-[#ff7a7a]',
+          clayInset,
+        )}
+      />
+      <div
+        className={cn(
+          'absolute top-[16%] left-[16%] size-[68%] rounded-full bg-white',
+          clayInset,
+        )}
+      />
+      <div
+        className={cn(
+          'absolute top-[31%] left-[31%] size-[38%] rounded-full bg-[#ff7a7a]',
+          clayInset,
+        )}
+      />
+    </div>
+  )
+}
+
+function ClayDart({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        'h-2.5 w-[70px] rounded-[5px] bg-[#3182f6] shadow-[inset_0_-3px_4px_rgba(0,0,0,.2)]',
+        className,
+      )}
+      aria-hidden
+    />
+  )
+}
+
+function GoalNudge({
+  storageKey,
+  monthLabel,
+}: {
+  storageKey: string
+  monthLabel: string
+}) {
+  // null = 하이드레이션 전. SSR/첫 페인트에서 깜빡이지 않게 숨긴다.
+  const [visible, setVisible] = useState<boolean | null>(null)
 
   useEffect(() => {
     try {
-      setHidden(window.localStorage.getItem(storageKey) === '1')
+      setVisible(!isGoalNudgeDismissed(window.localStorage.getItem(storageKey)))
     } catch {
-      setHidden(false)
+      setVisible(true)
     }
   }, [storageKey])
 
-  const handleDismiss = () => {
+  const handleDismiss = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    event.stopPropagation()
     try {
-      window.localStorage.setItem(storageKey, '1')
+      window.localStorage.setItem(storageKey, goalNudgeDismissValue())
     } catch {
-      setHidden(true)
-      return
+      // storage 실패해도 UI에서는 닫는다
     }
-    setHidden(true)
+    setVisible(false)
   }
 
-  if (hidden) return null
+  if (visible !== true) return null
 
   return (
-    <div className="border-accent/20 bg-accent/5 relative rounded-2xl border">
+    <div
+      className={cn(
+        'goal-nudge-enter bg-card relative overflow-hidden rounded-[22px]',
+        'shadow-[0_1px_2px_rgba(0,0,0,.04),0_10px_30px_rgba(30,60,120,.08)]',
+        'dark:shadow-[0_1px_2px_rgba(0,0,0,.2),0_10px_30px_rgba(0,0,0,.35)]',
+      )}
+    >
       <Link
         href="/my/budget"
-        className="hover:bg-accent/10 focus-visible:ring-accent flex items-center gap-3 rounded-2xl py-3.5 pr-12 pl-3.5 outline-none focus-visible:ring-2"
+        className="focus-visible:ring-accent relative flex min-h-[88px] items-center gap-2 py-[22px] pr-12 pl-[100px] outline-none focus-visible:ring-2"
+        aria-label={`${monthLabel} 목표 금액 정하기`}
       >
-        <span className="bg-card text-accent flex size-10 shrink-0 items-center justify-center rounded-xl">
-          <Wallet size={18} strokeWidth={2.25} aria-hidden />
-        </span>
-        <span className="min-w-0">
-          <span className="block text-sm font-extrabold tracking-tight">
-            이번 달 목표, 정해 볼까요?
+        <div className="pointer-events-none absolute -top-2 -left-3.5 z-[1]">
+          <ClayTarget />
+        </div>
+        <div className="pointer-events-none absolute top-3.5 left-[34px] z-[2] -rotate-[35deg]">
+          <ClayDart />
+        </div>
+
+        <span className="min-w-0 flex-1">
+          <span className="text-muted block text-[13px] leading-snug font-medium">
+            {monthLabel} 목표가 비어 있어요
           </span>
-          <span className="text-muted mt-0.5 block text-[12px] leading-snug font-medium">
-            아직 안 정했어요. 정해 두면 얼마 썼는지 바로 보여요.
+          <span className="text-foreground mt-0.5 inline-flex items-baseline gap-1 text-[17px] leading-none font-bold tracking-tight">
+            목표 금액 정하기
+            <span
+              className="text-[21px] leading-none font-light text-[#b0b8c1] dark:text-zinc-500"
+              aria-hidden
+            >
+              ›
+            </span>
           </span>
         </span>
       </Link>
@@ -71,9 +145,9 @@ function GoalNudge({ storageKey }: { storageKey: string }) {
         type="button"
         aria-label="이번 달 목표 안내 닫기"
         onClick={handleDismiss}
-        className="text-muted hover:bg-accent/10 hover:text-foreground focus-visible:ring-accent absolute top-2 right-2 flex size-8 cursor-pointer items-center justify-center rounded-full outline-none focus-visible:ring-2"
+        className="text-[#b0b8c1] hover:bg-black/5 hover:text-foreground focus-visible:ring-accent absolute top-2.5 right-2.5 z-[3] flex size-8 cursor-pointer items-center justify-center rounded-full outline-none focus-visible:ring-2 dark:hover:bg-white/10 dark:text-zinc-500"
       >
-        <X size={16} aria-hidden />
+        <X size={15} strokeWidth={2.25} aria-hidden />
       </button>
     </div>
   )
@@ -82,9 +156,11 @@ function GoalNudge({ storageKey }: { storageKey: string }) {
 export function HomeGoalCardView({
   model,
   nudgeKey,
+  monthLabel,
 }: {
   model: ReturnType<typeof homeGoalCardModel>
   nudgeKey: string
+  monthLabel: string
 }) {
   if (model.kind === 'loading') {
     return (
@@ -115,7 +191,7 @@ export function HomeGoalCardView({
   }
 
   if (model.kind === 'unset') {
-    return <GoalNudge storageKey={nudgeKey} />
+    return <GoalNudge storageKey={nudgeKey} monthLabel={monthLabel} />
   }
 
   return (
@@ -178,11 +254,13 @@ export function HomeGoalCard({
     spent,
     date: today,
   })
+  const monthKey = monthKeyFromDate(today)
 
   return (
     <HomeGoalCardView
       model={model}
-      nudgeKey={`goal-nudge:${user?.uid ?? 'local'}:${monthKeyFromDate(today)}`}
+      nudgeKey={goalNudgeStorageKey(user?.uid, monthKey)}
+      monthLabel={monthLabelFromDate(today)}
     />
   )
 }

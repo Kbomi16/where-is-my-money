@@ -1,5 +1,28 @@
 @import 'tailwindcss';
 
+/* 홈 「이번 달 목표」 미설정 배너 등장 */
+@keyframes goal-nudge-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.goal-nudge-enter {
+  animation: goal-nudge-enter 0.35s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .goal-nudge-enter {
+    animation: none;
+  }
+}
+
+
 @font-face {
   font-family: 'Pretendard';
   src: url('/fonts/Pretendard-Regular.woff2') format('woff2');
