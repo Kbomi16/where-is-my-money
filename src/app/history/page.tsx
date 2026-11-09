@@ -42,7 +42,7 @@ export default function HistoryPage() {
           <TransactionList
             items={monthItems}
             emptyMessage="이번 달 내역이 없어요."
-            className="md:grid md:grid-cols-2 md:items-start md:gap-3 md:space-y-0"
+            className="md:grid md:grid-cols-2 md:items-stretch md:gap-3 md:space-y-0"
           />
         )}
       </div>
