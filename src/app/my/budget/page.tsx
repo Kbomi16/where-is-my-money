@@ -6,7 +6,7 @@ import { CATEGORIES } from '@/app/constants/categories'
 import { getCategoryIconSrc } from '@/app/constants/categoryIcons'
 import { useAuthStore } from '@/app/store/useAuthStore'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { formFieldClassName, Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import MyDetailHeader from '../_components/MyDetailHeader'
 import MyShell from '../_components/MyShell'
@@ -278,7 +278,7 @@ export default function BudgetPage() {
               value={form.text}
               aria-invalid={budget.saveError ? true : undefined}
               placeholder="예: 300000"
-              className="border-border bg-background h-11 rounded-xl"
+              className={formFieldClassName}
               onChange={(event) => {
                 budget.clearSaveError()
                 setForm({ sourceKey: form.sourceKey, text: event.target.value })

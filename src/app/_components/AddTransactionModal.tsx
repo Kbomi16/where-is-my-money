@@ -33,7 +33,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { formFieldClassName, Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
@@ -43,7 +43,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
+import { formTextareaClassName, Textarea } from '@/components/ui/textarea'
 import { Calendar } from '@/components/ui/calendar'
 import {
   Popover,
@@ -481,7 +481,7 @@ export function AddTransactionModal({
                   value={formData.title}
                   onChange={(e) => handleFieldChange('title', e.target.value)}
                   placeholder="예: 스타벅스"
-                  className="focus-visible:ring-accent h-12 rounded-2xl border border-slate-100 bg-slate-50/50 px-4 font-bold focus-visible:ring-1 dark:border-slate-800 dark:bg-slate-900"
+                  className={formFieldClassName}
                 />
               </div>
               <div className="space-y-2">
@@ -617,7 +617,7 @@ export function AddTransactionModal({
                 value={formData.memo}
                 onChange={(e) => handleFieldChange('memo', e.target.value)}
                 placeholder="예: 점심 식사, 친구와 함께"
-                className="focus-visible:ring-accent min-h-24 resize-none rounded-3xl border border-slate-100 bg-slate-50/50 p-4 font-medium focus-visible:ring-1 md:min-h-40 dark:border-slate-800 dark:bg-slate-900"
+                className={formTextareaClassName}
               />
             </div>
 
