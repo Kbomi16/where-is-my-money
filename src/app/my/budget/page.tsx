@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import { CATEGORIES } from '@/app/constants/categories'
+import { useCategoryPreference } from '../_hooks/useCategoryPreference'
+import { categoriesForSpendList } from '../_lib/categoryPreference'
 import { getCategoryIconSrc } from '@/app/constants/categoryIcons'
 import { useAuthStore } from '@/app/store/useAuthStore'
 import { Button } from '@/components/ui/button'
@@ -36,6 +37,7 @@ export default function BudgetPage() {
     user?.uid,
   )
   const budget = useMonthBudget(user?.uid, today)
+  const categories = useCategoryPreference(user?.uid)
   const [form, setForm] = useState({ sourceKey: '', text: '' })
 
   const expenses = useMemo(
@@ -309,7 +311,11 @@ export default function BudgetPage() {
         </p>
 
         <ul>
-          {CATEGORIES.expense.map((category) => {
+          {categoriesForSpendList(
+            'expense',
+            categories.overrides,
+            spentByCategory,
+          ).map((category) => {
             const spent = spentByCategory.get(category) ?? 0
             const width = maxSpent > 0 ? (spent / maxSpent) * 100 : 0
 
