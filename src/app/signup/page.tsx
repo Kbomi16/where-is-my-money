@@ -26,6 +26,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { doc, setDoc } from 'firebase/firestore'
+import SocialLoginButtons from '@/components/auth/SocialLoginButtons'
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('')
@@ -212,6 +213,8 @@ export default function SignUpPage() {
               {isLoading ? '가입 진행 중...' : '계정 만들기'}
               {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
             </Button>
+
+            <SocialLoginButtons disabled={isLoading} />
 
             <div className="border-border/50 w-full border-t pt-6 text-center">
               <p className="text-muted text-sm">

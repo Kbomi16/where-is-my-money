@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { auth } from '@/lib/firebase'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
@@ -18,13 +18,52 @@ import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { Eye, EyeOff, Mail, Lock, Wallet, ArrowRight } from 'lucide-react'
 import { toast } from 'sonner'
+import SocialLoginButtons from '@/components/auth/SocialLoginButtons'
+import {
+  PENDING_LINK_EVENT,
+  clearPendingLink,
+  linkPendingCredential,
+  readPendingLink,
+} from '@/lib/auth/socialSignIn'
+import {
+  SOCIAL_ERROR_PARAM,
+  socialErrorParamMessage,
+} from '@/lib/auth/socialAuthCore'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [pendingLink, setPendingLink] = useState<{
+    email: string | null
+  } | null>(null)
   const router = useRouter()
+
+  // 카카오 콜백 실패(/login?social_error=...) 안내 후 주소 정리
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const code = params.get(SOCIAL_ERROR_PARAM)
+    if (!code) return
+    const message = socialErrorParamMessage(code)
+    if (message) toast.error(message)
+    window.history.replaceState(null, '', '/login')
+  }, [])
+
+  // 구글 계정 연결 대기(계정 충돌) 상태 표시
+  useEffect(() => {
+    const sync = () => {
+      const pending = readPendingLink()
+      setPendingLink(pending ? { email: pending.email } : null)
+      if (pending?.email) {
+        const pendingEmail = pending.email
+        setEmail((current) => current || pendingEmail)
+      }
+    }
+    sync()
+    window.addEventListener(PENDING_LINK_EVENT, sync)
+    return () => window.removeEventListener(PENDING_LINK_EVENT, sync)
+  }, [])
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword((current) => !current)
@@ -43,8 +82,21 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      await signInWithEmailAndPassword(auth, nextEmail, nextPassword)
-      toast.success('로그인 성공! 기록을 시작해보세요.')
+      const credential = await signInWithEmailAndPassword(
+        auth,
+        nextEmail,
+        nextPassword,
+      )
+      const link = await linkPendingCredential(credential.user)
+      if (link.status === 'linked') {
+        toast.success(`${link.providerLabel} 계정이 연결됐어요!`, {
+          description: '다음부터는 구글로도 바로 로그인할 수 있어요.',
+        })
+      } else if (link.status === 'failed') {
+        toast.error(link.message ?? '구글 계정 연결에 실패했어요.')
+      } else {
+        toast.success('로그인 성공! 기록을 시작해보세요.')
+      }
       router.push('/')
     } catch (error: any) {
       let errorMessage = '로그인 중 오류가 발생했습니다.'
@@ -107,6 +159,28 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin}>
           <CardContent className="space-y-5">
+            {pendingLink && (
+              <div
+                role="status"
+                className="border-accent/20 bg-accent/5 rounded-xl border p-3 text-sm"
+              >
+                <p className="text-foreground font-semibold">
+                  구글 계정 연결 대기 중
+                </p>
+                <p className="text-muted mt-1 text-xs leading-relaxed">
+                  {pendingLink.email ? `${pendingLink.email} ` : ''}
+                  기존 방법으로 로그인하면 구글 계정이 자동으로 연결돼요.
+                </p>
+                <button
+                  type="button"
+                  onClick={clearPendingLink}
+                  className="text-accent mt-2 text-xs font-bold underline-offset-4 hover:underline"
+                >
+                  연결 안 할게요
+                </button>
+              </div>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="email" className="ml-1 text-sm font-semibold">
                 이메일 주소
@@ -181,6 +255,8 @@ export default function LoginPage() {
             >
               테스트 계정으로 둘러보기
             </Button>
+
+            <SocialLoginButtons disabled={isLoading} />
 
             <div className="text-center">
               <p className="text-muted text-sm">
