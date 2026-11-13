@@ -39,7 +39,12 @@ export default function BottomNav() {
   }
 
   if (!user) return null
-  if (pathname === '/login' || pathname === '/signup') return null
+  if (
+    pathname === '/login' ||
+    pathname === '/signup' ||
+    pathname.startsWith('/auth/')
+  )
+    return null
 
   return (
     <nav
