@@ -105,7 +105,7 @@ export function TransactionList({
         items.map((item) => (
           <div
             key={item.id}
-            className={`{group ${item.isExclude ? 'bg-slate-100 dark:bg-slate-800' : 'bg-white dark:bg-slate-900'} dark:bg-slate-900} relative flex flex-col overflow-hidden rounded-2xl border border-slate-100 transition-all dark:border-slate-800`}
+            className={`{group ${item.isExclude ? 'bg-slate-100 dark:bg-slate-800' : 'bg-white dark:bg-slate-900'} dark:bg-slate-900} relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-100 transition-all dark:border-slate-800`}
           >
             <div className="flex items-center justify-between p-3 md:p-4">
               <div className="flex items-center gap-3 md:gap-4">
@@ -250,7 +250,7 @@ export function TransactionList({
         type="button"
         onClick={handleOpenAdd}
         aria-label="오늘 내역 추가"
-        className="flex h-[80px] w-full cursor-pointer flex-col items-center justify-center gap-1.5 self-start rounded-2xl border-2 border-dashed border-slate-200 text-slate-400 transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-600 md:h-[110px] dark:border-slate-700 dark:hover:border-slate-600 dark:hover:bg-slate-900 dark:hover:text-slate-200"
+        className="flex h-[80px] w-full cursor-pointer flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-slate-200 text-slate-400 transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-600 md:h-full md:min-h-[80px] dark:border-slate-700 dark:hover:border-slate-600 dark:hover:bg-slate-900 dark:hover:text-slate-200"
       >
         <Plus size={20} strokeWidth={2.25} />
         <span className="text-xs font-bold">추가</span>
