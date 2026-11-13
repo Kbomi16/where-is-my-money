@@ -14,9 +14,11 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   const isAuthPage = pathname === '/login' || pathname === '/signup'
+  // 소셜 로그인 완료 처리 화면(/auth/kakao)은 로그인 상태와 무관하게 그대로 보여준다
+  const isAuthCallback = pathname.startsWith('/auth/')
 
   useEffect(() => {
-    if (loading) return
+    if (loading || isAuthCallback) return
 
     if (!user) {
       // 1. 비로그인 유저가 보호된 페이지에 접근할 때
@@ -29,7 +31,9 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         router.replace('/')
       }
     }
-  }, [user, loading, router, pathname, isAuthPage])
+  }, [user, loading, router, pathname, isAuthPage, isAuthCallback])
+
+  if (isAuthCallback) return <>{children}</>
 
   if (loading) {
     return isAuthPage ? <AuthFormSkeleton /> : <PageSkeleton />
