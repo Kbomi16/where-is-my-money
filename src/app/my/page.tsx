@@ -11,12 +11,18 @@ import { GHOST_IMAGES } from '@/app/constants/ghosts'
 import { CATEGORIES } from '@/app/constants/categories'
 import { useAuthStore } from '@/app/store/useAuthStore'
 import { auth } from '@/lib/firebase'
+import {
+  formatLoginProviders,
+  resolveAccountEmail,
+  resolveLoginProviders,
+} from '@/lib/auth/loginProviders'
 import PageHeader from '@/components/common/PageHeader'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { HubRow } from './_components/HubRow'
 import MyShell from './_components/MyShell'
 import { useMonthBudget } from './_hooks/useMonthBudget'
+import { useUserAccountEmail } from './_hooks/useUserAccountEmail'
 import {
   filterMonthExpenses,
   filterRecurring,
@@ -36,6 +42,9 @@ export default function MyPage() {
   const today = useMemo(() => new Date(), [])
   const { transactions, loading } = useUserTransactions(user?.uid)
   const budget = useMonthBudget(user?.uid, today)
+  const { email: docEmail, loading: docEmailLoading } = useUserAccountEmail(
+    user?.uid,
+  )
 
   const monthExpense = useMemo(
     () => sumAmount(filterMonthExpenses(transactions, today)),
@@ -60,6 +69,18 @@ export default function MyPage() {
     GHOST_IMAGES.find((item) => item.id === user.photoURL) ?? GHOST_IMAGES[0]
   const name = user.displayName || '회원'
   const categoryHint = `${CATEGORIES.expense.slice(0, 3).join(' · ')}처럼 나눠요`
+  const displayEmail = resolveAccountEmail(user.email, docEmail)
+  const emailLine = displayEmail
+    ? maskEmail(displayEmail)
+    : docEmailLoading && !user.email
+      ? '\u00a0'
+      : maskEmail(null)
+  const loginMethodLine = `로그인 방식 · ${formatLoginProviders(
+    resolveLoginProviders({
+      uid: user.uid,
+      providerData: user.providerData,
+    }),
+  )}`
 
   return (
     <MyShell className="md:max-w-none">
@@ -84,7 +105,10 @@ export default function MyPage() {
             {name}
           </span>
           <span className="text-muted mt-0.5 block truncate text-xs font-medium">
-            {maskEmail(user.email)}
+            {emailLine}
+          </span>
+          <span className="text-muted mt-1 block truncate text-[11px] font-medium">
+            {loginMethodLine}
           </span>
           <span className="bg-accent/10 text-accent mt-2 inline-block rounded-full px-2.5 py-1 text-[10px] font-bold">
             프로필 보기 · 수정
