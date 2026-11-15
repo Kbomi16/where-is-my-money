@@ -2,20 +2,30 @@
 
 import { useEffect, useState } from 'react'
 import { User, updateProfile } from 'firebase/auth'
+import { doc, setDoc } from 'firebase/firestore'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input, formFieldClassName } from '@/components/ui/input'
 import { toast } from 'sonner'
 import Image from 'next/image'
-import { GHOST_IMAGES, GhostId } from '@/app/constants/ghosts'
+import { GHOST_IMAGES } from '@/app/constants/ghosts'
 import { Save, Check } from 'lucide-react'
+import { auth, db } from '@/lib/firebase'
+import { useAuthStore } from '@/app/store/useAuthStore'
+import { MAX_NICKNAME_LENGTH } from '@/lib/auth/socialAuthCore'
 
 export default function ProfileSection({ user }: { user: User }) {
+  const [nickname, setNickname] = useState(user.displayName ?? '')
   const [isUpdating, setIsUpdating] = useState(false)
-
-  // 1. 현재 선택(프리뷰) 중인 캐릭터 상태 (초기값은 현재 유저의 photoURL)
   const [selectedGhostId, setSelectedGhostId] = useState<string | null>(
     user.photoURL || GHOST_IMAGES[0].id,
   )
+
+  const setUser = useAuthStore((state) => state.setUser)
+
+  useEffect(() => {
+    setNickname(user.displayName ?? '')
+  }, [user.displayName])
 
   useEffect(() => {
     if (user.photoURL) {
@@ -23,23 +33,35 @@ export default function ProfileSection({ user }: { user: User }) {
     }
   }, [user.photoURL])
 
-  // 프리뷰로 보여줄 이미지 찾기
   const previewGhost =
-    GHOST_IMAGES.find((g) => g.id === selectedGhostId) || GHOST_IMAGES[0]
-
-  // 실제 변경사항이 있는지 확인 (저장 버튼 활성화용)
-  const isChanged = selectedGhostId !== user.photoURL
+    GHOST_IMAGES.find((ghost) => ghost.id === selectedGhostId) ||
+    GHOST_IMAGES[0]
+  const trimmedNickname = nickname.trim()
+  const nameChanged = trimmedNickname !== (user.displayName ?? '')
+  const isChanged = nameChanged || selectedGhostId !== user.photoURL
 
   const handleSave = async () => {
-    if (!selectedGhostId || !isChanged) return
+    if (!selectedGhostId || !isChanged || isUpdating) return
+    if (trimmedNickname.length < 2) {
+      toast.error('닉네임은 최소 2자 이상이어야 해요!')
+      return
+    }
 
     setIsUpdating(true)
     try {
-      await updateProfile(user, { photoURL: selectedGhostId })
-      toast.success('프로필 수정 완료!', {
-        description: '새로운 프로필이 저장되었어요.',
+      await updateProfile(user, {
+        displayName: trimmedNickname,
+        photoURL: selectedGhostId,
       })
-    } catch (error) {
+      await setDoc(
+        doc(db, 'users', user.uid),
+        { nickname: trimmedNickname, photoURL: selectedGhostId },
+        { merge: true },
+      )
+      await user.reload()
+      setUser(auth.currentUser)
+      toast.success('프로필을 저장했어요.')
+    } catch {
       toast.error('저장에 실패했습니다. 다시 시도해주세요.')
     } finally {
       setIsUpdating(false)
@@ -59,25 +81,45 @@ export default function ProfileSection({ user }: { user: User }) {
 
       <CardContent className="space-y-8">
         {/* 중앙 프리뷰 영역 */}
-        <div className="flex justify-center py-4">
-          <div className="group relative">
-            <div className="relative rounded-4xl bg-white p-6 transition-all duration-500 dark:bg-slate-800">
-              <Image
-                key={previewGhost.id}
-                src={previewGhost.src}
-                alt="Preview Ghost"
-                width={120}
-                height={120}
-                className="object-contain"
-              />
-            </div>
-            <div className="bg-accent absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full px-4 py-1.5 text-xs font-bold text-white">
-              {user.displayName}
-            </div>
+        <div className="flex w-full min-w-0 flex-col items-center gap-4 py-4">
+          <div className="rounded-4xl bg-white p-6 dark:bg-slate-800">
+            <Image
+              key={previewGhost.id}
+              src={previewGhost.src}
+              alt="Preview Ghost"
+              width={120}
+              height={120}
+              className="object-contain"
+            />
           </div>
+          <p className="bg-accent max-w-full min-w-0 truncate rounded-full px-4 py-1.5 text-xs font-bold whitespace-nowrap text-white">
+            {nickname.trim() || '이름 없음'}
+          </p>
         </div>
 
-        {/* 그리드 선택 영역 */}
+        <div>
+          <div className="flex flex-col gap-3">
+            <label htmlFor="profile-nickname" className="text-sm font-bold">
+              닉네임
+            </label>
+            <Input
+              id="profile-nickname"
+              value={nickname}
+              maxLength={MAX_NICKNAME_LENGTH}
+              autoComplete="nickname"
+              onChange={(event) => setNickname(event.currentTarget.value)}
+              className={formFieldClassName}
+              aria-describedby="profile-nickname-hint"
+            />
+          </div>
+          <p
+            id="profile-nickname-hint"
+            className="text-muted mt-2 text-[11px] font-medium"
+          >
+            2자 이상, 20자까지 쓸 수 있어요.
+          </p>
+        </div>
+
         <div className="space-y-4">
           <div className="grid grid-cols-3 gap-3">
             {GHOST_IMAGES.map((ghost) => {
