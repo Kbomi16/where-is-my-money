@@ -5,6 +5,7 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import BottomNav from '@/components/layout/BottomNav'
 import AddTransactionFab from '@/components/layout/AddTransactionFab'
+import PushForegroundListener from '@/components/layout/PushForegroundListener'
 import AuthProvider from '@/components/layout/AuthProvider'
 import AuthGuard from '@/components/layout/AuthGuard'
 import { Toaster } from '@/components/ui/sonner'
@@ -48,6 +49,7 @@ export default function RootLayout({
           </div>
           <BottomNav />
           <AddTransactionFab />
+          <PushForegroundListener />
           <Toaster position="top-right" />
         </AuthProvider>
       </body>

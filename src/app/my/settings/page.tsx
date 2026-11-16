@@ -3,15 +3,18 @@
 import { useEffect, useState } from 'react'
 import { Bell, Moon } from 'lucide-react'
 import { useAuthStore } from '@/app/store/useAuthStore'
+import { Switch } from '@/components/ui/switch'
+import { usePushNotification } from '../_hooks/usePushNotification'
 import MyDetailHeader from '../_components/MyDetailHeader'
 import MyShell from '../_components/MyShell'
 
-// TODO: 푸시 알림과 앱 안 테마 저장이 없습니다.
+// TODO: 앱 안 테마 저장이 없습니다.
 // 테마는 기기 prefers-color-scheme 값만 보여 주고, 바꾸거나 저장하지 않습니다.
 
 export default function SettingsPage() {
   const { user } = useAuthStore()
   const [scheme, setScheme] = useState<'light' | 'dark' | null>(null)
+  const push = usePushNotification(user)
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-color-scheme: dark)')
@@ -35,23 +38,26 @@ export default function SettingsPage() {
       />
 
       <section className="border-border bg-card divide-border divide-y overflow-hidden rounded-[18px] border">
-        <div className="flex items-center gap-3 px-3.5 py-3.5">
+        <label className="flex items-center gap-3 px-3.5 py-3.5">
           <span className="bg-accent/10 text-accent flex size-10 shrink-0 items-center justify-center rounded-xl">
             <Bell size={18} strokeWidth={2.25} />
           </span>
           <span className="min-w-0 flex-1">
             <span className="block text-sm font-extrabold">푸시 알림</span>
-            <span className="text-muted mt-0.5 block text-[11px] font-medium">
-              지출이 생기면 알려드릴 준비를 하고 있어요.
+            <span
+              className="text-muted mt-0.5 block text-[11px] font-medium"
+              aria-live="polite"
+            >
+              {push.description}
             </span>
           </span>
-          <span
-            aria-disabled="true"
-            className="bg-border relative inline-flex h-6 w-11 shrink-0 items-center rounded-full opacity-60"
-          >
-            <span className="bg-card ml-0.5 inline-block size-5 rounded-full shadow" />
-          </span>
-        </div>
+          <Switch
+            aria-label="푸시 알림"
+            checked={push.enabled}
+            disabled={!push.canToggle}
+            onCheckedChange={push.toggle}
+          />
+        </label>
 
         <div className="flex items-center gap-3 px-3.5 py-3.5">
           <span className="bg-accent/10 text-accent flex size-10 shrink-0 items-center justify-center rounded-xl">
